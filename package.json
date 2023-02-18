@@ -109,6 +109,7 @@
     "autoprefixer": "^10.4.13",
     "browserslist-config-erb": "^0.0.3",
     "chalk": "^4.1.2",
+    "clsx": "^1.2.1",
     "concurrently": "^7.6.0",
     "core-js": "^3.27.2",
     "cross-env": "^7.0.3",

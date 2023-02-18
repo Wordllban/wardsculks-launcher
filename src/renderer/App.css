@@ -2,8 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: 'Diary';
+  font-weight: 400;
+  src: url('../../assets/fonts/diary-normal.woff') format('woff');
+}
+
 @layer components {
   .screen-container {
     @apply h-screen bg-no-repeat bg-cover;
+  }
+}
+
+@layer base {
+  body {
+    font-family: 'Diary';
   }
 }

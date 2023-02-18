@@ -1,6 +1,5 @@
 module.exports = {
   content: ['./src/renderer/**/*.{js,jsx,ts,tsx,ejs}'],
-  darkMode: false, // or 'media' or 'class'
   variants: {
     extend: {},
   },
@@ -8,7 +7,10 @@ module.exports = {
   theme: {
     extend: {
       backgroundImage: {
-        main: "url('../../assets/images/background.png')",
+        // login page
+        'login-main': "url('../../assets/images/background.png')",
+        'login-sides':
+          "url('../../assets/images/wall-left.png'), url('../../assets/images/wall-right.png')",
       },
     },
   },
