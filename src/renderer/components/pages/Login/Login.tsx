@@ -1,12 +1,12 @@
-import React from 'react';
+import { ReactElement } from 'react';
 import Layout from 'renderer/components/common/Layout/Layout';
 
-const Login = () => {
+function Login(): ReactElement {
   return (
-    <Layout mainBackground={'bg-login-main'} sideBackground={'bg-login-sides'}>
-      <div></div>
+    <Layout mainBackground="bg-login-main" sideBackground="bg-login-sides">
+      <div />
     </Layout>
   );
-};
+}
 
 export default Login;

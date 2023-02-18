@@ -32,7 +32,7 @@ ipcMain.on('ipc-example', async (event, arg) => {
 });
 
 ipcMain.on('browser-open', async (event, arg) => {
-  console.log('BROWSER');
+  console.log('BROWSER: ', arg);
   event.reply(
     'browser-open',
     shell.openExternal(`C:\\Program Files\\Mozilla Firefox\\firefox.exe`)

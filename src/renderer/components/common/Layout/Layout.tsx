@@ -1,4 +1,4 @@
-import { FC, ReactNode } from 'react';
+import { ReactElement, ReactNode } from 'react';
 import clsx from 'clsx';
 
 type Props = {
@@ -7,17 +7,29 @@ type Props = {
   sideBackground?: string;
 };
 
-const Layout: FC<Props> = (props) => {
-  const { children, mainBackground, sideBackground } = props;
+function Layout({
+  children,
+  mainBackground,
+  sideBackground = '',
+}: Props): ReactElement {
   return (
     <div className={clsx('screen-container', mainBackground)}>
       <div
-        className={`h-screen bg-no-repeat ${sideBackground} bg-[position:left,_right]`}
+        className={clsx(
+          'h-screen',
+          'bg-no-repeat',
+          'bg-[position:left,_right]',
+          sideBackground
+        )}
       >
         {children}
       </div>
     </div>
   );
+}
+
+Layout.defaultProps = {
+  sideBackground: '',
 };
 
 export default Layout;
