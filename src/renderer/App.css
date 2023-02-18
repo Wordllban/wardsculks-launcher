@@ -1,3 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+  .screen-container {
+    @apply h-screen bg-no-repeat bg-cover;
+  }
+}

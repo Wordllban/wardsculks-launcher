@@ -5,4 +5,11 @@ module.exports = {
     extend: {},
   },
   plugins: [],
+  theme: {
+    extend: {
+      backgroundImage: {
+        main: "url('../../assets/images/background.png')",
+      },
+    },
+  },
 };

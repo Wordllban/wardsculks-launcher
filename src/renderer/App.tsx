@@ -1,18 +1,14 @@
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
-import icon from '../../assets/icon.svg';
+import background from '../../assets/images/background.png';
 import './App.css';
+import Layout from './components/common/Layout/Layout';
 
 function Hello() {
   const handleOpenMozila = () => {
     window.electron.ipcRenderer.sendMessage('browser-open', ['open browser']);
   };
 
-  return (
-    <div>
-      <a className="text-5xl">WardSculks</a>
-      <button onClick={handleOpenMozila}>Open</button>
-    </div>
-  );
+  return <Layout />;
 }
 
 export default function App() {
