@@ -2,12 +2,17 @@ module.exports = {
   extends: 'erb',
   rules: {
     // A temporary hack related to IDE not resolving correct package.json
-    'import/no-extraneous-dependencies': 'off',
     'react/react-in-jsx-scope': 'off',
     'react/jsx-filename-extension': 'off',
+    'react/require-default-props': 'off',
+    'react/button-has-type': 'off',
+    'import/no-extraneous-dependencies': 'off',
     'import/extensions': 'off',
     'import/no-unresolved': 'off',
     'import/no-import-module-exports': 'off',
+    'import/prefer-default-export': 'off',
+    // we are using labels for addition styles
+    'jsx-a11y/label-has-associated-control': 'off',
   },
   parserOptions: {
     ecmaVersion: 2020,

@@ -1,2 +1,2 @@
-/* eslint-disable no-restricted-exports */
-export { default } from './pages';
+export * from './pages';
+export * from './common';

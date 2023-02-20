@@ -7,7 +7,7 @@ type Props = {
   sideBackground?: string;
 };
 
-function Layout({
+export function Layout({
   children,
   mainBackground,
   sideBackground = '',
@@ -16,9 +16,7 @@ function Layout({
     <div className={clsx('screen-container', mainBackground)}>
       <div
         className={clsx(
-          'h-screen',
-          'bg-no-repeat',
-          'bg-[position:left,_right]',
+          'h-screen bg-[position:right,left] bg-no-repeat py-5',
           sideBackground
         )}
       >
@@ -27,9 +25,3 @@ function Layout({
     </div>
   );
 }
-
-Layout.defaultProps = {
-  sideBackground: '',
-};
-
-export default Layout;
