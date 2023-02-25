@@ -10,7 +10,7 @@
 
 @layer components {
   .screen-container {
-    @apply h-screen bg-cover bg-no-repeat;
+    @apply h-screen overflow-hidden bg-cover bg-no-repeat;
   }
 
   .border-default {
@@ -19,6 +19,10 @@
 
   .flex-center-col {
     @apply flex flex-col items-center justify-center;
+  }
+
+  .flex-start-col {
+    @apply flex flex-col items-start justify-center;
   }
 
   .glow-text {
@@ -50,7 +54,6 @@
   }
 
   a {
-    color: theme(colors.main);
     cursor: pointer;
   }
 }

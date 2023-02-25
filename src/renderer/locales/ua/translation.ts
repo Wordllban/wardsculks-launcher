@@ -2,7 +2,8 @@ import { Resource } from 'i18next';
 
 const translation: Resource = {
   translation: {
-    LOGIN: 'Вхід',
+    LOGIN: 'Логін',
+    LOGOUT: 'Вийти',
     PASSWORD: 'Пароль',
     SAVE_PASSWORD: 'Зберегти пароль',
     FORGOT_PASSWORD: 'Забули пароль?',
@@ -10,6 +11,7 @@ const translation: Resource = {
     DONT_HAVE_ACCOUNT: 'Не маєте акаунту?',
     REGISTER: 'Зареєструватися',
     ONLINE: 'Онлайн: ',
+    START_GAME: 'Почати гру',
   },
 };
 

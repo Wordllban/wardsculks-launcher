@@ -10,13 +10,13 @@ type Props = {
 export function Layout({
   children,
   mainBackground,
-  sideBackground = '',
+  sideBackground,
 }: Props): ReactElement {
   return (
     <div className={clsx('screen-container', mainBackground)}>
       <div
         className={clsx(
-          'h-screen bg-[position:right,left] bg-no-repeat py-5',
+          'h-screen bg-[position:right,left] bg-no-repeat py-5 px-12',
           sideBackground
         )}
       >

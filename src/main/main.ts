@@ -31,12 +31,9 @@ ipcMain.on('ipc-example', async (event, arg) => {
   event.reply('ipc-example', msgTemplate('pong'));
 });
 
-ipcMain.on('browser-open', async (event, arg) => {
-  console.log('BROWSER: ', arg);
-  event.reply(
-    'browser-open',
-    shell.openExternal(`C:\\Program Files\\Mozilla Firefox\\firefox.exe`)
-  );
+ipcMain.on('login', async (event, arg) => {
+  console.log('login: ', arg);
+  event.reply('login', () => console.log('logged in'));
 });
 
 if (process.env.NODE_ENV === 'production') {
@@ -80,7 +77,7 @@ const createWindow = async () => {
   mainWindow = new BrowserWindow({
     show: false,
     width: 915,
-    height: 535,
+    height: 538,
     icon: getAssetPath('icon.png'),
     webPreferences: {
       preload: app.isPackaged

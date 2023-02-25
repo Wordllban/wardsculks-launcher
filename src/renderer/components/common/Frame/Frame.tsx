@@ -12,7 +12,7 @@ export function Frame(props: Props): ReactElement {
   return (
     <div
       className={clsx(
-        'border-default bg-wall bg-no-repeat object-cover shadow-glow',
+        'border-default bg-wall bg-center bg-no-repeat object-scale-down shadow-glow',
         className
       )}
     >
