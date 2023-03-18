@@ -6,10 +6,12 @@ module.exports = {
     'react/jsx-filename-extension': 'off',
     'react/require-default-props': 'off',
     'react/button-has-type': 'off',
+    'react/jsx-props-no-spreading': 'off',
     'import/no-extraneous-dependencies': 'off',
     'import/extensions': 'off',
     'import/no-unresolved': 'off',
     'import/no-import-module-exports': 'off',
+    // disabled to barrel export
     'import/prefer-default-export': 'off',
     // we are using labels for addition styles
     'jsx-a11y/label-has-associated-control': 'off',

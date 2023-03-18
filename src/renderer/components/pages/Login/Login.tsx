@@ -1,27 +1,87 @@
-import { ReactElement, useState } from 'react';
+import {
+  ReactElement,
+  useState,
+  useMemo,
+  FormEvent,
+  ChangeEvent,
+  useContext,
+} from 'react';
 import { useTranslation } from 'react-i18next';
-import axios from 'axios';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Button, Checkbox, Frame, Input, Layout } from '../../common';
 import logo from '../../../../../assets/icons/logo-big.svg';
-
-const loginUrl = 'http://localhost:8000/users/auth/token/obtain';
-
-const login = async (username: string, password: string) => {
-  axios
-    .post(loginUrl, {
-      username,
-      password,
-    })
-    .then((response) => console.log(response))
-    .catch((error) => console.log(error));
-};
+import { UserContext } from '../../../auth/UserContext';
+import auth from 'services/auth.service';
+import { IFormInput } from '../../../types';
 
 export function Login(): ReactElement {
+  const { setUserData } = useContext(UserContext);
+  const navigate = useNavigate();
   const { t } = useTranslation();
 
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+
+  const [isSavePassword, setSavePassword] = useState<boolean>(false);
+
+  const handleSavePassword = (): void => {
+    setSavePassword(!isSavePassword);
+  };
+
+  const handleLogin = async (
+    event: FormEvent<HTMLFormElement>
+  ): Promise<void> => {
+    event.preventDefault();
+
+    const { access, refresh } = await auth.requestTokens(username, password);
+
+    if (access && refresh) {
+      setUserData({ access, username });
+      window.electron.ipcRenderer.sendMessage('save-access-token', [access]);
+      if (isSavePassword) {
+        window.electron.ipcRenderer.sendMessage('save-refresh-token', [
+          refresh,
+        ]);
+      }
+      navigate('/main-menu');
+    } else {
+      // TODO: add error handler
+      console.error('Failed to login');
+    }
+  };
+
+  // TODO: add error message to input validation
+  const fields: IFormInput[] = useMemo(
+    () => [
+      {
+        key: 'username-input',
+        name: 'username',
+        placeholder: t('LOGIN'),
+        type: 'text',
+        className: 'mt-2 w-full text-sm',
+        onChange: (event: ChangeEvent<HTMLInputElement>) =>
+          setUsername(event.target.value),
+        minLength: 2,
+        maxLength: 16,
+        pattern: '^[a-zA-Z0-9_]*$',
+        required: true,
+        errorMessage: 'Invalid login',
+      },
+      {
+        key: 'password-input',
+        name: 'password',
+        placeholder: t('PASSWORD'),
+        type: 'password',
+        className: 'mt-4 w-full text-sm',
+        onChange: (event: ChangeEvent<HTMLInputElement>) =>
+          setPassword(event.target.value),
+        minLength: 6,
+        required: true,
+        errorMessage: 'Invalid password',
+      },
+    ],
+    [t]
+  );
 
   return (
     <Layout mainBackground="bg-login-bg" sideBackground="bg-login-sides">
@@ -29,48 +89,35 @@ export function Login(): ReactElement {
         <Frame className="max-w-[245px] px-7 py-8">
           <div className="flex-start-col">
             <h1 className="w-full text-center">{t('LOGIN')}</h1>
-            <Input
-              placeholder={t('LOGIN')}
-              type="text"
-              className="mt-2 w-full text-sm"
-              onChange={(event) => setUsername(event.target.value)}
-              value={username}
-            />
-            <Input
-              placeholder={t('PASSWORD')}
-              type="password"
-              className="mt-4 w-full text-sm"
-              onChange={(event) => setPassword(event.target.value)}
-              value={password}
-            />
-
-            <div className="mt-6 w-full text-sm">
-              <label className="flex">
-                <Checkbox className="mr-2" />
-                <span className="flex flex-row items-center text-sm">
-                  {t('SAVE_PASSWORD')}
-                </span>
-              </label>
-              <a
-                className="hover:glow-text mt-2 text-main"
-                href="https://github.com/Ward-Sculks"
-              >
-                {t('FORGOT_PASSWORD')}
-              </a>
-            </div>
-
-            <Link to="/main-menu">
-              <Button
-                className="hover:glow-text my-[25px] px-[46px] py-3 text-22"
-                onClick={() => login(username, password)}
-              >
+            <form onSubmit={handleLogin}>
+              {fields.map((field: IFormInput) => (
+                <Input {...field} />
+              ))}
+              <div className="mt-6 w-full text-sm">
+                <label className="flex">
+                  <Checkbox className="mr-2" onClick={handleSavePassword} />
+                  <span className="flex flex-row items-center text-sm">
+                    {t('SAVE_PASSWORD')}
+                  </span>
+                </label>
+                <a
+                  className="hover:glow-text mt-2 text-main"
+                  href="https://github.com/Ward-Sculks"
+                >
+                  {t('FORGOT_PASSWORD')}
+                </a>
+              </div>
+              <Button className="hover:glow-text my-[25px] px-[46px] py-3 text-22">
                 {t('LOGIN_BUTTON')}
               </Button>
-            </Link>
+            </form>
 
             <div className="text-sm">
               <p>{t('DONT_HAVE_ACCOUNT')}</p>
               <p>
+                {/**
+                 * TODO: change to <Link /> when registration page be ready
+                 */}
                 <a
                   className="hover:glow-text text-main"
                   href="https://github.com/Ward-Sculks"
@@ -84,6 +131,9 @@ export function Login(): ReactElement {
         <div className="flex h-full flex-col items-center justify-end">
           <img src={logo} alt="wardsculks" />
           <p className="text-center">
+            {/**
+             * TODO: Fetch real life online
+             */}
             {t('ONLINE')} <span className="glow-text">{256}</span>
           </p>
         </div>

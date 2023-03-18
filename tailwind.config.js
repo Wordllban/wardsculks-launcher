@@ -5,13 +5,13 @@ module.exports = {
   },
   plugins: [],
   theme: {
-    colors: {
-      main: '#00EAFF',
-      neutral: {
-        950: '#131313',
-      },
-    },
     extend: {
+      colors: {
+        main: '#00EAFF',
+        neutral: {
+          950: '#131313',
+        },
+      },
       fontSize: {
         22: ['1.375rem', '22px'],
       },

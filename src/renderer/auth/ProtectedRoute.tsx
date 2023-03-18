@@ -1,16 +1,18 @@
-import { ReactElement, ReactNode } from 'react';
+import { ReactNode, useContext } from 'react';
 import { Navigate } from 'react-router-dom';
+import { UserContext } from './UserContext';
 
 type Props = {
-  user: any;
   redirectPath?: string;
   children: ReactNode;
 };
 
 function ProtectedRoute(props: Props) {
-  const { user, redirectPath = '/login', children } = props;
+  const { redirectPath = '/login', children } = props;
 
-  if (!user) {
+  const { userData } = useContext(UserContext);
+
+  if (!userData.access) {
     return <Navigate to={redirectPath} replace />;
   }
 

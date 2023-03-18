@@ -1,26 +1,18 @@
-// @ts-nocheck
-// @ts-ignore
-import {
-  findCredentials,
-  setPassword,
-  deletePassword,
-  getPassword,
-} from 'keytar';
-import { userInfo } from 'os';
+/* eslint no-console: off */
+import client from './client.service';
 
-//
-const tokens = async (login: string, passoword: string) => ({
-  access: '',
-  refresh: '',
-});
-//
+interface IRetrieveTokensResponse {
+  access: string | null;
+  refresh: string | null;
+}
 
-const KEYTAR_SERVICE_NAME = 'keytar-pw';
-const KEYTAR_ACCOUNT_NAME = userInfo().username;
+const retrieveTokens = (data: any) => {
+  return client.post<IRetrieveTokensResponse>('/users/auth/token/obtain', {
+    ...data,
+  });
+};
 
 class AuthService {
-  private static instance: AuthService;
-
   private access: string | null = null;
 
   private refresh: string | null = null;
@@ -28,59 +20,70 @@ class AuthService {
   /**
    * Request tokens from server
    *
-   * @param login - User account login
+   * @param username - User account name
    * @param passowrd - User account password
    *
-   * @returns `Promise<void>`
+   * @returns {Object} `{ access, refresh }` - Object with tokens
    */
-  async requestTokens(login: string, password: string): Promise<void> {
+  async requestTokens(
+    username: string,
+    password: string
+  ): Promise<IRetrieveTokensResponse> {
     try {
-      const { access, refresh } = await tokens(login, password);
+      const { data } = await retrieveTokens({ username, password });
+      const { access, refresh } = data;
 
       this.access = access;
       this.refresh = refresh;
 
-      if (this.refresh) {
-        await setPassword(
-          KEYTAR_SERVICE_NAME,
-          KEYTAR_ACCOUNT_NAME,
-          this.refresh
-        );
-      }
+      return { access: this.access, refresh: this.refresh };
     } catch (error) {
-      throw error;
+      // TODO: add error handler
+      console.error('Failted to request tokens');
+      return { access: null, refresh: null };
     }
   }
 
   /**
    * Refresh current tokens.
    *
+   * @param username - User account name
+   * @param passowrd - User account password
+   *
    * @returns `access` & `refresh` tokens
    */
-  async requestTokensRefresh() {
+  async requestTokensRefresh(
+    username: string,
+    password: string
+  ): Promise<IRetrieveTokensResponse> {
     const refreshToken: string | null = await this.getRefreshToken();
 
     if (!refreshToken) {
-      throw new Error('Please, log in again.');
+      console.error('Please, log in again.');
     }
 
     try {
-      console.log('implementation');
+      const tokens = await this.requestTokens(username, password);
+
+      this.access = tokens.access;
+      this.refresh = tokens.refresh;
+
+      return tokens;
     } catch (error) {
-      throw error;
+      // TODO: add error handler
+      console.error('Failed to refresh tokens');
+      return { access: null, refresh: null };
     }
   }
 
   /**
    * Get current refresh token.
-   * @returns `string`
+   *
+   * @returns refresh token
    */
   async getRefreshToken(): Promise<string | null> {
     if (!this.refresh) {
-      this.refresh = await getPassword(
-        KEYTAR_SERVICE_NAME,
-        KEYTAR_ACCOUNT_NAME
-      );
+      this.refresh = await window.tokens.getRefreshToken();
     }
 
     return this.refresh;
@@ -88,9 +91,14 @@ class AuthService {
 
   /**
    * Get current access token.
-   * @returns `string`
+   *
+   * @returns access token
    */
-  getAccessToken() {
+  async getAccessToken() {
+    if (!this.access) {
+      this.access = await window.tokens.getAccessToken();
+    }
+
     return this.access;
   }
 
@@ -101,23 +109,12 @@ class AuthService {
    * @returns `Promise<void>`
    */
   async logout(): Promise<void> {
-    await deletePassword(KEYTAR_SERVICE_NAME, KEYTAR_ACCOUNT_NAME);
+    window.electron.ipcRenderer.sendMessage('logout');
     this.access = null;
     this.refresh = null;
   }
-
-  /**
-   * Create service instance or return existing one
-   * @returns Instance of auth service
-   */
-  static getInstance() {
-    if (this.instance) {
-      return this.instance;
-    }
-
-    this.instance = new AuthService();
-    return this.instance;
-  }
 }
 
-export default AuthService;
+const auth = new AuthService();
+
+export default auth;

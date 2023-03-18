@@ -2,11 +2,16 @@
 /* eslint no-unused-vars: off */
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 
-export type Channels = 'ipc-example' | 'login';
+export type Channels =
+  | 'save-access-token'
+  | 'save-refresh-token'
+  | 'get-access-token'
+  | 'get-refresh-token'
+  | 'logout';
 
 const electronHandler = {
   ipcRenderer: {
-    sendMessage(channel: Channels, args: unknown[]) {
+    sendMessage(channel: Channels, args?: unknown) {
       ipcRenderer.send(channel, args);
     },
     on(channel: Channels, func: (...args: unknown[]) => void) {
@@ -25,5 +30,21 @@ const electronHandler = {
 };
 
 contextBridge.exposeInMainWorld('electron', electronHandler);
-
 export type ElectronHandler = typeof electronHandler;
+
+const envHandler = {
+  API_URL: process.env.API_URL,
+};
+
+contextBridge.exposeInMainWorld('env', envHandler);
+export type EnvHandler = typeof envHandler;
+
+const tokensHandler = {
+  getAccessToken: () =>
+    ipcRenderer.invoke('get-access-token').then((result) => result),
+  getRefreshToken: () =>
+    ipcRenderer.invoke('get-refresh-token').then((result) => result),
+};
+
+contextBridge.exposeInMainWorld('tokens', tokensHandler);
+export type TokensHandler = typeof tokensHandler;

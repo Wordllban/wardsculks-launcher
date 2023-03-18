@@ -1,13 +1,12 @@
 import clsx from 'clsx';
-import { ReactElement, useState } from 'react';
+import { ReactElement, useState, InputHTMLAttributes } from 'react';
 
 type Props = {
   className?: string;
-  onClickCB?: () => void;
-};
+} & InputHTMLAttributes<HTMLInputElement>;
 
 export function Checkbox(props: Props): ReactElement {
-  const { className, onClickCB } = props;
+  const { className, onClick } = props;
 
   const [isChecked, setIsChecked] = useState<boolean>(false);
 
@@ -22,8 +21,10 @@ export function Checkbox(props: Props): ReactElement {
         type="checkbox"
         checked={isChecked}
         onChange={() => {
-          if (onClickCB) onClickCB();
           setIsChecked(!isChecked);
+        }}
+        onClick={(e) => {
+          if (onClick) onClick(e);
         }}
       />
       {isChecked && (

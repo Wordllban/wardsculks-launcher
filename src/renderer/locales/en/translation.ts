@@ -12,6 +12,7 @@ const translation: Resource = {
     REGISTER: 'Sign up',
     ONLINE: 'Online: ',
     START_GAME: 'Start',
+    WELCOME: 'Welcome, <br /> {{username}}',
   },
 };
 

@@ -53,6 +53,15 @@
     margin: 0;
   }
 
+  input:invalid[data-focused='true'] ~ span[data-error='true'] {
+    display: block;
+  }
+
+  span[data-error='true'] {
+    @apply text-red-600;
+    display: none;
+  }
+
   a {
     cursor: pointer;
   }
