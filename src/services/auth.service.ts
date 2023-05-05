@@ -83,7 +83,9 @@ class AuthService {
    */
   async getRefreshToken(): Promise<string | null> {
     if (!this.refresh) {
-      this.refresh = await window.tokens.getRefreshToken();
+      this.refresh = await window.electron.ipcRenderer.invoke(
+        'get-refresh-token'
+      );
     }
 
     return this.refresh;
@@ -96,7 +98,9 @@ class AuthService {
    */
   async getAccessToken() {
     if (!this.access) {
-      this.access = await window.tokens.getAccessToken();
+      this.access = await window.electron.ipcRenderer.invoke(
+        'get-access-token'
+      );
     }
 
     return this.access;

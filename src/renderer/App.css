@@ -57,6 +57,33 @@
     display: block;
   }
 
+  input[type='range'] {
+    appearance: none;
+  }
+
+  input[type='range']::-webkit-slider-runnable-track {
+    padding-left: 12px;
+    padding-right: 12px;
+    height: 3px;
+    cursor: pointer;
+    animate: 0.2s;
+    border: 2px solid;
+    @apply border-cyan-650;
+  }
+
+  input[type='range']::-webkit-slider-thumb {
+    height: 7px;
+    width: 7px;
+    background: black;
+    cursor: pointer;
+    margin-top: -3.5px;
+    appearance: none;
+    box-shadow: -3px 0 0 theme(colors.main), 3px 0 0 theme(colors.main),
+      0 3px 0 theme(colors.main), 0 -3px 0 theme(colors.main),
+      -3px 0 10px theme(colors.main), 3px 0 10px theme(colors.main),
+      0 3px 10px theme(colors.main), 0 -3px 10px theme(colors.main);
+  }
+
   span[data-error='true'] {
     @apply text-red-600;
     display: none;

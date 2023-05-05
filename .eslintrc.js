@@ -5,6 +5,7 @@ module.exports = {
     'react/react-in-jsx-scope': 'off',
     'react/jsx-filename-extension': 'off',
     'react/require-default-props': 'off',
+    // TODO: add types for all buttons and turn on this rule
     'react/button-has-type': 'off',
     'react/jsx-props-no-spreading': 'off',
     'import/no-extraneous-dependencies': 'off',
@@ -14,7 +15,9 @@ module.exports = {
     // disabled to barrel export
     'import/prefer-default-export': 'off',
     // we are using labels for addition styles
+    // TODO: fix labels and turn on this rule
     'jsx-a11y/label-has-associated-control': 'off',
+    'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
   },
   parserOptions: {
     ecmaVersion: 2020,

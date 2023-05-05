@@ -2,6 +2,7 @@ import { ReactElement, useContext } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import auth from 'services/auth.service';
 import { UserContext } from 'renderer/auth/UserContext';
+import { Link } from 'react-router-dom';
 import { Button, Frame, Layout } from '../../common';
 import logo from '../../../../../assets/icons/logo-big.svg';
 
@@ -29,9 +30,9 @@ export function Main(): ReactElement {
               />
             </h1>
 
-            <a className="text-main" onClick={handleLogout}>
+            <Link to="/login" className="text-main" onClick={handleLogout}>
               {t('LOGOUT')}
-            </a>
+            </Link>
           </div>
         </Frame>
         <div className="flex h-full flex-col items-center justify-end">

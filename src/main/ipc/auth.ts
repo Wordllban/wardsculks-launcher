@@ -2,6 +2,10 @@ import { setPassword, deletePassword, getPassword } from 'keytar';
 import { ipcMain } from 'electron';
 import { userInfo } from 'os';
 
+/**
+ * IPC handlers related to auth
+ */
+
 const REFRESH_TOKEN = 'wardsculks-refresh';
 const ACCESS_TOKEN = 'wardsculks-access';
 const ACCOUNT_NAME = userInfo().username;
@@ -23,9 +27,9 @@ ipcMain.on('logout', () => {
   deletePassword(REFRESH_TOKEN, ACCOUNT_NAME);
 });
 
-ipcMain.handle('get-access-token', () =>
-  getPassword(ACCESS_TOKEN, ACCOUNT_NAME)
-);
+ipcMain.handle('get-access-token', () => {
+  getPassword(ACCESS_TOKEN, ACCOUNT_NAME);
+});
 
 ipcMain.handle('get-refresh-token', () =>
   getPassword(REFRESH_TOKEN, ACCOUNT_NAME)

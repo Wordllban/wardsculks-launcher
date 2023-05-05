@@ -7,11 +7,11 @@ import {
   useContext,
 } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import auth from 'services/auth.service';
 import { Button, Checkbox, Frame, Input, Layout } from '../../common';
 import logo from '../../../../../assets/icons/logo-big.svg';
 import { UserContext } from '../../../auth/UserContext';
-import auth from 'services/auth.service';
 import { IFormInput } from '../../../types';
 
 export function Login(): ReactElement {
@@ -83,8 +83,12 @@ export function Login(): ReactElement {
     [t]
   );
 
+  console.log('isSavePassword: ', isSavePassword);
+
   return (
     <Layout mainBackground="bg-login-bg" sideBackground="bg-login-sides">
+      <Link to="/settings">SETTINGS</Link>
+
       <div className="flex h-full items-center gap-10">
         <Frame className="max-w-[245px] px-7 py-8">
           <div className="flex-start-col">
@@ -100,12 +104,12 @@ export function Login(): ReactElement {
                     {t('SAVE_PASSWORD')}
                   </span>
                 </label>
-                <a
+                <Link
                   className="hover:glow-text mt-2 text-main"
-                  href="https://github.com/Ward-Sculks"
+                  to="/forgot-password"
                 >
                   {t('FORGOT_PASSWORD')}
-                </a>
+                </Link>
               </div>
               <Button className="hover:glow-text my-[25px] px-[46px] py-3 text-22">
                 {t('LOGIN_BUTTON')}
@@ -115,15 +119,9 @@ export function Login(): ReactElement {
             <div className="text-sm">
               <p>{t('DONT_HAVE_ACCOUNT')}</p>
               <p>
-                {/**
-                 * TODO: change to <Link /> when registration page be ready
-                 */}
-                <a
-                  className="hover:glow-text text-main"
-                  href="https://github.com/Ward-Sculks"
-                >
+                <Link className="hover:glow-text text-main" to="/registration">
                   {t('REGISTER')}
-                </a>
+                </Link>
               </p>
             </div>
           </div>
@@ -132,7 +130,7 @@ export function Login(): ReactElement {
           <img src={logo} alt="wardsculks" />
           <p className="text-center">
             {/**
-             * TODO: Fetch real life online
+             * TODO: Fetch real live online
              */}
             {t('ONLINE')} <span className="glow-text">{256}</span>
           </p>

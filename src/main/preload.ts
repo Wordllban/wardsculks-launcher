@@ -7,7 +7,8 @@ export type Channels =
   | 'save-refresh-token'
   | 'get-access-token'
   | 'get-refresh-token'
-  | 'logout';
+  | 'logout'
+  | 'get-os-memory';
 
 const electronHandler = {
   ipcRenderer: {
@@ -26,6 +27,9 @@ const electronHandler = {
     once(channel: Channels, func: (...args: unknown[]) => void) {
       ipcRenderer.once(channel, (_event, ...args) => func(...args));
     },
+    invoke(channel: Channels, args?: unknown) {
+      return ipcRenderer.invoke(channel, args);
+    },
   },
 };
 
@@ -38,13 +42,3 @@ const envHandler = {
 
 contextBridge.exposeInMainWorld('env', envHandler);
 export type EnvHandler = typeof envHandler;
-
-const tokensHandler = {
-  getAccessToken: () =>
-    ipcRenderer.invoke('get-access-token').then((result) => result),
-  getRefreshToken: () =>
-    ipcRenderer.invoke('get-refresh-token').then((result) => result),
-};
-
-contextBridge.exposeInMainWorld('tokens', tokensHandler);
-export type TokensHandler = typeof tokensHandler;

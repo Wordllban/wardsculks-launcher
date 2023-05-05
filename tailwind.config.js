@@ -11,6 +11,9 @@ module.exports = {
         neutral: {
           950: '#131313',
         },
+        cyan: {
+          650: '#007A85',
+        },
       },
       fontSize: {
         22: ['1.375rem', '22px'],
@@ -28,6 +31,9 @@ module.exports = {
         'main-bg': "url('../../assets/images/main-background.png')",
         'main-sides':
           "url('../../assets/images/main-wall-right.png'), url('../../assets/images/main-wall-left.png')",
+        // settings
+        'settings-bg': "url('../../assets/images/settings-background.png')",
+        'settings-sides': "url('../../assets/images/wall-right.png')",
         // components
         wall: "url('../../assets/images/wall.png')",
       },

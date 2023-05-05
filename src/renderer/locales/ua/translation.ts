@@ -13,6 +13,14 @@ const translation: Resource = {
     ONLINE: 'Онлайн: ',
     START_GAME: 'Почати гру',
     WELCOME: 'Вітаємо, <br /> {{username}}',
+    DEBUG_MODE: 'Налагодження',
+    DEBUG_MODE_DESCRIPTION: 'Увімкнути режим налагодження для запуску клієнта.',
+    AUTO_JOIN_SERVER: 'Автоматичний вхід',
+    AUTO_JOIN_SERVER_DESCRIPTION:
+      'Увімкнути автоматичний вхід на сервер при запуску клієнта.',
+    FULLSCREEN_MODE: 'Повноекранний режим',
+    FULLSCREEN_MODE_DESCRIPTION: 'Увімкнути повноекранний режим у грі.',
+    CHANGE_PATH: 'Змінити',
   },
 };
 
