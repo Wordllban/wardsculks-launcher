@@ -65,7 +65,7 @@ export function Login(): ReactElement {
         maxLength: 16,
         pattern: '^[a-zA-Z0-9_]*$',
         required: true,
-        errorMessage: 'Invalid login',
+        errorMessage: t('INVALID_LOGIN'),
       },
       {
         key: 'password-input',
@@ -77,13 +77,11 @@ export function Login(): ReactElement {
           setPassword(event.target.value),
         minLength: 6,
         required: true,
-        errorMessage: 'Invalid password',
+        errorMessage: t('INVALID_PASSWORD'),
       },
     ],
     [t]
   );
-
-  console.log('isSavePassword: ', isSavePassword);
 
   return (
     <Layout mainBackground="bg-login-bg" sideBackground="bg-login-sides">
@@ -91,7 +89,7 @@ export function Login(): ReactElement {
 
       <div className="flex h-full items-center gap-10">
         <Frame className="max-w-[245px] px-7 py-8">
-          <div className="flex-start-col">
+          <div className="flex flex-col items-start justify-center">
             <h1 className="w-full text-center">{t('LOGIN')}</h1>
             <form onSubmit={handleLogin}>
               {fields.map((field: IFormInput) => (

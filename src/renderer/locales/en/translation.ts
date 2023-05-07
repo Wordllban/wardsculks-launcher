@@ -20,6 +20,8 @@ const translation: Resource = {
     FULLSCREEN_MODE: 'Fullscreen Mode',
     FULLSCREEN_MODE_DESCRIPTION: 'Enable the fullscreen mode.',
     CHANGE_PATH: 'Change',
+    INVALID_LOGIN: 'Invalid login',
+    INVALID_PASSWORD: 'Invalid password',
   },
 };
 

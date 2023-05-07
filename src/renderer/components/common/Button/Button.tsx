@@ -12,7 +12,7 @@ export function Button(props: Props): ReactElement {
     <button
       {...props}
       className={clsx(
-        'border-default bg-wall bg-no-repeat object-cover shadow-default outline-none transition-all',
+        'border-4 border-solid border-main bg-wall bg-no-repeat object-cover shadow-default outline-none transition-all',
         'focus:glow-text hover:text-main focus:text-main focus:shadow-[0_0_20px_2px_theme(colors.main)]',
         className
       )}

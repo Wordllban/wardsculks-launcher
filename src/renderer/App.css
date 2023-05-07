@@ -9,22 +9,6 @@
 }
 
 @layer components {
-  .screen-container {
-    @apply h-screen overflow-hidden bg-cover bg-no-repeat;
-  }
-
-  .border-default {
-    @apply border-4 border-solid border-main;
-  }
-
-  .flex-center-col {
-    @apply flex flex-col items-center justify-center;
-  }
-
-  .flex-start-col {
-    @apply flex flex-col items-start justify-center;
-  }
-
   .glow-text {
     @apply transition-all;
     color: theme(colors.main);
@@ -93,3 +77,4 @@
     cursor: pointer;
   }
 }
+

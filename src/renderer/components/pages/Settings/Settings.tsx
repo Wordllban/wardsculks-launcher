@@ -78,14 +78,14 @@ export function Settings(): ReactElement {
         key: 'setting-fullscreen',
         title: t('FULLSCREEN_MODE'),
         description: t('FULLSCREEN_MODE_DESCRIPTION'),
-        onCheckbox: () => console.log(t('AUTO_JOIN_SERVER')),
+        onCheckbox: () => console.log(t('FULL_SCREEN_MODE')),
       },
     ],
     [t]
   );
 
   return (
-    <Layout mainBackground="bg-settings-bg" sideBackground="bg-settings-sides">
+    <Layout mainBackground="bg-settings-bg">
       <span className="absolute left-[1rem]">
         <ArrowBack />
       </span>

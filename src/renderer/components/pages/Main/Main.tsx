@@ -18,7 +18,7 @@ export function Main(): ReactElement {
     <Layout mainBackground="bg-main-bg" sideBackground="bg-main-sides">
       <div className="flex h-full items-center gap-16">
         <Frame className="py-8 px-4">
-          <div className="flex-center-col w-full gap-3 text-sm">
+          <div className="flex w-full flex-col items-center justify-center gap-3 text-sm">
             <img src={logo} alt="wardsculks" width="155" height="50" />
             <h1 className="text-center">
               <Trans

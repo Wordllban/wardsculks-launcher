@@ -21,6 +21,8 @@ const translation: Resource = {
     FULLSCREEN_MODE: 'Повноекранний режим',
     FULLSCREEN_MODE_DESCRIPTION: 'Увімкнути повноекранний режим у грі.',
     CHANGE_PATH: 'Змінити',
+    INVALID_LOGIN: 'Неправильний логін',
+    INVALID_PASSWORD: 'Неправильний пароль',
   },
 };
 
