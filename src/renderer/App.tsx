@@ -42,7 +42,7 @@ export default function App() {
     <Suspense>
       <Router>
         <Routes>
-          {/* <Route index path="/" element={<Login />} /> */}
+          <Route index path="/" element={<Login />} />
           <Route index path="/login" element={<Login />} />
           <Route path="/registration" element={<Registration />} />
           <Route
@@ -61,7 +61,7 @@ export default function App() {
               </ProtectedRoute>
             }
           />
-          <Route index path="/" element={<Downloading />} />
+          <Route index path="/downloading" element={<Downloading />} />
           <Route
             path="/forgot-password"
             element={<h1 className="bg-black">RESET PASSOWORD</h1>}
