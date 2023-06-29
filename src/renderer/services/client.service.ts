@@ -29,9 +29,9 @@ class ClientService {
     });
   }
 
-  async get<Response, Config>(
+  async get<Response>(
     url: string,
-    config?: AxiosRequestConfig<Config>
+    config?: AxiosRequestConfig
   ): Promise<AxiosResponse<Response>> {
     return this.client.get(url, config);
   }

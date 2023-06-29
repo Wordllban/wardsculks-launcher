@@ -1,7 +1,7 @@
 import { ReactElement, useContext } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
-import auth from 'services/auth.service';
 import { Link } from 'react-router-dom';
+import { auth } from '../../../services';
 import { UserContext } from '../../../context/auth/UserContext';
 import { Button, Frame, Layout } from '../../common';
 import logo from '../../../../../assets/icons/logo-big.svg';

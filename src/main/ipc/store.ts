@@ -1,6 +1,6 @@
 import { ipcMain } from 'electron';
 import { valueToReplace, replaceTo } from '../../constants/settings';
-import store from '../../services/store.service';
+import { store } from '../services';
 
 /**
  * IPC handlers related to store user settings

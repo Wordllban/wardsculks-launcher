@@ -9,7 +9,7 @@ import {
 } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { useNavigate, Link } from 'react-router-dom';
-import auth from 'services/auth.service';
+import { auth } from '../../../services';
 import { IFormInput } from '../../../types';
 import { Layout, Frame, Input, Checkbox, Button } from '../../common';
 import { UserContext } from '../../../context/auth/UserContext';

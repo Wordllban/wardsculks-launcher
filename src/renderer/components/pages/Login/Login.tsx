@@ -8,7 +8,7 @@ import {
 } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, Link } from 'react-router-dom';
-import auth from 'services/auth.service';
+import { auth } from '../../../services';
 import { Button, Checkbox, Frame, Input, Layout } from '../../common';
 import logo from '../../../../../assets/icons/logo-big.svg';
 import { UserContext } from '../../../context/auth/UserContext';
