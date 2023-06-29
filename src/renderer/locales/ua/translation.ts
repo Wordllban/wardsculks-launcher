@@ -1,10 +1,14 @@
 import { Resource } from 'i18next';
+import { errors } from './errors';
 
 const translation: Resource = {
   translation: {
-    LOGIN: 'Логін',
+    ...errors,
+    LOGIN: 'Вхід',
+    LOGIN_FIELD: "Ім'я користувача",
     LOGOUT: 'Вийти',
     PASSWORD: 'Пароль',
+    EMAIL: 'Пошта',
     SAVE_PASSWORD: 'Зберегти пароль',
     FORGOT_PASSWORD: 'Забули пароль?',
     LOGIN_BUTTON: 'Увійти',
@@ -21,8 +25,20 @@ const translation: Resource = {
     FULLSCREEN_MODE: 'Повноекранний режим',
     FULLSCREEN_MODE_DESCRIPTION: 'Увімкнути повноекранний режим у грі.',
     CHANGE_PATH: 'Змінити',
-    INVALID_LOGIN: 'Неправильний логін',
+    SAVE_CHANGES: 'Зберегти',
+    INVALID_LOGIN: "Неправильне ім'я користувача",
     INVALID_PASSWORD: 'Неправильний пароль',
+    INVALID_EMAIL: 'Неправильна пошта',
+    REGISTRATION: 'Реєстрація',
+    CONFIRM_AGREEMENT: 'Я погоджуюсь з <wrapper>правилами</wrapper> проєкту',
+    HAVE_ACCOUNT: 'Маєте аккаунт?',
+    TO_LOGIN: 'Увійти',
+    YES: 'Так',
+    NO: 'Ні',
+    UNSAVED_SETTINGS_CONFIRMATION_TITLE:
+      'Ви впевнені, що хочете вийти з цього вікна?',
+    UNSAVED_SETTINGS_CONFIRMATION_DESCRIPTION:
+      'Ви внесли зміни в налаштуваннях, але не зберегли їх',
   },
 };
 

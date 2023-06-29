@@ -27,9 +27,9 @@ ipcMain.on('logout', () => {
   deletePassword(REFRESH_TOKEN, ACCOUNT_NAME);
 });
 
-ipcMain.handle('get-access-token', () => {
-  getPassword(ACCESS_TOKEN, ACCOUNT_NAME);
-});
+ipcMain.handle('get-access-token', async () =>
+  getPassword(ACCESS_TOKEN, ACCOUNT_NAME)
+);
 
 ipcMain.handle('get-refresh-token', () =>
   getPassword(REFRESH_TOKEN, ACCOUNT_NAME)

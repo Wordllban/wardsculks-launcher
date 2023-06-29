@@ -21,7 +21,7 @@ export function Layout({
     >
       <div
         className={clsx(
-          'h-screen bg-[position:right,left] bg-no-repeat py-5 px-12',
+          'h-screen bg-[position:right,left] bg-no-repeat px-12 py-5',
           sideBackground
         )}
       >

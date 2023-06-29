@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 
 /**
  * Service provides basic `http` requests with auth tokens using axios.
@@ -12,35 +12,48 @@ import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
  * @method `delete`
  */
 class ClientService {
-  private client = axios.create({
-    baseURL: window.env.API_URL,
-  });
+  client: AxiosInstance;
 
-  async get<T>(
+  constructor() {
+    this.client = axios.create({
+      baseURL: window.env.API_URL,
+    });
+    this.client.interceptors.request.use(async (config) => {
+      const token = await window.electron.ipcRenderer.invoke(
+        'get-access-token'
+      );
+
+      if (token) config.headers.Authorization = `Bearer ${token}`;
+
+      return config;
+    });
+  }
+
+  async get<Response, Config>(
     url: string,
-    config?: AxiosRequestConfig
-  ): Promise<AxiosResponse<T>> {
+    config?: AxiosRequestConfig<Config>
+  ): Promise<AxiosResponse<Response>> {
     return this.client.get(url, config);
   }
 
-  async put<T>(
+  async put<Response, Data>(
     url: string,
-    config?: AxiosRequestConfig
-  ): Promise<AxiosResponse<T>> {
-    return this.client.put(url, config);
+    data?: Data
+  ): Promise<AxiosResponse<Response>> {
+    return this.client.put(url, data);
   }
 
-  async post<T>(
+  async post<Response, Data>(
     url: string,
-    config?: AxiosRequestConfig
-  ): Promise<AxiosResponse<T>> {
-    return this.client.post(url, config);
+    data?: Data
+  ): Promise<AxiosResponse<Response>> {
+    return this.client.post(url, data);
   }
 
-  async delete<T>(
+  async delete<Response, Config>(
     url: string,
-    config?: AxiosRequestConfig
-  ): Promise<AxiosResponse<T>> {
+    config?: AxiosRequestConfig<Config>
+  ): Promise<AxiosResponse<Response>> {
     return this.client.delete(url, config);
   }
 }

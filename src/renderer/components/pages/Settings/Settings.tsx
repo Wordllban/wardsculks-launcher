@@ -1,11 +1,25 @@
-import { ReactElement, useState, useEffect, useMemo } from 'react';
+import {
+  ReactElement,
+  useState,
+  useEffect,
+  useMemo,
+  useRef,
+  useCallback,
+  useContext,
+} from 'react';
 import { useTranslation } from 'react-i18next';
+import clsx from 'clsx';
 import { Button, Checkbox, InputRange, Layout, ArrowBack } from '../../common';
-import { formatBytes, getSystemMemory } from './utils';
+import {
+  formatBytes,
+  getSystemMemory,
+  saveMultipleSettingsOptions,
+} from './utils';
+import { ISettings, SettingsList } from '../../../types';
+import { MIN_MEMORY } from '../../../../constants/settings';
+import { ErrorContext } from '../../../context/error/ErrorContext';
 
-const MIN_MEMORY = 1;
 /**
- * TODO: store settings locally
  * TODO: get app folder real location
  */
 
@@ -13,15 +27,33 @@ type SettingProps = {
   title: string;
   onCheckbox: () => void;
   description?: string;
+  initialValue?: boolean;
+  disabled?: boolean;
 };
 
 function Setting(props: SettingProps) {
-  const { title, description, onCheckbox } = props;
+  const { title, description, initialValue, disabled, onCheckbox } = props;
   return (
-    <div className="mb-5 flex flex-col items-start">
+    <div
+      className={clsx('mb-5 flex flex-col items-start', {
+        'cursor-not-allowed opacity-50': disabled,
+      })}
+    >
       <label className="flex items-start leading-4">
-        <Checkbox className="mr-2" onClick={() => onCheckbox()} />
-        <span className="hover:glow-text flex flex-row items-center text-main">
+        <Checkbox
+          className="mr-2"
+          onChange={onCheckbox}
+          checked={initialValue}
+          disabled={disabled}
+        />
+        <span
+          className={clsx(
+            'hover:glow-text flex flex-row items-center text-main',
+            {
+              'cursor-not-allowed': disabled,
+            }
+          )}
+        >
           {title}
         </span>
       </label>
@@ -33,9 +65,30 @@ function Setting(props: SettingProps) {
 }
 
 export function Settings(): ReactElement {
+  const { showError } = useContext(ErrorContext);
   const { t } = useTranslation();
 
   const [maxMemory, setMaxMemory] = useState<number>(0);
+
+  const currentSettings = useRef<any>({});
+  const [newSettings, setNewSettings] = useState<ISettings>({} as ISettings);
+
+  const getCurrentSettings = useCallback(() => {
+    window.electron.ipcRenderer
+      .invoke('get-all-settings')
+      .then((result) => {
+        currentSettings.current = result;
+        setNewSettings(result);
+        return result;
+      })
+      .catch((error) =>
+        showError({ message: t('FAILED_TO_GET_SETTINGS'), nativeError: error })
+      );
+  }, [t, showError]);
+
+  useEffect(() => {
+    getCurrentSettings();
+  }, [getCurrentSettings]);
 
   useEffect(() => {
     getSystemMemory()
@@ -43,8 +96,13 @@ export function Settings(): ReactElement {
         const memoryInGB = formatBytes(memory);
         return setMaxMemory(memoryInGB);
       })
-      .catch((error) => console.error(error));
-  }, []);
+      .catch((error) =>
+        showError({
+          message: t('FAILED_TO_GET_SYSTEM_MEMORY'),
+          nativeError: error,
+        })
+      );
+  }, [t, showError]);
 
   const availableOptions: number[] = useMemo(() => {
     if (maxMemory === 0) return [];
@@ -60,35 +118,76 @@ export function Settings(): ReactElement {
     return array;
   }, [maxMemory]);
 
-  const settingsWithCheckboxes: SettingProps[] = useMemo(
+  const settingsWithCheckboxes: (SettingProps & { name: string })[] = useMemo(
     () => [
       {
-        key: 'setting-debug',
+        name: 'debug',
         title: t('DEBUG_MODE'),
         description: t('DEBUG_MODE_DESCRIPTION'),
-        onCheckbox: () => console.log(t('DEBUG_MODE')),
+        initialValue: false,
+        disabled: true,
+        onCheckbox: () => {
+          console.log(t('DEBUG_MODE'));
+          console.log(newSettings);
+        },
       },
       {
-        key: 'setting-auto-join',
+        name: 'auto-join',
         title: t('AUTO_JOIN_SERVER'),
         description: t('AUTO_JOIN_SERVER_DESCRIPTION'),
-        onCheckbox: () => console.log(t('AUTO_JOIN_SERVER')),
+        initialValue: !!newSettings[SettingsList.serverAddress],
+        onCheckbox: () => {
+          setNewSettings((prevState) => ({
+            ...prevState,
+            [SettingsList.serverAddress]: prevState[SettingsList.serverAddress]
+              ? null
+              : `${window.env.SERVER_IP}:${window.env.SERVER_PORT}`,
+          }));
+        },
       },
       {
-        key: 'setting-fullscreen',
+        name: 'fullscreen',
         title: t('FULLSCREEN_MODE'),
         description: t('FULLSCREEN_MODE_DESCRIPTION'),
-        onCheckbox: () => console.log(t('FULL_SCREEN_MODE')),
+        initialValue: newSettings[SettingsList.isFullScreen],
+        onCheckbox: () => {
+          setNewSettings((prevState) => ({
+            ...prevState,
+            [SettingsList.isFullScreen]:
+              !newSettings[SettingsList.isFullScreen],
+          }));
+        },
       },
     ],
-    [t]
+    [t, newSettings]
+  );
+
+  const handleSaveSettings = () => {
+    saveMultipleSettingsOptions(newSettings);
+    getCurrentSettings();
+  };
+
+  const hasSettingsChanged: boolean = useMemo(
+    () =>
+      Object.keys(currentSettings.current).some((key) => {
+        return (
+          currentSettings.current[key as SettingsList] !==
+          newSettings[key as SettingsList]
+        );
+      }),
+    [newSettings]
   );
 
   return (
     <Layout mainBackground="bg-settings-bg">
-      <span className="absolute left-[1rem]">
-        <ArrowBack />
-      </span>
+      <ArrowBack
+        position="absolute left-[1rem]"
+        hasConfirmation={hasSettingsChanged}
+        confirmationWindowTitle={t('UNSAVED_SETTINGS_CONFIRMATION_TITLE')}
+        confirmationWindowDescription={t(
+          'UNSAVED_SETTINGS_CONFIRMATION_DESCRIPTION'
+        )}
+      />
       <div className="flex h-full flex-col items-center justify-center">
         <div className="flex w-full flex-col items-end">
           <InputRange
@@ -96,11 +195,17 @@ export function Settings(): ReactElement {
             max={maxMemory}
             options={availableOptions}
             step={0.5}
-            onChangeHandler={(e) => console.log(e.currentTarget.value)}
+            onChangeHandler={(e) => {
+              setNewSettings((prevState) => ({
+                ...prevState,
+                [SettingsList.maxMemoryUsage]: Number(e.target.value),
+              }));
+            }}
             className="mb-6"
+            initialValue={Number(newSettings[SettingsList.maxMemoryUsage])}
           />
-          {settingsWithCheckboxes.map((setting: SettingProps) => (
-            <Setting {...setting} />
+          {settingsWithCheckboxes.map((setting) => (
+            <Setting {...setting} key={`${setting.name}-setting`} />
           ))}
           <div className="flex items-center">
             <span className="mr-5 text-xs text-main">
@@ -110,6 +215,12 @@ export function Settings(): ReactElement {
               {t('CHANGE_PATH')}
             </Button>
           </div>
+          <Button
+            className="hover:glow-text my-[25px] px-[46px] py-3 text-22"
+            onClick={handleSaveSettings}
+          >
+            {t('SAVE_CHANGES')}
+          </Button>
         </div>
       </div>
     </Layout>

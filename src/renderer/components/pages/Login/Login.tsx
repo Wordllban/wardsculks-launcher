@@ -11,11 +11,13 @@ import { useNavigate, Link } from 'react-router-dom';
 import auth from 'services/auth.service';
 import { Button, Checkbox, Frame, Input, Layout } from '../../common';
 import logo from '../../../../../assets/icons/logo-big.svg';
-import { UserContext } from '../../../auth/UserContext';
+import { UserContext } from '../../../context/auth/UserContext';
+import { ErrorContext } from '../../../context/error/ErrorContext';
 import { IFormInput } from '../../../types';
 
 export function Login(): ReactElement {
   const { setUserData } = useContext(UserContext);
+  const { showError } = useContext(ErrorContext);
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -45,18 +47,15 @@ export function Login(): ReactElement {
       }
       navigate('/main-menu');
     } else {
-      // TODO: add error handler
-      console.error('Failed to login');
+      showError({ message: t('FAILED_TO_LOGIN') });
     }
   };
 
-  // TODO: add error message to input validation
   const fields: IFormInput[] = useMemo(
     () => [
       {
-        key: 'username-input',
         name: 'username',
-        placeholder: t('LOGIN'),
+        placeholder: t('LOGIN_FIELD'),
         type: 'text',
         className: 'mt-2 w-full text-sm',
         onChange: (event: ChangeEvent<HTMLInputElement>) =>
@@ -68,7 +67,6 @@ export function Login(): ReactElement {
         errorMessage: t('INVALID_LOGIN'),
       },
       {
-        key: 'password-input',
         name: 'password',
         placeholder: t('PASSWORD'),
         type: 'password',
@@ -85,19 +83,21 @@ export function Login(): ReactElement {
 
   return (
     <Layout mainBackground="bg-login-bg" sideBackground="bg-login-sides">
-      <Link to="/settings">SETTINGS</Link>
-
       <div className="flex h-full items-center gap-10">
         <Frame className="max-w-[245px] px-7 py-8">
           <div className="flex flex-col items-start justify-center">
-            <h1 className="w-full text-center">{t('LOGIN')}</h1>
+            <h1 className="w-full text-center text-lg">{t('LOGIN')}</h1>
             <form onSubmit={handleLogin}>
               {fields.map((field: IFormInput) => (
-                <Input {...field} />
+                <Input {...field} key={`${field.name}-input`} />
               ))}
               <div className="mt-6 w-full text-sm">
                 <label className="flex">
-                  <Checkbox className="mr-2" onClick={handleSavePassword} />
+                  <Checkbox
+                    className="mr-2"
+                    onChange={handleSavePassword}
+                    checked={isSavePassword}
+                  />
                   <span className="flex flex-row items-center text-sm">
                     {t('SAVE_PASSWORD')}
                   </span>

@@ -7,15 +7,13 @@ export interface IUserContextData {
 
 interface IUserContext {
   userData: IUserContextData;
-  /* eslint-disable-next-line no-unused-vars */
   setUserData: (data: IUserContextData) => void;
   clearUserData: () => void;
 }
 
 export const UserContext = createContext<IUserContext>({
   userData: { access: '', username: '' },
-  /* eslint-disable-next-line no-unused-vars */
-  setUserData: (data: IUserContextData) => {},
+  setUserData: (data: IUserContextData) => data,
   clearUserData: () => {},
 });
 

@@ -1,16 +1,12 @@
 /* eslint no-console: off */
-import client from './client.service';
+/* eslint class-methods-use-this: ["error", { "exceptMethods": ["registration"] }] */
 
-interface IRetrieveTokensResponse {
-  access: string | null;
-  refresh: string | null;
-}
-
-const retrieveTokens = (data: any) => {
-  return client.post<IRetrieveTokensResponse>('/users/auth/token/obtain', {
-    ...data,
-  });
-};
+import {
+  ICreateUserResponse,
+  IRetrieveTokensResponse,
+  createUser,
+  retrieveTokens,
+} from './api';
 
 class AuthService {
   private access: string | null = null;
@@ -18,10 +14,42 @@ class AuthService {
   private refresh: string | null = null;
 
   /**
+   * Create new user
+   *
+   * @param username - User account name
+   * @param password - User account password
+   * @param email - User account email
+   *
+   * @returns `access`, `refresh`, `username`
+   */
+  async registration(
+    username: string,
+    password: string,
+    email: string
+  ): Promise<ICreateUserResponse> {
+    try {
+      const machineId = await window.electron.ipcRenderer.invoke(
+        'get-machine-id'
+      );
+
+      const { data } = await createUser({
+        username,
+        password,
+        email,
+        machine_id: machineId,
+      });
+
+      return data;
+    } catch (error) {
+      return { user: null, access: null, refresh: null };
+    }
+  }
+
+  /**
    * Request tokens from server
    *
    * @param username - User account name
-   * @param passowrd - User account password
+   * @param password - User account password
    *
    * @returns {Object} `{ access, refresh }` - Object with tokens
    */
@@ -38,8 +66,6 @@ class AuthService {
 
       return { access: this.access, refresh: this.refresh };
     } catch (error) {
-      // TODO: add error handler
-      console.error('Failted to request tokens');
       return { access: null, refresh: null };
     }
   }
@@ -48,7 +74,7 @@ class AuthService {
    * Refresh current tokens.
    *
    * @param username - User account name
-   * @param passowrd - User account password
+   * @param password - User account password
    *
    * @returns `access` & `refresh` tokens
    */

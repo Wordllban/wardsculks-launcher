@@ -1,5 +1,5 @@
 module.exports = {
-  extends: 'erb',
+  extends: ['erb', 'eslint:recommended', 'plugin:react/recommended'],
   rules: {
     // A temporary hack related to IDE not resolving correct package.json
     'react/react-in-jsx-scope': 'off',
@@ -17,8 +17,14 @@ module.exports = {
     // we are using labels for addition styles
     // TODO: fix labels and turn on this rule
     'jsx-a11y/label-has-associated-control': 'off',
-    'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+    // 'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+    'no-unused-vars': 'off',
+    '@typescript-eslint/no-unused-vars': 'error',
+    'no-shadow': 'off',
+    '@typescript-eslint/no-shadow': 'error',
+    'consistent-return': 'off',
   },
+  plugins: ['@typescript-eslint'],
   parserOptions: {
     ecmaVersion: 2020,
     sourceType: 'module',

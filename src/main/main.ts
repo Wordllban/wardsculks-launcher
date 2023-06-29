@@ -13,7 +13,7 @@ import { app, BrowserWindow, shell } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
-import { configureEnviroment, resolveHtmlPath } from './util';
+import { configureEnvironment, resolveHtmlPath } from './util';
 
 import './ipc/index';
 
@@ -53,7 +53,7 @@ const installExtensions = async () => {
 };
 
 const createWindow = async () => {
-  configureEnviroment();
+  configureEnvironment();
 
   if (isDebug) {
     await installExtensions();
@@ -71,12 +71,11 @@ const createWindow = async () => {
     show: false,
     width: 915,
     height: 538,
-    icon: getAssetPath('icon.png'),
+    icon: getAssetPath('logo.png'),
     webPreferences: {
       preload: app.isPackaged
         ? path.join(__dirname, 'preload.js')
         : path.join(__dirname, '../../.erb/dll/preload.js'),
-      // nodeIntegration: true,
     },
   });
 
@@ -134,3 +133,7 @@ app
     });
   })
   .catch(console.error);
+
+export function getMainWindow() {
+  return mainWindow;
+}

@@ -38,7 +38,7 @@ export function Input(props: Props): ReactElement {
         // data attribute for styles
         data-focused={isFocused}
       />
-      <span data-error className="pt-1 text-xs font-light">
+      <span data-error className="block pt-1 text-xs font-light">
         {errorMessage}
       </span>
     </span>

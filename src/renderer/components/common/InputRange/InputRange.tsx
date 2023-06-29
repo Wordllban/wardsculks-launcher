@@ -7,7 +7,8 @@ import {
 import clsx from 'clsx';
 
 type Props = {
-  onChangeHandler: (_event: ChangeEvent<HTMLInputElement>) => void;
+  onChangeHandler: (event: ChangeEvent<HTMLInputElement>) => void;
+  initialValue?: number | string;
   options?: number[];
   className?: string;
 } & InputHTMLAttributes<HTMLInputElement>;
@@ -18,13 +19,14 @@ export function InputRange(props: Props): ReactElement {
     min = 1,
     max = 32,
     step = 1,
+    initialValue,
     onChangeHandler,
     className,
   } = props;
+
   const [value, setValue] = useState<string | number>(
     max ? Number(max) / 2 : 2
   );
-  console.log(max, value);
 
   return (
     <div className="relative flex flex-col">
@@ -37,10 +39,9 @@ export function InputRange(props: Props): ReactElement {
             <option
               key={`datalist-option-${option}`}
               className={clsx(
-                'w-6 p-0',
-                options[2].toString().split('').length >= 2 && index > 2
-                  ? 'text-right'
-                  : index === 0
+                'w-6 p-0', // TODO: try to update with child selectors
+                index === 0 ||
+                  (options[2].toString().split('').length >= 2 && index > 2)
                   ? 'text-right'
                   : options[2].toString().split('').length >= 2 && index === 1
                   ? 'text-center'
@@ -54,7 +55,7 @@ export function InputRange(props: Props): ReactElement {
       )}
       <div className="relative">
         <span className="glow-text absolute left-[-4rem] top-[-0.25rem] w-20 text-main">
-          {value} GB
+          {initialValue || value} GB
         </span>
         <input
           type="range"
@@ -67,7 +68,7 @@ export function InputRange(props: Props): ReactElement {
             setValue(event.target.value);
           }}
           list="memory"
-          value={value}
+          value={initialValue || value}
         />
       </div>
     </div>

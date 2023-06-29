@@ -2,20 +2,30 @@
 /* eslint no-unused-vars: off */
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 
+// TODO: split channels type into specific files
 export type Channels =
   | 'save-access-token'
   | 'save-refresh-token'
   | 'get-access-token'
   | 'get-refresh-token'
   | 'logout'
-  | 'get-os-memory';
+  | 'get-os-memory'
+  | 'get-machine-id'
+  | 'open-file'
+  | 'get-setting'
+  | 'set-setting'
+  | 'get-all-settings'
+  | 'has-setting'
+  | 'game-install'
+  | 'downloading-log'
+  | 'error';
 
 const electronHandler = {
   ipcRenderer: {
     sendMessage(channel: Channels, args?: unknown) {
       ipcRenderer.send(channel, args);
     },
-    on(channel: Channels, func: (...args: unknown[]) => void) {
+    on(channel: Channels, func: (args?: any) => void) {
       const subscription = (_event: IpcRendererEvent, ...args: unknown[]) =>
         func(...args);
       ipcRenderer.on(channel, subscription);
@@ -38,6 +48,8 @@ export type ElectronHandler = typeof electronHandler;
 
 const envHandler = {
   API_URL: process.env.API_URL,
+  SERVER_IP: process.env.SERVER_IP,
+  SERVER_PORT: process.env.SERVER_PORT,
 };
 
 contextBridge.exposeInMainWorld('env', envHandler);

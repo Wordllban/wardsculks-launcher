@@ -5,3 +5,4 @@ export * from './Checkbox';
 export * from './Button';
 export * from './InputRange';
 export * from './ArrowBack';
+export * from './ConfirmationWindow';

@@ -17,6 +17,19 @@
 }
 
 @layer base {
+  /* scrollbar */
+  *::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: theme(colors.main);
+  }
+
+  *::-webkit-scrollbar-track {
+    background-color: theme(colors.cyan.650);
+  }
+
   body {
     font-family: 'Diary';
     color: white;
@@ -76,5 +89,9 @@
   a {
     cursor: pointer;
   }
-}
 
+  button:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}

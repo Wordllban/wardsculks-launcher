@@ -12,8 +12,23 @@ export function resolveHtmlPath(htmlFileName: string) {
   return `file://${path.resolve(__dirname, '../renderer/', htmlFileName)}`;
 }
 
-export function configureEnviroment() {
+export function configureEnvironment() {
   dotenv.config({
     path: path.join(__dirname, '../../', `.env.${process.env.NODE_ENV}`),
   });
+}
+
+export function resolveFilesURL(fileName: string) {
+  return `file://${path.resolve(__dirname, '../../assets/files', fileName)}`;
+}
+
+export function resolveFilesPath(fileName: string) {
+  return `${path.resolve(__dirname, '../../assets/files', fileName)}`;
+}
+
+export async function sleep(sleepTime: number): Promise<null> {
+  await new Promise((resolve) => {
+    setTimeout(resolve, sleepTime);
+  });
+  return null;
 }
