@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { KeyboardEvent, ReactElement, useState, useCallback } from 'react';
 import clsx from 'clsx';
 import { useKeyPress } from '../../../hooks/useKeyPress';
-import arrowIcon from '../../../../../assets/icons/arrow-back.svg';
+import arrowIcon from '../../../../../assets/icons/arrow.svg';
 import ConfirmationWindow from '../ConfirmationWindow/ConfirmationWindow';
 
 type Props = {

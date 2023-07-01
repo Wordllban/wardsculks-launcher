@@ -7,7 +7,6 @@ type ErrorProps = ILauncherError & {
   removeError: (id: number) => void;
 };
 
-// todo: add close button
 function Error(props: ErrorProps): ReactElement {
   const { t } = useTranslation();
   const { id, message, nativeError, removeError } = props;

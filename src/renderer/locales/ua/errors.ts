@@ -7,4 +7,5 @@ export const errors: Record<string, string> = {
   FAILED_TO_GET_SYSTEM_MEMORY: "Не вдалось отримати об'єм ОЗУ системи",
   FAILED_TO_CREATE_INITIAL_SETTINGS:
     'Не вдалось створити стандартні налаштування',
+  FAILED_TO_GET_SERVERS_LIST: 'Не вдалось отримати список доступних серверів',
 };

@@ -34,7 +34,7 @@ function ErrorContextProvider(props: Props): ReactElement {
         updatedErrors.shift();
         setErrors(updatedErrors);
       }
-    }, 1200000);
+    }, 12000);
 
     return () => {
       clearInterval(timer);

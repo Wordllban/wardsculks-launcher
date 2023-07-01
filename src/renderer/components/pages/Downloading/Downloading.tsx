@@ -26,7 +26,7 @@ export function Downloading(): ReactElement {
   });
 
   useEffect(() => {
-    window.electron.ipcRenderer.sendMessage('game-install', ['1', '0.0.1']);
+    window.electron.ipcRenderer.sendMessage('game-install', '1');
   }, []);
 
   return (

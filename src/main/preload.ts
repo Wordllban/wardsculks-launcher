@@ -16,6 +16,7 @@ export type Channels =
   | 'set-setting'
   | 'get-all-settings'
   | 'has-setting'
+  | 'find-game-folder'
   | 'game-install'
   | 'downloading-log'
   | 'error';

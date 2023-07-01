@@ -1,8 +1,10 @@
 import { ipcMain, BrowserWindow } from 'electron';
 import { dirname, basename, join } from 'path';
-import { existsSync, mkdirSync } from 'fs';
+import { existsSync, mkdirSync, stat } from 'fs';
 import pLimit from 'p-limit';
 import axios from 'axios';
+import getAppDataPath from 'appdata-path';
+import { promisify } from 'util';
 import { GAME_FOLDER_NAME } from '../../constants/files';
 import MenuBuilder from '../menu';
 import { resolveFilesURL } from '../util';
@@ -40,15 +42,13 @@ ipcMain.on('open-file', async (_, fileName) => {
   window.loadURL(path);
 });
 
-ipcMain.on('game-install', async (_, releaseInfo: string[]) => {
-  const [serverId, version] = releaseInfo;
-
+ipcMain.on('game-install', async (_, serverId: number) => {
   const main = getMainWindow();
 
   try {
     // request release
     const { data: release } = await axios.get<IRelease>(
-      `${process.env.API_URL}/files/servers/${serverId}/releases/${version}`
+      `${process.env.API_URL}/files/servers/${serverId}/releases/latest`
     );
     // limit number of request at time during downloading
     const limit = pLimit(25);
@@ -87,6 +87,23 @@ ipcMain.on('game-install', async (_, releaseInfo: string[]) => {
   } catch (error) {
     main?.webContents.send('error', {
       message: 'Error during installation',
+      nativeError: error,
+    });
+  }
+});
+
+ipcMain.handle('find-game-folder', async (_, serverName: string) => {
+  const asyncStat = promisify(stat);
+
+  const main = getMainWindow();
+  const path = getAppDataPath(`.wardsculks/${serverName}`);
+
+  try {
+    const stats = await asyncStat(path);
+    return !!stats.isDirectory();
+  } catch (error) {
+    main?.webContents.send('error', {
+      message: 'Game folder not found, starting installation',
       nativeError: error,
     });
   }

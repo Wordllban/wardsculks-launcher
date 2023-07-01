@@ -128,7 +128,6 @@ export function Settings(): ReactElement {
         disabled: true,
         onCheckbox: () => {
           console.log(t('DEBUG_MODE'));
-          console.log(newSettings);
         },
       },
       {
