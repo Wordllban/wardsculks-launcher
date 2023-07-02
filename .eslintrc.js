@@ -5,8 +5,6 @@ module.exports = {
     'react/react-in-jsx-scope': 'off',
     'react/jsx-filename-extension': 'off',
     'react/require-default-props': 'off',
-    // TODO: add types for all buttons and turn on this rule
-    'react/button-has-type': 'off',
     'react/jsx-props-no-spreading': 'off',
     'import/no-extraneous-dependencies': 'off',
     'import/extensions': 'off',
@@ -23,6 +21,7 @@ module.exports = {
     'no-shadow': 'off',
     '@typescript-eslint/no-shadow': 'error',
     'consistent-return': 'off',
+    'react-hooks/exhaustive-deps': 'off',
   },
   plugins: ['@typescript-eslint'],
   parserOptions: {

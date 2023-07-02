@@ -39,25 +39,31 @@ export function Main(): ReactElement {
     if (isGameFolderExist) {
       // verify immutable folders
       // start game
+      console.log('game start');
     } else {
-      navigate(`/downloading/${selectedServer?.id}`);
+      navigate(
+        `/downloading?serverId=${selectedServer?.id}&serverName=${selectedServer?.name}`
+      );
     }
   }, [navigate, selectedServer]);
 
   useEffect(() => {
     retrieveServers()
-      .then((servers) => setAvailableServers(servers))
+      .then((servers) => {
+        setAvailableServers(servers);
+        return setSelectedServer(servers[0]);
+      })
       .catch((error) =>
         showError({
           message: t('FAILED_TO_GET_SERVERS_LIST'),
           nativeError: error,
         })
       );
-  }, [showError, t]);
+  }, []);
 
   return (
     <Layout mainBackground="bg-main-bg" sideBackground="bg-main-sides">
-      <div className="flex h-full items-center gap-12">
+      <div className="flex h-full items-center justify-between">
         <Frame className="px-4 py-8">
           <div className="flex w-full flex-col items-center justify-center gap-3">
             <img src={logo} alt="wardsculks" width="155" height="50" />
@@ -85,13 +91,10 @@ export function Main(): ReactElement {
           </p>
         </div>
         <Frame className="px-4 py-8">
-          <h4 className="px-2 py-1">Оберіть сервер</h4>
+          <h4 className="px-2 py-1">{t('CURRENT_SELECTED_SERVER')}</h4>
           <Dropdown<IServer>
             onSelect={(server: IServer) => setSelectedServer(server)}
-            items={[
-              availableServers[0],
-              { id: 2, title: 'test 123', name: '123', immutableFolders: [] },
-            ]}
+            items={availableServers}
             defaultValue={availableServers[0]}
           />
         </Frame>

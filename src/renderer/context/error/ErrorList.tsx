@@ -20,7 +20,10 @@ function Error(props: ErrorProps): ReactElement {
         {message}
         {nativeError ? (
           <div className="text-xs">
-            <button onClick={() => setShowNativeError(!showNativeError)}>
+            <button
+              onClick={() => setShowNativeError(!showNativeError)}
+              type="button"
+            >
               {t(!showNativeError ? 'SHOW_NATIVE_ERROR' : 'HIDE_NATIVE_ERROR')}
             </button>
             {showNativeError ? (
@@ -32,6 +35,7 @@ function Error(props: ErrorProps): ReactElement {
       <button
         onClick={() => removeError(id)}
         className="absolute right-3 top-[-0.5rem] z-50"
+        type="button"
       >
         <img src={closeIcon} alt="close" width={20} height={20} />
       </button>

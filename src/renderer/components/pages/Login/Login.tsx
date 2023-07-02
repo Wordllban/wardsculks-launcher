@@ -78,7 +78,7 @@ export function Login(): ReactElement {
         errorMessage: t('INVALID_PASSWORD'),
       },
     ],
-    [t]
+    []
   );
 
   return (

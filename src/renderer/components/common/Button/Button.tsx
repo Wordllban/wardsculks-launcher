@@ -1,3 +1,4 @@
+/* eslint-disable react/button-has-type */
 import clsx from 'clsx';
 import { ButtonHTMLAttributes, ReactElement, ReactNode } from 'react';
 

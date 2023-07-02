@@ -94,4 +94,12 @@
     cursor: not-allowed;
     opacity: 0.6;
   }
+
+  progress[value]::-webkit-progress-bar {
+    background-color: theme(colors.slate.750);
+  }
+
+  progress[value]::-webkit-progress-value {
+    background-color: theme(colors.main);
+  }
 }

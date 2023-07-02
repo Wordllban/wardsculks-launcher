@@ -98,7 +98,7 @@ export function Registration(): ReactElement {
         errorMessage: t('INVALID_EMAIL'),
       },
     ],
-    [t]
+    []
   );
 
   return (

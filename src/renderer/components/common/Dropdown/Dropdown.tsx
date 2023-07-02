@@ -34,11 +34,13 @@ export function Dropdown<T extends IDropdownItem>(
     }
   }, [defaultValue]);
 
+  // todo: change button to input with type menu
   return (
     <div className="flex flex-col text-sm">
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="flex cursor-pointer items-center gap-2"
+        type="button"
       >
         <span className="w-[140px] bg-black/80 px-2 py-1 text-start">
           {selected?.title}
@@ -62,6 +64,7 @@ export function Dropdown<T extends IDropdownItem>(
                 )}
                 onClick={() => handleSelect(item)}
                 key={`${item.title}-server`}
+                type="button"
               >
                 {item.title}
               </button>

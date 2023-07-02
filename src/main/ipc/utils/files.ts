@@ -1,4 +1,10 @@
-import { createWriteStream, createReadStream, unlinkSync } from 'fs';
+import {
+  createWriteStream,
+  createReadStream,
+  unlinkSync,
+  statSync,
+  readdirSync,
+} from 'fs';
 import { createHash } from 'crypto';
 import axios from 'axios';
 import https from 'https';
@@ -16,7 +22,6 @@ export async function downloadFile(
 ): Promise<void | null> {
   const fileFullPath = join(filePath, fileName);
   const writer = createWriteStream(fileFullPath);
-  // const startTime = new Date();
 
   const main = getMainWindow();
 
@@ -28,12 +33,6 @@ export async function downloadFile(
     });
 
     const responseSize = response.headers['content-length'];
-
-    /* const endTime = new Date();
-    const durationInSeconds = (Number(endTime) - Number(startTime)) / 1000;
-    const downloadSpeedInBytesPerSecond = responseSize / durationInSeconds;
-    const downloadSpeedInKBPerSecond =
-      downloadSpeedInBytesPerSecond / (1024 * 1024); */
 
     // 302 is redirect
     if (response.status === 302) {
@@ -102,3 +101,26 @@ export const sha256 = async (filePath: string): Promise<string> => {
     });
   });
 };
+
+export function getFolderSize(folderPath: string) {
+  let totalSize = 0;
+
+  function calculateFolderSize(directory: string) {
+    const files = readdirSync(directory);
+
+    files.forEach((file) => {
+      const filePath = join(directory, file);
+      const stats = statSync(filePath);
+
+      if (stats.isFile()) {
+        totalSize += stats.size;
+      } else if (stats.isDirectory()) {
+        calculateFolderSize(filePath);
+      }
+    });
+  }
+
+  calculateFolderSize(folderPath);
+
+  return totalSize;
+}

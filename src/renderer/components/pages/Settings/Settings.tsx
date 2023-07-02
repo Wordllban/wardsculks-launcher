@@ -10,14 +10,11 @@ import {
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 import { Button, Checkbox, InputRange, Layout, ArrowBack } from '../../common';
-import {
-  formatBytes,
-  getSystemMemory,
-  saveMultipleSettingsOptions,
-} from './utils';
+import { getSystemMemory, saveMultipleSettingsOptions } from './utils';
 import { ISettings, SettingsList } from '../../../types';
 import { MIN_MEMORY } from '../../../../constants/settings';
 import { ErrorContext } from '../../../context/error/ErrorContext';
+import { formatBytes } from '../../../../utils';
 
 /**
  * TODO: get app folder real location
@@ -84,7 +81,7 @@ export function Settings(): ReactElement {
       .catch((error) =>
         showError({ message: t('FAILED_TO_GET_SETTINGS'), nativeError: error })
       );
-  }, [t, showError]);
+  }, []);
 
   useEffect(() => {
     getCurrentSettings();
@@ -93,7 +90,7 @@ export function Settings(): ReactElement {
   useEffect(() => {
     getSystemMemory()
       .then((memory) => {
-        const memoryInGB = formatBytes(memory);
+        const memoryInGB = formatBytes(memory, 0).value;
         return setMaxMemory(memoryInGB);
       })
       .catch((error) =>
@@ -102,7 +99,7 @@ export function Settings(): ReactElement {
           nativeError: error,
         })
       );
-  }, [t, showError]);
+  }, []);
 
   const availableOptions: number[] = useMemo(() => {
     if (maxMemory === 0) return [];

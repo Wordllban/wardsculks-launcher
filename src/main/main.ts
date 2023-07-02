@@ -77,6 +77,8 @@ const createWindow = async () => {
         ? path.join(__dirname, 'preload.js')
         : path.join(__dirname, '../../.erb/dll/preload.js'),
     },
+    // todo: borderless window with custom menu
+    frame: true,
   });
 
   mainWindow.loadURL(resolveHtmlPath('index.html'));

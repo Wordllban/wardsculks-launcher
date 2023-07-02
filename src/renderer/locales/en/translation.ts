@@ -1,8 +1,10 @@
 import { Resource } from 'i18next';
 import { errors } from './errors';
+import globalTranslation from '../global';
 
 const translation: Resource = {
   translation: {
+    ...globalTranslation,
     ...errors,
     LOGIN: 'Sign in',
     LOGIN_FIELD: 'Username',
@@ -38,6 +40,7 @@ const translation: Resource = {
       'Are you sure you want to leave this window?',
     UNSAVED_SETTINGS_CONFIRMATION_DESCRIPTION:
       "You have changed settings, but haven't saved them.",
+    CURRENT_SELECTED_SERVER: 'Selected server',
   },
 };
 

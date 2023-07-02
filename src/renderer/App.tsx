@@ -36,7 +36,7 @@ export default function App() {
           nativeError: error,
         })
       );
-  }, [t, showError]);
+  }, []);
 
   return (
     <Suspense>

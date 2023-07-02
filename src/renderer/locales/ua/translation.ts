@@ -1,8 +1,10 @@
 import { Resource } from 'i18next';
 import { errors } from './errors';
+import globalTranslation from '../global';
 
 const translation: Resource = {
   translation: {
+    ...globalTranslation,
     ...errors,
     LOGIN: 'Вхід',
     LOGIN_FIELD: "Ім'я користувача",
@@ -39,6 +41,7 @@ const translation: Resource = {
       'Ви впевнені, що хочете вийти з цього вікна?',
     UNSAVED_SETTINGS_CONFIRMATION_DESCRIPTION:
       'Ви внесли зміни в налаштуваннях, але не зберегли їх',
+    CURRENT_SELECTED_SERVER: 'Обраний сервер',
   },
 };
 

@@ -14,6 +14,9 @@ module.exports = {
         cyan: {
           650: '#007A85',
         },
+        slate: {
+          750: '#272727',
+        },
       },
       fontSize: {
         22: ['1.375rem', '22px'],
