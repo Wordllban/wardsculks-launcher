@@ -3,7 +3,14 @@ import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
 import { useTranslation } from 'react-i18next';
 import { ProtectedRoute, ErrorContext } from './context';
-import { Login, Main, Registration, Settings, Downloading } from './components';
+import {
+  Login,
+  Main,
+  Registration,
+  Settings,
+  Downloading,
+  Menu,
+} from './components';
 import { SettingsList, ISettings } from './types';
 import { saveMultipleSettingsOptions } from './components/pages/Settings/utils';
 
@@ -41,6 +48,7 @@ export default function App() {
   return (
     <Suspense>
       <Router>
+        <Menu />
         <Routes>
           <Route index path="/" element={<Login />} />
           <Route index path="/login" element={<Login />} />

@@ -1,7 +1,6 @@
 import {
   ReactElement,
   useState,
-  useMemo,
   FormEvent,
   ChangeEvent,
   useContext,
@@ -9,11 +8,17 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useNavigate, Link } from 'react-router-dom';
 import { auth } from '../../../services';
-import { Button, Checkbox, Frame, Input, Layout } from '../../common';
+import {
+  Button,
+  Checkbox,
+  Frame,
+  Input,
+  Layout,
+  PasswordInput,
+} from '../../common';
 import logo from '../../../../../assets/icons/logo-big.svg';
 import { UserContext } from '../../../context/auth/UserContext';
 import { ErrorContext } from '../../../context/error/ErrorContext';
-import { IFormInput } from '../../../types';
 
 export function Login(): ReactElement {
   const { setUserData } = useContext(UserContext);
@@ -51,46 +56,39 @@ export function Login(): ReactElement {
     }
   };
 
-  const fields: IFormInput[] = useMemo(
-    () => [
-      {
-        name: 'username',
-        placeholder: t('LOGIN_FIELD'),
-        type: 'text',
-        className: 'mt-2 w-full text-sm',
-        onChange: (event: ChangeEvent<HTMLInputElement>) =>
-          setUsername(event.target.value),
-        minLength: 2,
-        maxLength: 16,
-        pattern: '^[a-zA-Z0-9_]*$',
-        required: true,
-        errorMessage: t('INVALID_LOGIN'),
-      },
-      {
-        name: 'password',
-        placeholder: t('PASSWORD'),
-        type: 'password',
-        className: 'mt-4 w-full text-sm',
-        onChange: (event: ChangeEvent<HTMLInputElement>) =>
-          setPassword(event.target.value),
-        minLength: 6,
-        required: true,
-        errorMessage: t('INVALID_PASSWORD'),
-      },
-    ],
-    []
-  );
-
   return (
-    <Layout mainBackground="bg-login-bg" sideBackground="bg-login-sides">
+    <Layout mainBackground="bg-login-bg">
       <div className="flex h-full items-center gap-10">
         <Frame className="max-w-[245px] px-7 py-8">
           <div className="flex flex-col items-start justify-center">
             <h1 className="w-full text-center text-lg">{t('LOGIN')}</h1>
             <form onSubmit={handleLogin}>
-              {fields.map((field: IFormInput) => (
-                <Input {...field} key={`${field.name}-input`} />
-              ))}
+              <Input
+                name="username"
+                placeholder={t('LOGIN_FIELD')}
+                type="text"
+                className="mt-2 w-full text-sm"
+                onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                  setUsername(event.target.value)
+                }
+                minLength={2}
+                maxLength={16}
+                pattern="^[a-zA-Z0-9_]*$"
+                required
+                errorMessage={t('INVALID_LOGIN')}
+              />
+              <PasswordInput
+                name="password"
+                placeholder={t('PASSWORD')}
+                type="password"
+                className="mt-4 w-full text-sm"
+                onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                  setPassword(event.target.value)
+                }
+                minLength={6}
+                required
+                errorMessage={t('INVALID_PASSWORD')}
+              />
               <div className="mt-6 w-full text-sm">
                 <label className="flex">
                   <Checkbox

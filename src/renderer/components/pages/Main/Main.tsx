@@ -62,7 +62,7 @@ export function Main(): ReactElement {
   }, []);
 
   return (
-    <Layout mainBackground="bg-main-bg" sideBackground="bg-main-sides">
+    <Layout mainBackground="bg-main-bg">
       <div className="flex h-full items-center justify-between">
         <Frame className="px-4 py-8">
           <div className="flex w-full flex-col items-center justify-center gap-3">

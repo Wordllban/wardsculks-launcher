@@ -70,15 +70,14 @@ const createWindow = async () => {
   mainWindow = new BrowserWindow({
     show: false,
     width: 915,
-    height: 538,
+    height: 540,
     icon: getAssetPath('logo.png'),
     webPreferences: {
       preload: app.isPackaged
         ? path.join(__dirname, 'preload.js')
         : path.join(__dirname, '../../.erb/dll/preload.js'),
     },
-    // todo: borderless window with custom menu
-    frame: true,
+    frame: false,
   });
 
   mainWindow.loadURL(resolveHtmlPath('index.html'));

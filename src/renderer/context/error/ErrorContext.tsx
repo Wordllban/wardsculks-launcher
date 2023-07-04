@@ -31,7 +31,7 @@ function ErrorContextProvider(props: Props): ReactElement {
     const timer = setInterval(() => {
       if (errors.length > 0) {
         const updatedErrors = [...errors];
-        updatedErrors.shift();
+        updatedErrors.pop();
         setErrors(updatedErrors);
       }
     }, 12000);
@@ -43,7 +43,7 @@ function ErrorContextProvider(props: Props): ReactElement {
 
   const showError = useCallback(
     (error: Omit<ILauncherError, 'id'>) => {
-      setErrors([...errors, { ...error, id: errors.length }]);
+      setErrors([{ ...error, id: errors.length }, ...errors]);
     },
     [errors]
   );

@@ -1,6 +1,5 @@
 import {
   useState,
-  useMemo,
   useContext,
   ReactElement,
   ChangeEvent,
@@ -10,8 +9,14 @@ import {
 import { useTranslation, Trans } from 'react-i18next';
 import { useNavigate, Link } from 'react-router-dom';
 import { auth } from '../../../services';
-import { IFormInput } from '../../../types';
-import { Layout, Frame, Input, Checkbox, Button } from '../../common';
+import {
+  Layout,
+  Frame,
+  Input,
+  Checkbox,
+  Button,
+  PasswordInput,
+} from '../../common';
 import { UserContext } from '../../../context/auth/UserContext';
 import { ErrorContext } from '../../../context/error/ErrorContext';
 
@@ -59,57 +64,51 @@ export function Registration(): ReactElement {
     );
   }, []);
 
-  const fields: IFormInput[] = useMemo(
-    () => [
-      {
-        name: 'username',
-        placeholder: t('LOGIN_FIELD'),
-        type: 'text',
-        className: 'mt-2 w-full text-sm',
-        onChange: (event: ChangeEvent<HTMLInputElement>) =>
-          setUsername(event.target.value),
-        minLength: 2,
-        maxLength: 16,
-        pattern: '^[a-zA-Z0-9_]*$',
-        required: true,
-        errorMessage: t('INVALID_LOGIN'),
-      },
-      {
-        name: 'password',
-        placeholder: t('PASSWORD'),
-        type: 'password',
-        className: 'mt-4 w-full text-sm',
-        onChange: (event: ChangeEvent<HTMLInputElement>) =>
-          setPassword(event.target.value),
-        minLength: 6,
-        required: true,
-        errorMessage: t('INVALID_PASSWORD'),
-      },
-      {
-        name: 'email',
-        placeholder: t('EMAIL'),
-        type: 'email',
-        className: 'mt-4 w-full text-sm',
-        onChange: (event: ChangeEvent<HTMLInputElement>) =>
-          setEmail(event.target.value),
-        minLength: 6,
-        required: true,
-        pattern: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$',
-        errorMessage: t('INVALID_EMAIL'),
-      },
-    ],
-    []
-  );
-
   return (
     <Layout mainBackground="bg-registration-bg">
       <div className="flex h-full items-center justify-end gap-10">
         <Frame className="max-w-[385px] px-7 py-8">
           <h1 className="w-full text-center text-lg">{t('REGISTRATION')}</h1>
           <form onSubmit={handleRegistration}>
-            {fields.map((field: IFormInput) => (
-              <Input {...field} key={`${field.name}-input`} />
-            ))}
+            <Input
+              name="username"
+              placeholder={t('LOGIN_FIELD')}
+              type="text"
+              className="mt-2 w-full text-sm"
+              onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                setUsername(event.target.value)
+              }
+              minLength={2}
+              maxLength={16}
+              pattern="^[a-zA-Z0-9_]*$"
+              required
+              errorMessage={t('INVALID_LOGIN')}
+            />
+            <PasswordInput
+              name="password"
+              placeholder={t('PASSWORD')}
+              type="password"
+              className="mt-4 w-full text-sm"
+              onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                setPassword(event.target.value)
+              }
+              minLength={6}
+              required
+              errorMessage={t('INVALID_PASSWORD')}
+            />
+            <Input
+              name="email"
+              placeholder={t('EMAIL')}
+              type="email"
+              className="mt-4 w-full text-sm"
+              onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                setEmail(event.target.value)
+              }
+              minLength={6}
+              required
+              pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$"
+              errorMessage={t('INVALID_EMAIL')}
+            />
             <div className="mt-6 w-full text-sm">
               <label className="flex">
                 <Checkbox

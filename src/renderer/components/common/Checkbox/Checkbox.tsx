@@ -6,7 +6,14 @@ type Props = {
 } & InputHTMLAttributes<HTMLInputElement>;
 
 export function Checkbox(props: Props): ReactElement {
-  const { checked = false, disabled, className, onClick, onChange } = props;
+  const {
+    name,
+    checked = false,
+    disabled,
+    className,
+    onClick,
+    onChange,
+  } = props;
 
   return (
     <label
@@ -17,6 +24,7 @@ export function Checkbox(props: Props): ReactElement {
         },
         className
       )}
+      htmlFor={name}
     >
       <input
         type="checkbox"
@@ -24,6 +32,7 @@ export function Checkbox(props: Props): ReactElement {
         onChange={onChange}
         onClick={onClick}
         disabled={disabled}
+        name={name}
       />
       {checked && (
         <span

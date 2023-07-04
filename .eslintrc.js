@@ -15,7 +15,6 @@ module.exports = {
     // we are using labels for addition styles
     // TODO: fix labels and turn on this rule
     'jsx-a11y/label-has-associated-control': 'off',
-    // 'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
     'no-unused-vars': 'off',
     '@typescript-eslint/no-unused-vars': 'error',
     'no-shadow': 'off',

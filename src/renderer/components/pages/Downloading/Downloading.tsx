@@ -57,7 +57,7 @@ export function Downloading(): ReactElement {
   }, [params]);
 
   return (
-    <Layout mainBackground="bg-update-bg" sideBackground="bg-update-sides">
+    <Layout mainBackground="bg-update-bg">
       <div className="flex h-full flex-col items-center justify-end gap-6">
         <div className="flex w-full flex-row gap-6">
           <span className="glow-text flex h-48 w-[15%] grow-0 items-center justify-center bg-black/60 p-12 px-4 text-lg text-main">

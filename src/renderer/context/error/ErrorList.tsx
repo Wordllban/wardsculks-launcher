@@ -56,7 +56,7 @@ function ErrorsList(props: ErrorsListProps): ReactElement {
   };
 
   return (
-    <div className="absolute right-2 top-2 max-h-[85vh] overflow-y-auto pt-4">
+    <div className="absolute bottom-2 right-2 max-h-[85vh] overflow-y-auto pt-4">
       <div className="flex w-[380px] flex-col gap-4 transition-all">
         {errors.length > 0
           ? errors.map(({ id, message, nativeError }) => (

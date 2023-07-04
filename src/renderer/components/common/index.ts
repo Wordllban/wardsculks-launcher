@@ -6,4 +6,6 @@ export * from './Dropdown';
 export * from './Frame';
 export * from './Layout';
 export * from './Input';
+export * from './PasswordInput';
 export * from './InputRange';
+export * from './Menu';

@@ -1,12 +1,12 @@
 import { InputHTMLAttributes, ReactElement, useState } from 'react';
 import clsx from 'clsx';
 
-type Props = {
+export type InputProps = {
   errorMessage?: string;
   className?: string;
 } & InputHTMLAttributes<HTMLInputElement>;
 
-export function Input(props: Props): ReactElement {
+export function Input(props: InputProps): ReactElement {
   const {
     name,
     placeholder,
@@ -23,7 +23,7 @@ export function Input(props: Props): ReactElement {
   const [isFocused, setIsFocused] = useState<boolean>(false);
 
   return (
-    <span>
+    <span className="flex flex-col">
       <input
         name={name}
         placeholder={placeholder}

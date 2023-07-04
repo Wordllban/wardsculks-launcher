@@ -1,7 +1,7 @@
 // Disable no-unused-vars, broken for spread args
 /* eslint no-unused-vars: off */
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
-
+import { MenuChannels } from './ipc/types';
 // TODO: split channels type into specific files
 export type Channels =
   | 'save-access-token'
@@ -20,7 +20,8 @@ export type Channels =
   | 'game-install'
   | 'downloading-log'
   | 'error'
-  | 'downloaded-size';
+  | 'downloaded-size'
+  | MenuChannels;
 
 const electronHandler = {
   ipcRenderer: {
