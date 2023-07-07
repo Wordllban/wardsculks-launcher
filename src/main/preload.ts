@@ -21,6 +21,7 @@ export type Channels =
   | 'downloading-log'
   | 'error'
   | 'downloaded-size'
+  | 'generate-minecraft-command'
   | MenuChannels;
 
 const electronHandler = {

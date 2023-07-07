@@ -10,9 +10,11 @@ import axios from 'axios';
 import https from 'https';
 import http from 'http';
 import { basename, join } from 'path';
+import getAppDataPath from 'appdata-path';
 import { sleep } from '../../util';
 import { getMainWindow } from '../../main';
 import { IFileInformation } from '../../../types';
+import { GAME_FOLDER_NAME } from '../../../constants/files';
 
 export async function downloadFile(
   url: string,
@@ -224,4 +226,39 @@ export async function verifyFolder(
       nativeError: error,
     });
   }
+}
+
+export async function generateLaunchMinecraftCommand({
+  username,
+  memoryInGigabytes,
+  serverName,
+  serverIp,
+}: {
+  username: string;
+  memoryInGigabytes: number;
+  serverName: string | null;
+  serverIp?: string;
+}): Promise<string> {
+  const serverFolderPath = getAppDataPath(`${GAME_FOLDER_NAME}/${serverName}`);
+  const librariesFolderPath = `${serverFolderPath}\\libraries`;
+  const executableText = `${serverFolderPath}\\jre\\bin\\java.exe`;
+
+  const librariesPaths = await getAllFilePaths(librariesFolderPath);
+  const librariesString = librariesPaths.reduce((accumulator, libraryPath) => {
+    return `${`${accumulator + libraryPath};`}`;
+  }, '');
+  const librariesVariable = `-cp "${librariesString}"`;
+  const memoryVariable = `-Xmx${memoryInGigabytes}G`;
+  const variables = `${memoryVariable} ${librariesVariable}`;
+
+  const immutableParameters =
+    '--gameDir . --assetsDir assets --accessToken 0 --tweakClass fabric.loader.Tweaker';
+  const assetIndexParameter = '--assetIndex 1.19';
+  const usernameParameter = `--username ${username}`;
+  const autoConnectParameter = serverIp ? `--server ${serverIp}` : '';
+  const parameters = `${immutableParameters} ${assetIndexParameter} ${usernameParameter} ${autoConnectParameter}`;
+
+  return `cd ${serverFolderPath}
+  ${executableText} ${variables} net.fabricmc.loader.impl.launch.knot.KnotClient ${parameters}
+  `;
 }

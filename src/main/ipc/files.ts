@@ -8,7 +8,11 @@ import { promisify } from 'util';
 import { GAME_FOLDER_NAME, MAX_REQUEST_RETRIES } from '../../constants/files';
 import MenuBuilder from '../menu';
 import { resolveFilesURL } from '../util';
-import { downloadFile, getFolderSize } from './utils';
+import {
+  downloadFile,
+  generateLaunchMinecraftCommand,
+  getFolderSize,
+} from './utils';
 import { getMainWindow } from '../main';
 import { formatBytes } from '../../utils';
 import { IFileInformation } from '../../types';
@@ -135,3 +139,28 @@ ipcMain.handle('find-game-folder', async (_, serverName: string) => {
     });
   }
 });
+
+ipcMain.handle(
+  'generate-minecraft-command',
+  async (
+    _,
+    {
+      username,
+      memoryInGigabytes,
+      serverName,
+      serverIp,
+    }: {
+      username: string;
+      memoryInGigabytes: number;
+      serverName: string | null;
+      serverIp?: string;
+    }
+  ) => {
+    return generateLaunchMinecraftCommand({
+      username,
+      serverName,
+      memoryInGigabytes,
+      serverIp,
+    });
+  }
+);

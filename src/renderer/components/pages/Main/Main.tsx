@@ -14,6 +14,7 @@ import { ErrorContext } from '../../../context/error/ErrorContext';
 import { Button, Dropdown, Frame, Layout } from '../../common';
 import logo from '../../../../../assets/icons/logo-big.svg';
 import { retrieveServers } from '../../../services/api';
+import { generateLaunchMinecraftCommand } from '../../../../main/ipc/utils';
 
 export function Main(): ReactElement {
   const navigate = useNavigate();
@@ -40,6 +41,16 @@ export function Main(): ReactElement {
       // verify immutable folders
       // start game
       console.log('game start');
+
+      const commandString = await window.electron.ipcRenderer.invoke(
+        'generate-minecraft-command',
+        {
+          username: 'MAKSUMUS',
+          serverName: selectedServer?.name || '',
+          memoryInGigabytes: 8,
+        }
+      );
+      console.log(commandString);
     } else {
       navigate(
         `/downloading?serverId=${selectedServer?.id}&serverName=${selectedServer?.name}`
