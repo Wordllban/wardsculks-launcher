@@ -42,9 +42,10 @@ ipcMain.on('open-file', async (_, fileName) => {
 ipcMain.on('game-install', async (_, serverInfo: string[]) => {
   ipcMain.removeAllListeners();
   const main = getMainWindow();
-
   const [serverId, serverName] = serverInfo;
   const serverFolderPath = getAppDataPath(`${GAME_FOLDER_NAME}/${serverName}`);
+  // create game folder
+  mkdirSync(serverFolderPath, { recursive: true });
   const serverFolderSize = getFolderSize(serverFolderPath);
 
   try {

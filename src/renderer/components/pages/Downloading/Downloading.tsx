@@ -1,4 +1,4 @@
-import { ReactElement, useState, useEffect, useRef } from 'react';
+import { ReactElement, useState, useEffect, useMemo, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Trans } from 'react-i18next';
 import { Layout } from '../../common';
@@ -24,6 +24,9 @@ export function Downloading(): ReactElement {
 
   const logRef = useRef<HTMLDivElement>(null);
   const [params] = useSearchParams();
+
+  const serverId = useMemo(() => params.get('serverId'), [params]);
+  const serverName = useMemo(() => params.get('serverName'), [params]);
 
   useEffect(() => {
     window.electron.ipcRenderer.on(
@@ -51,10 +54,10 @@ export function Downloading(): ReactElement {
 
   useEffect(() => {
     window.electron.ipcRenderer.sendMessage('game-install', [
-      params.get('serverId'),
-      params.get('serverName'),
+      serverId,
+      serverName,
     ]);
-  }, [params]);
+  }, [serverId, serverName]);
 
   return (
     <Layout mainBackground="bg-update-bg">
