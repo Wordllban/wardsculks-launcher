@@ -11,16 +11,11 @@ import { resolveFilesURL } from '../util';
 import { downloadFile, getFolderSize } from './utils';
 import { getMainWindow } from '../main';
 import { formatBytes } from '../../utils';
+import { IFileInformation } from '../../types';
 
 /**
  * IPC handlers related to file system
  */
-
-interface IFileInformation {
-  url: string;
-  size: number;
-  hash: string;
-}
 
 interface IRelease {
   files: Record<string, IFileInformation>;
@@ -50,6 +45,7 @@ ipcMain.on('game-install', async (_, serverInfo: string[]) => {
 
   const [serverId, serverName] = serverInfo;
   const serverFolderPath = getAppDataPath(`${GAME_FOLDER_NAME}/${serverName}`);
+  const serverFolderSize = getFolderSize(serverFolderPath);
 
   try {
     // request release
@@ -82,7 +78,6 @@ ipcMain.on('game-install', async (_, serverInfo: string[]) => {
     let prevServerFolderSize: number = 0;
 
     const downloadingTimer = setInterval(() => {
-      const serverFolderSize = getFolderSize(serverFolderPath);
       main?.webContents.send('downloaded-size', {
         progress: Math.floor((serverFolderSize / total_size) * 100),
         downloadedSize: formatBytes(
@@ -96,9 +91,17 @@ ipcMain.on('game-install', async (_, serverInfo: string[]) => {
     Promise.all(downloadPromises)
       .then(() => {
         clearInterval(downloadingTimer);
+
+        if (serverFolderSize === total_size) {
+          return main?.webContents.send(
+            'downloading-log',
+            'Installation completed successfully. \n'
+          );
+        }
+
         return main?.webContents.send(
           'downloading-log',
-          'Installation completed successfully. \n'
+          'Something went wrong. \n'
         );
       })
       .catch((error) =>

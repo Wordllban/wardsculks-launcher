@@ -9,9 +9,10 @@ import { createHash } from 'crypto';
 import axios from 'axios';
 import https from 'https';
 import http from 'http';
-import { join } from 'path';
+import { basename, join } from 'path';
 import { sleep } from '../../util';
 import { getMainWindow } from '../../main';
+import { IFileInformation } from '../../../types';
 
 export async function downloadFile(
   url: string,
@@ -82,6 +83,11 @@ export async function downloadFile(
   return null;
 }
 
+/**
+ * Create sha256 hash
+ * @param {string} filePath
+ * @returns {string} hash
+ */
 export const sha256 = async (filePath: string): Promise<string> => {
   const read = createReadStream(filePath);
   const hash = createHash('sha256').setEncoding('hex');
@@ -123,4 +129,99 @@ export function getFolderSize(folderPath: string) {
   calculateFolderSize(folderPath);
 
   return totalSize;
+}
+
+/**
+ * Compare file hash
+ * @param path - path to file
+ * @param expectedHash - expected file hash
+ * @returns boolean
+ */
+export async function verifyFileHash(
+  path: string,
+  expectedHash: string
+): Promise<boolean> {
+  const main = getMainWindow();
+  try {
+    const hash = await sha256(path);
+    return hash === expectedHash;
+  } catch (error) {
+    main?.webContents.send('error', {
+      message: 'Error during file verification',
+      nativeError: error,
+    });
+    return false;
+  }
+}
+
+export async function getAllFilePaths(folderPath: string): Promise<string[]> {
+  const filePaths: string[] = [];
+
+  function traverseDirectory(directory: string) {
+    const files = readdirSync(directory);
+
+    files.forEach((file) => {
+      const filePath = join(directory, file);
+      const fileStat = statSync(filePath);
+
+      if (fileStat.isFile()) {
+        filePaths.push(filePath);
+      } else if (fileStat.isDirectory()) {
+        traverseDirectory(filePath);
+      }
+    });
+  }
+
+  traverseDirectory(folderPath);
+
+  return filePaths;
+}
+
+export async function verifyFolder(
+  folderPath: string,
+  files: Record<string, IFileInformation>
+): Promise<any> {
+  const main = getMainWindow();
+  try {
+    const filePaths = await getAllFilePaths(folderPath);
+
+    const filesToVerify = filePaths.map(async (path: string) => {
+      const fileInfo: IFileInformation | undefined = files[path];
+
+      if (fileInfo) {
+        const verification: boolean = await verifyFileHash(path, fileInfo.hash);
+
+        if (verification) {
+          return;
+        }
+
+        const { url, size } = fileInfo;
+        const fileName = basename(path);
+
+        await downloadFile(url, path, fileName, size);
+      } else {
+        // delete file if there is no path
+        // gg cheats
+        unlinkSync(path);
+      }
+    });
+
+    Promise.all(filesToVerify)
+      .then(() => {
+        return main?.webContents.send('error', {
+          message: `Files in ${basename(folderPath)} passed the verification`,
+        });
+      })
+      .catch((error) => {
+        main?.webContents.send('error', {
+          message: 'Error during folder verification',
+          nativeError: error,
+        });
+      });
+  } catch (error) {
+    main?.webContents.send('error', {
+      message: 'Error during folder verification',
+      nativeError: error,
+    });
+  }
 }
