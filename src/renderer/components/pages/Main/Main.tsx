@@ -7,21 +7,21 @@ import {
 } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { useNavigate, Link } from 'react-router-dom';
-import { IServer } from 'renderer/types/IServer';
 import { auth } from '../../../services';
 import { UserContext } from '../../../context/auth/UserContext';
-import { ErrorContext } from '../../../context/error/ErrorContext';
+import { LoggerContext } from '../../../context/logger/LoggerContext';
 import { Button, Dropdown, Frame, Layout } from '../../common';
 import logo from '../../../../../assets/icons/logo-big.svg';
 import { retrieveServers } from '../../../services/api';
-import { generateLaunchMinecraftCommand } from '../../../../main/ipc/utils';
+import { LauncherLogs } from '../../../../types';
+import { SettingsList, IServer } from '../../../types';
 
 export function Main(): ReactElement {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
   const { userData, clearUserData } = useContext(UserContext);
-  const { showError } = useContext(ErrorContext);
+  const { showMessage } = useContext(LoggerContext);
 
   const [availableServers, setAvailableServers] = useState<IServer[]>([]);
   const [selectedServer, setSelectedServer] = useState<IServer>();
@@ -32,31 +32,64 @@ export function Main(): ReactElement {
   }, [clearUserData]);
 
   const handleStartGame = useCallback(async () => {
-    const isGameFolderExist = await window.electron.ipcRenderer.invoke(
+    const gameFolder = await window.electron.ipcRenderer.invoke(
       'find-game-folder',
       selectedServer?.name
     );
 
-    if (isGameFolderExist) {
+    if (gameFolder) {
       // verify immutable folders
-      // start game
-      console.log('game start');
-
-      const commandString = await window.electron.ipcRenderer.invoke(
-        'generate-minecraft-command',
+      const isVerified = await window.electron.ipcRenderer.invoke(
+        'verify-folders',
         {
-          username: 'MAKSUMUS',
-          serverName: selectedServer?.name || '',
-          memoryInGigabytes: 8,
+          foldersNames: selectedServer?.immutableFolders,
+          serverName: selectedServer?.name,
+          serverId: selectedServer?.id,
         }
       );
-      console.log(commandString);
+
+      if (isVerified) {
+        // get maximum memory usage from settings
+        const gameMemoryUsage = await window.electron.ipcRenderer.invoke(
+          'get-setting',
+          SettingsList.maxMemoryUsage
+        );
+
+        const commandString = await window.electron.ipcRenderer.invoke(
+          'create-launch-command',
+          {
+            username: userData.username,
+            serverName: selectedServer?.name || '',
+            memoryInGigabytes: gameMemoryUsage,
+          }
+        );
+
+        /*         const isLaunchFileExists = await window.electron.ipcRenderer.invoke(
+          'check-exists',
+          {
+            path: 'launch.bat',
+            serverName: selectedServer?.name,
+          }
+        ); */
+
+        await window.electron.ipcRenderer.sendMessage('create-file', {
+          serverName: selectedServer?.name,
+          format: 'bat',
+          name: 'launch',
+          content: commandString,
+        });
+
+        window.electron.ipcRenderer.sendMessage('execute-file', {
+          path: 'launch.bat',
+          serverName: selectedServer?.name,
+        });
+      }
     } else {
       navigate(
         `/downloading?serverId=${selectedServer?.id}&serverName=${selectedServer?.name}`
       );
     }
-  }, [navigate, selectedServer]);
+  }, [navigate, selectedServer, userData.username]);
 
   useEffect(() => {
     retrieveServers()
@@ -65,9 +98,10 @@ export function Main(): ReactElement {
         return setSelectedServer(servers[0]);
       })
       .catch((error) =>
-        showError({
+        showMessage({
           message: t('FAILED_TO_GET_SERVERS_LIST'),
           nativeError: error,
+          type: LauncherLogs.error,
         })
       );
   }, []);

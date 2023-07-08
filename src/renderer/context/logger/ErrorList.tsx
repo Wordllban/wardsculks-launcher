@@ -1,9 +1,9 @@
 import { useState, ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ILauncherError } from '../../types';
+import { ILauncherLog } from '../../../types';
 import closeIcon from '../../../../assets/icons/close.svg';
 
-type ErrorProps = ILauncherError & {
+type ErrorProps = ILauncherLog & {
   removeError: (id: number) => void;
 };
 
@@ -27,7 +27,7 @@ function Error(props: ErrorProps): ReactElement {
               {t(!showNativeError ? 'SHOW_NATIVE_ERROR' : 'HIDE_NATIVE_ERROR')}
             </button>
             {showNativeError ? (
-              <div className="flex">{JSON.stringify(nativeError)}</div>
+              <div className="flex">{`${nativeError}`}</div>
             ) : null}
           </div>
         ) : null}
@@ -44,8 +44,8 @@ function Error(props: ErrorProps): ReactElement {
 }
 
 type ErrorsListProps = {
-  errors: ILauncherError[];
-  setErrors: (error: ILauncherError[]) => void;
+  errors: ILauncherLog[];
+  setErrors: (error: ILauncherLog[]) => void;
 };
 function ErrorsList(props: ErrorsListProps): ReactElement {
   const { errors, setErrors } = props;
@@ -59,13 +59,14 @@ function ErrorsList(props: ErrorsListProps): ReactElement {
     <div className="absolute bottom-2 right-2 max-h-[85vh] overflow-y-auto pt-4">
       <div className="flex w-[380px] flex-col gap-4 transition-all">
         {errors.length > 0
-          ? errors.map(({ id, message, nativeError }) => (
+          ? errors.map(({ id, message, nativeError, type }) => (
               <Error
                 key={`${id}-error`}
                 id={id}
                 message={message}
                 nativeError={nativeError}
                 removeError={removeError}
+                type={type}
               />
             ))
           : null}

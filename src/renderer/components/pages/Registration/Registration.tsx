@@ -18,11 +18,12 @@ import {
   PasswordInput,
 } from '../../common';
 import { UserContext } from '../../../context/auth/UserContext';
-import { ErrorContext } from '../../../context/error/ErrorContext';
+import { LoggerContext } from '../../../context/logger/LoggerContext';
+import { LauncherLogs } from '../../../../types';
 
 export function Registration(): ReactElement {
   const { setUserData } = useContext(UserContext);
-  const { showError } = useContext(ErrorContext);
+  const { showMessage } = useContext(LoggerContext);
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -52,7 +53,10 @@ export function Registration(): ReactElement {
 
       navigate('/main-menu');
     } else {
-      showError({ message: t('FAILED_TO_REGISTER') });
+      showMessage({
+        message: t('FAILED_TO_REGISTER'),
+        type: LauncherLogs.error,
+      });
     }
   };
 

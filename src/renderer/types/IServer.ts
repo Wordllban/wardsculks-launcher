@@ -3,4 +3,5 @@ export interface IServer {
   title: string;
   name: string;
   immutableFolders: string[];
+  ip: string;
 }

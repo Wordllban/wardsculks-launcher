@@ -18,11 +18,12 @@ import {
 } from '../../common';
 import logo from '../../../../../assets/icons/logo-big.svg';
 import { UserContext } from '../../../context/auth/UserContext';
-import { ErrorContext } from '../../../context/error/ErrorContext';
+import { LoggerContext } from '../../../context/logger/LoggerContext';
+import { LauncherLogs } from '../../../../types';
 
 export function Login(): ReactElement {
   const { setUserData } = useContext(UserContext);
-  const { showError } = useContext(ErrorContext);
+  const { showMessage } = useContext(LoggerContext);
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -52,7 +53,7 @@ export function Login(): ReactElement {
       }
       navigate('/main-menu');
     } else {
-      showError({ message: t('FAILED_TO_LOGIN') });
+      showMessage({ message: t('FAILED_TO_LOGIN'), type: LauncherLogs.error });
     }
   };
 

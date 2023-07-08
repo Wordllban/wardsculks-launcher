@@ -1,2 +1,2 @@
 export * from './ISettings';
-export * from './IError';
+export * from './IServer';

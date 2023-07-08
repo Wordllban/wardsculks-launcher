@@ -4,17 +4,17 @@ import {
   unlinkSync,
   statSync,
   readdirSync,
+  constants,
+  accessSync,
 } from 'fs';
 import { createHash } from 'crypto';
-import axios from 'axios';
-import https from 'https';
-import http from 'http';
 import { basename, join } from 'path';
 import getAppDataPath from 'appdata-path';
 import { sleep } from '../../util';
 import { getMainWindow } from '../../main';
-import { IFileInformation } from '../../../types';
+import { IFileInformation, LauncherLogs } from '../../../types';
 import { GAME_FOLDER_NAME } from '../../../constants/files';
+import getAxios from '../../services/axios';
 
 export async function downloadFile(
   url: string,
@@ -27,12 +27,10 @@ export async function downloadFile(
   const writer = createWriteStream(fileFullPath);
 
   const main = getMainWindow();
-
+  const axios = getAxios();
   try {
     const response = await axios.get(url, {
       responseType: 'stream',
-      httpsAgent: new https.Agent({ keepAlive: true, maxSockets: 100 }),
-      httpAgent: new http.Agent({ keepAlive: true, maxSockets: 100 }),
     });
 
     const responseSize = response.headers['content-length'];
@@ -91,20 +89,21 @@ export async function downloadFile(
  * @returns {string} hash
  */
 export const sha256 = async (filePath: string): Promise<string> => {
-  const read = createReadStream(filePath);
-  const hash = createHash('sha256').setEncoding('hex');
-
-  read.pipe(hash);
-
   return new Promise((resolve, reject) => {
-    read.on('finish', () => {
-      hash.end();
+    const read = createReadStream(filePath);
+    const hash = createHash('sha256');
 
-      resolve(hash.read());
+    read.on('data', (data) => {
+      hash.update(data);
+    });
+
+    read.on('end', () => {
+      const hashed = hash.digest('hex');
+      resolve(hashed);
     });
 
     read.on('error', (err) => {
-      hash.end();
+      console.error('Error reading file:', err);
       reject(err);
     });
   });
@@ -148,15 +147,19 @@ export async function verifyFileHash(
     const hash = await sha256(path);
     return hash === expectedHash;
   } catch (error) {
-    main?.webContents.send('error', {
+    main?.webContents.send('logger', {
       message: 'Error during file verification',
       nativeError: error,
+      type: LauncherLogs.error,
     });
     return false;
   }
 }
 
-export async function getAllFilePaths(folderPath: string): Promise<string[]> {
+export function getAllFilePaths(
+  folderPath: string,
+  isAbsolutePath: boolean = true
+): string[] {
   const filePaths: string[] = [];
 
   function traverseDirectory(directory: string) {
@@ -176,54 +179,64 @@ export async function getAllFilePaths(folderPath: string): Promise<string[]> {
 
   traverseDirectory(folderPath);
 
-  return filePaths;
+  if (isAbsolutePath) {
+    return filePaths;
+  }
+
+  const serverPath = folderPath.replace(basename(folderPath), '');
+  return filePaths.map((path: string) =>
+    path.replace(serverPath, '').replaceAll('\\', '/')
+  );
 }
 
-export async function verifyFolder(
+export function verifyFolder(
   folderPath: string,
-  files: Record<string, IFileInformation>
-): Promise<any> {
+  files: Record<string, IFileInformation>,
+  serverPath: string
+) {
   const main = getMainWindow();
   try {
-    const filePaths = await getAllFilePaths(folderPath);
-
+    const filePaths = getAllFilePaths(folderPath, false);
     const filesToVerify = filePaths.map(async (path: string) => {
       const fileInfo: IFileInformation | undefined = files[path];
-
+      const filePath = join(serverPath, path);
       if (fileInfo) {
-        const verification: boolean = await verifyFileHash(path, fileInfo.hash);
+        const verification: boolean = await verifyFileHash(
+          filePath,
+          fileInfo.hash
+        );
 
         if (verification) {
           return;
         }
 
         const { url, size } = fileInfo;
-        const fileName = basename(path);
 
-        await downloadFile(url, path, fileName, size);
+        main?.webContents.send('logger', {
+          message:
+            'Some of game files was broken, starting their re-installation',
+          type: LauncherLogs.warning,
+        });
+        await downloadFile(url, filePath, '', size);
       } else {
         // delete file if there is no path
         // gg cheats
-        unlinkSync(path);
+        unlinkSync(filePath);
       }
     });
 
-    Promise.all(filesToVerify)
-      .then(() => {
-        return main?.webContents.send('error', {
-          message: `Files in ${basename(folderPath)} passed the verification`,
-        });
-      })
-      .catch((error) => {
-        main?.webContents.send('error', {
-          message: 'Error during folder verification',
-          nativeError: error,
-        });
+    Promise.all(filesToVerify).catch((error) => {
+      main?.webContents.send('logger', {
+        message: 'Error during folders verification',
+        nativeError: error,
+        type: LauncherLogs.error,
       });
+    });
   } catch (error) {
-    main?.webContents.send('error', {
+    main?.webContents.send('logger', {
       message: 'Error during folder verification',
       nativeError: error,
+      type: LauncherLogs.error,
     });
   }
 }
@@ -240,10 +253,10 @@ export async function generateLaunchMinecraftCommand({
   serverIp?: string;
 }): Promise<string> {
   const serverFolderPath = getAppDataPath(`${GAME_FOLDER_NAME}/${serverName}`);
-  const librariesFolderPath = `${serverFolderPath}\\libraries`;
-  const executableText = `${serverFolderPath}\\jre\\bin\\java.exe`;
-
-  const librariesPaths = await getAllFilePaths(librariesFolderPath);
+  const librariesFolderPath = join(serverFolderPath, 'libraries');
+  const executableText = join(serverFolderPath, 'jre', 'bin', 'java.exe');
+  // todo: get java.exe path for diff OS
+  const librariesPaths = getAllFilePaths(librariesFolderPath);
   const librariesString = librariesPaths.reduce((accumulator, libraryPath) => {
     return `${`${accumulator + libraryPath};`}`;
   }, '');
@@ -253,7 +266,10 @@ export async function generateLaunchMinecraftCommand({
 
   const immutableParameters =
     '--gameDir . --assetsDir assets --accessToken 0 --tweakClass fabric.loader.Tweaker';
-  const assetIndexParameter = '--assetIndex 1.19';
+  const assetIndexVersion = basename(
+    getAllFilePaths(join(serverFolderPath, 'assets', 'indexes'))[0]
+  ).replace('.json', '');
+  const assetIndexParameter = `--assetIndex ${assetIndexVersion}`;
   const usernameParameter = `--username ${username}`;
   const autoConnectParameter = serverIp ? `--server ${serverIp}` : '';
   const parameters = `${immutableParameters} ${assetIndexParameter} ${usernameParameter} ${autoConnectParameter}`;
@@ -261,4 +277,24 @@ export async function generateLaunchMinecraftCommand({
   return `cd ${serverFolderPath}
   ${executableText} ${variables} net.fabricmc.loader.impl.launch.knot.KnotClient ${parameters}
   `;
+}
+
+export function checkFileExists(filePath: string) {
+  const main = getMainWindow();
+
+  try {
+    accessSync(filePath, constants.F_OK);
+    return true;
+  } catch (error) {
+    main?.webContents.send('logger', {
+      message: 'Launch file does not exists. Starting creation',
+      nativeError: error,
+      type: LauncherLogs.error,
+    });
+    return false;
+  }
+}
+
+export function getServerFolder(serverName: string) {
+  return getAppDataPath(`${GAME_FOLDER_NAME}/${serverName}`);
 }

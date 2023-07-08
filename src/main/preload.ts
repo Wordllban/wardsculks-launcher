@@ -1,27 +1,19 @@
 // Disable no-unused-vars, broken for spread args
 /* eslint no-unused-vars: off */
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
-import { MenuChannels } from './ipc/types';
-// TODO: split channels type into specific files
+import {
+  MenuChannels,
+  StoreChannels,
+  OsChannels,
+  AuthChannels,
+  FilesChannels,
+} from './ipc/types';
+
 export type Channels =
-  | 'save-access-token'
-  | 'save-refresh-token'
-  | 'get-access-token'
-  | 'get-refresh-token'
-  | 'logout'
-  | 'get-os-memory'
-  | 'get-machine-id'
-  | 'open-file'
-  | 'get-setting'
-  | 'set-setting'
-  | 'get-all-settings'
-  | 'has-setting'
-  | 'find-game-folder'
-  | 'game-install'
-  | 'downloading-log'
-  | 'error'
-  | 'downloaded-size'
-  | 'generate-minecraft-command'
+  | AuthChannels
+  | FilesChannels
+  | OsChannels
+  | StoreChannels
   | MenuChannels;
 
 const electronHandler = {
@@ -54,8 +46,6 @@ export type ElectronHandler = typeof electronHandler;
 
 const envHandler = {
   API_URL: process.env.API_URL,
-  SERVER_IP: process.env.SERVER_IP,
-  SERVER_PORT: process.env.SERVER_PORT,
 };
 
 contextBridge.exposeInMainWorld('env', envHandler);

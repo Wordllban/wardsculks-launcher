@@ -6,9 +6,7 @@ import { store } from '../services';
  * IPC handlers related to store user settings
  */
 
-ipcMain.handle('get-setting', (_, args: [string]) => {
-  const [key] = args;
-
+ipcMain.handle('get-setting', (_, key) => {
   const value = store.get(key);
 
   return value;

@@ -2,7 +2,7 @@ import { Suspense, useEffect, useContext } from 'react';
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
 import { useTranslation } from 'react-i18next';
-import { ProtectedRoute, ErrorContext } from './context';
+import { ProtectedRoute, LoggerContext } from './context';
 import {
   Login,
   Main,
@@ -12,17 +12,18 @@ import {
   Menu,
 } from './components';
 import { SettingsList, ISettings } from './types';
+import { LauncherLogs } from '../types';
 import { saveMultipleSettingsOptions } from './components/pages/Settings/utils';
 
 const DEFAULT_INITIAL_SETTINGS: ISettings = {
   isInitial: false,
   '-Xmx': 2,
-  '-Dorg_lwjgl_opengl_Window_undecorated': false,
-  '--server': null,
+  fullscreen: false,
+  autoJoin: false,
 };
 
 export default function App() {
-  const { showError } = useContext(ErrorContext);
+  const { showMessage } = useContext(LoggerContext);
   const { t } = useTranslation();
 
   /**
@@ -38,9 +39,10 @@ export default function App() {
         return isInitialSettings;
       })
       .catch((error) =>
-        showError({
+        showMessage({
           message: t('FAILED_TO_CREATE_INITIAL_SETTINGS'),
           nativeError: error,
+          type: LauncherLogs.error,
         })
       );
   }, []);

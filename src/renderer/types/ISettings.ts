@@ -13,13 +13,13 @@
 export enum SettingsList {
   isInitial = 'isInitial',
   maxMemoryUsage = '-Xmx',
-  isFullScreen = '-Dorg_lwjgl_opengl_Window_undecorated',
-  serverAddress = '--server',
+  isFullScreen = 'fullscreen',
+  isAutoJoin = 'autoJoin',
 }
 
 export interface ISettings {
   [SettingsList.isInitial]: boolean;
   [SettingsList.maxMemoryUsage]: number;
   [SettingsList.isFullScreen]: boolean;
-  [SettingsList.serverAddress]: string | null;
+  [SettingsList.isAutoJoin]: boolean;
 }

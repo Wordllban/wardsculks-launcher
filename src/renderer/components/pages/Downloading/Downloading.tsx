@@ -1,10 +1,14 @@
 import { ReactElement, useState, useEffect, useMemo, useRef } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Trans } from 'react-i18next';
 import { Layout } from '../../common';
 import { ProgressBar } from './ProgressBar';
 
+const FINISHED_PROGRESS = 100;
+
 export function Downloading(): ReactElement {
+  const navigate = useNavigate();
+
   const [downloadingStatus, setDownloadingStatus] = useState({
     progress: 0,
     downloadedSize: {
@@ -14,13 +18,15 @@ export function Downloading(): ReactElement {
     },
   });
 
-  useEffect(() => {
-    window.electron.ipcRenderer.on('downloaded-size', (value) => {
-      if (value.progress > downloadingStatus.progress) {
-        setDownloadingStatus(value);
-      }
-    });
-  }, [downloadingStatus.progress]);
+  window.electron.ipcRenderer.on('downloaded-size', (value) => {
+    if (value.progress > downloadingStatus.progress) {
+      setDownloadingStatus(value);
+    }
+
+    if (value.progress === FINISHED_PROGRESS) {
+      navigate('/main-menu');
+    }
+  });
 
   const logRef = useRef<HTMLDivElement>(null);
   const [params] = useSearchParams();

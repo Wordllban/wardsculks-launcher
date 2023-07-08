@@ -13,12 +13,9 @@ import { Button, Checkbox, InputRange, Layout, ArrowBack } from '../../common';
 import { getSystemMemory, saveMultipleSettingsOptions } from './utils';
 import { ISettings, SettingsList } from '../../../types';
 import { MIN_MEMORY } from '../../../../constants/settings';
-import { ErrorContext } from '../../../context/error/ErrorContext';
+import { LoggerContext } from '../../../context/logger/LoggerContext';
 import { formatBytes } from '../../../../utils';
-
-/**
- * TODO: get app folder real location
- */
+import { LauncherLogs } from '../../../../types';
 
 type SettingProps = {
   title: string;
@@ -62,7 +59,7 @@ function Setting(props: SettingProps) {
 }
 
 export function Settings(): ReactElement {
-  const { showError } = useContext(ErrorContext);
+  const { showMessage } = useContext(LoggerContext);
   const { t } = useTranslation();
 
   const [maxMemory, setMaxMemory] = useState<number>(0);
@@ -79,13 +76,17 @@ export function Settings(): ReactElement {
         return result;
       })
       .catch((error) =>
-        showError({ message: t('FAILED_TO_GET_SETTINGS'), nativeError: error })
+        showMessage({
+          message: t('FAILED_TO_GET_SETTINGS'),
+          nativeError: error,
+          type: LauncherLogs.error,
+        })
       );
   }, []);
 
   useEffect(() => {
     getCurrentSettings();
-  }, [getCurrentSettings]);
+  }, []);
 
   useEffect(() => {
     getSystemMemory()
@@ -94,9 +95,10 @@ export function Settings(): ReactElement {
         return setMaxMemory(memoryInGB);
       })
       .catch((error) =>
-        showError({
+        showMessage({
           message: t('FAILED_TO_GET_SYSTEM_MEMORY'),
           nativeError: error,
+          type: LauncherLogs.error,
         })
       );
   }, []);
@@ -124,20 +126,18 @@ export function Settings(): ReactElement {
         initialValue: false,
         disabled: true,
         onCheckbox: () => {
-          console.log(t('DEBUG_MODE'));
+          // console.log(t('DEBUG_MODE'));
         },
       },
       {
         name: 'auto-join',
         title: t('AUTO_JOIN_SERVER'),
         description: t('AUTO_JOIN_SERVER_DESCRIPTION'),
-        initialValue: !!newSettings[SettingsList.serverAddress],
+        initialValue: newSettings[SettingsList.isAutoJoin],
         onCheckbox: () => {
           setNewSettings((prevState) => ({
             ...prevState,
-            [SettingsList.serverAddress]: prevState[SettingsList.serverAddress]
-              ? null
-              : `${window.env.SERVER_IP}:${window.env.SERVER_PORT}`,
+            [SettingsList.isAutoJoin]: !prevState[SettingsList.isAutoJoin],
           }));
         },
       },
@@ -146,7 +146,14 @@ export function Settings(): ReactElement {
         title: t('FULLSCREEN_MODE'),
         description: t('FULLSCREEN_MODE_DESCRIPTION'),
         initialValue: newSettings[SettingsList.isFullScreen],
+        // todo: do not apply changes to options without save
+        disabled: true,
         onCheckbox: () => {
+          window.electron.ipcRenderer.sendMessage('update-launch-options', {
+            key: 'fullscreen',
+            value: !newSettings.fullscreen,
+            serverName: 'test',
+          });
           setNewSettings((prevState) => ({
             ...prevState,
             [SettingsList.isFullScreen]:
@@ -203,14 +210,15 @@ export function Settings(): ReactElement {
           {settingsWithCheckboxes.map((setting) => (
             <Setting {...setting} key={`${setting.name}-setting`} />
           ))}
-          <div className="flex items-center">
+          {/* feature: ability to change game folder */}
+          {/* <div className="flex items-center">
             <span className="mr-5 text-xs text-main">
               C:\Users\harmf\AppData\Roaming\WardSculks\updates
             </span>
             <Button className="hover:glow-text px-1 text-sm">
               {t('CHANGE_PATH')}
             </Button>
-          </div>
+          </div> */}
           <Button
             className="hover:glow-text my-[25px] px-[46px] py-3 text-22"
             onClick={handleSaveSettings}
