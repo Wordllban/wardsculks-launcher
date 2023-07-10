@@ -53,7 +53,10 @@ export function Login(): ReactElement {
       }
       navigate('/main-menu');
     } else {
-      showMessage({ message: t('FAILED_TO_LOGIN'), type: LauncherLogs.error });
+      showMessage({
+        message: t('FAILED_TO_LOGIN'),
+        type: LauncherLogs.error,
+      });
     }
   };
 

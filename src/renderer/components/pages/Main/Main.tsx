@@ -64,14 +64,6 @@ export function Main(): ReactElement {
           }
         );
 
-        /*         const isLaunchFileExists = await window.electron.ipcRenderer.invoke(
-          'check-exists',
-          {
-            path: 'launch.bat',
-            serverName: selectedServer?.name,
-          }
-        ); */
-
         await window.electron.ipcRenderer.sendMessage('create-file', {
           serverName: selectedServer?.name,
           format: 'bat',

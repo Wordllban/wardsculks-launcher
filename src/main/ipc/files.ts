@@ -124,7 +124,7 @@ ipcMain.on('game-install', async (_, serverInfo: string[]) => {
 
         return main?.webContents.send(
           'downloading-log',
-          'Something went wrong. \n'
+          'Something went wrong. Try again. \n'
         );
       })
       .catch((error) => {
@@ -154,7 +154,7 @@ ipcMain.handle('find-game-folder', async (_, serverName: string) => {
     main?.webContents.send('logger', {
       message: 'Game folder not found, starting installation',
       nativeError: error,
-      type: LauncherLogs.error,
+      type: LauncherLogs.warning,
     });
   }
 });

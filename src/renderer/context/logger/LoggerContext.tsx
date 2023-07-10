@@ -7,17 +7,15 @@ import {
   ReactElement,
   useCallback,
 } from 'react';
-import ErrorsList from './ErrorList';
+import MessagesList from './MessagesList';
 import { ILauncherLog } from '../../../types';
-
-// todo: error context to logger context
-
+import { v4 as uuid } from 'uuid';
 interface ILauncherLogsContext {
-  showMessage: (error: Omit<ILauncherLog, 'id'>) => void;
+  showMessage: (message: Omit<ILauncherLog, 'id'>) => void;
 }
 
 export const LoggerContext = createContext<ILauncherLogsContext>({
-  showMessage: (error: Omit<ILauncherLog, 'id'>) => error,
+  showMessage: (message: Omit<ILauncherLog, 'id'>) => message,
 });
 
 type Props = {
@@ -45,7 +43,7 @@ function LoggerContextProvider(props: Props): ReactElement {
 
   const showMessage = useCallback(
     (message: Omit<ILauncherLog, 'id'>) => {
-      setMessages([{ ...message, id: messages.length }, ...messages]);
+      setMessages([{ ...message, id: uuid() }, ...messages]);
     },
     [messages]
   );
@@ -64,7 +62,7 @@ function LoggerContextProvider(props: Props): ReactElement {
   return (
     <LoggerContext.Provider value={contextValue}>
       {children}
-      <ErrorsList errors={messages} setErrors={setMessages} />
+      <MessagesList messages={messages} setMessages={setMessages} />
     </LoggerContext.Provider>
   );
 }

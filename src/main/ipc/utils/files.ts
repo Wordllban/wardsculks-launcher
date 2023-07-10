@@ -280,17 +280,10 @@ export async function generateLaunchMinecraftCommand({
 }
 
 export function checkFileExists(filePath: string) {
-  const main = getMainWindow();
-
   try {
     accessSync(filePath, constants.F_OK);
     return true;
   } catch (error) {
-    main?.webContents.send('logger', {
-      message: 'Launch file does not exists. Starting creation',
-      nativeError: error,
-      type: LauncherLogs.error,
-    });
     return false;
   }
 }

@@ -10,7 +10,7 @@ export type LauncherLogsTypes =
   | LauncherLogs.warning;
 
 export interface ILauncherLog {
-  id: number;
+  id: string;
   message: string;
   type: LauncherLogsTypes;
   nativeError?: unknown;
