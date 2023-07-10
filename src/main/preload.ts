@@ -46,6 +46,7 @@ export type ElectronHandler = typeof electronHandler;
 
 const envHandler = {
   API_URL: process.env.API_URL,
+  RULES_URL: process.env.RULES_URL,
 };
 
 contextBridge.exposeInMainWorld('env', envHandler);

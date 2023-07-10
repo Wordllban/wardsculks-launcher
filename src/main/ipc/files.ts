@@ -11,7 +11,7 @@ import {
   MAX_REQUEST_RETRIES,
 } from '../../constants/files';
 import MenuBuilder from '../menu';
-import { resolveFilesURL, sleep } from '../util';
+import { sleep } from '../util';
 import {
   checkFileExists,
   downloadFile,
@@ -34,8 +34,7 @@ interface IRelease {
   totalSize: number;
 }
 
-ipcMain.on('open-file', async (_, fileName) => {
-  const path = resolveFilesURL(fileName);
+ipcMain.on('open-remote-file', async (_, url) => {
   const window = new BrowserWindow({
     webPreferences: {
       plugins: true,
@@ -47,7 +46,7 @@ ipcMain.on('open-file', async (_, fileName) => {
   const menuBuilder = new MenuBuilder(window);
   menuBuilder.buildMenu();
 
-  window.loadURL(path);
+  window.loadURL(url);
 });
 
 ipcMain.on('game-install', async (_, serverInfo: string[]) => {

@@ -63,8 +63,8 @@ export function Registration(): ReactElement {
   const handleRulesOpen = useCallback(() => {
     setIsAgreementAccepted(true);
     window.electron.ipcRenderer.sendMessage(
-      'open-file',
-      'wardsculks-rules.pdf' // TODO: update file and filename
+      'open-remote-file',
+      window.env.RULES_URL
     );
   }, []);
 

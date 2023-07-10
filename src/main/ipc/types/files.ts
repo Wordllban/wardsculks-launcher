@@ -1,5 +1,5 @@
 type FilesChannels =
-  | 'open-file'
+  | 'open-remote-file'
   | 'find-game-folder'
   | 'game-install'
   | 'create-launch-command'
