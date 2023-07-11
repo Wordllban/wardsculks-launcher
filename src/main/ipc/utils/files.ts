@@ -8,7 +8,7 @@ import {
   accessSync,
 } from 'fs';
 import { createHash } from 'crypto';
-import { basename, join } from 'path';
+import { basename, join, sep } from 'path';
 import getAppDataPath from 'appdata-path';
 import { sleep } from '../../util';
 import { getMainWindow } from '../../main';
@@ -254,11 +254,21 @@ export async function generateLaunchMinecraftCommand({
 }): Promise<string> {
   const serverFolderPath = getAppDataPath(`${GAME_FOLDER_NAME}/${serverName}`);
   const librariesFolderPath = join(serverFolderPath, 'libraries');
-  const executableText = join(serverFolderPath, 'jre', 'bin', 'java.exe');
+  const executableText = `start ${join(
+    serverFolderPath,
+    'jre',
+    'bin',
+    'javaw.exe'
+  )}`;
   // todo: get java.exe path for diff OS
   const librariesPaths = getAllFilePaths(librariesFolderPath);
   const librariesString = librariesPaths.reduce((accumulator, libraryPath) => {
-    return `${`${accumulator + libraryPath};`}`;
+    return `${
+      accumulator +
+      libraryPath
+        .replace(`${serverFolderPath + sep}`, '')
+        .replace(/\\[^\\]+$/, '\\*')
+    };`;
   }, '');
   const librariesVariable = `-cp "${librariesString}"`;
   const memoryVariable = `-Xmx${memoryInGigabytes}G`;
@@ -273,7 +283,6 @@ export async function generateLaunchMinecraftCommand({
   const usernameParameter = `--username ${username}`;
   const autoConnectParameter = serverIp ? `--server ${serverIp}` : '';
   const parameters = `${immutableParameters} ${assetIndexParameter} ${usernameParameter} ${autoConnectParameter}`;
-
   return `cd ${serverFolderPath}
   ${executableText} ${variables} net.fabricmc.loader.impl.launch.knot.KnotClient ${parameters}
   `;
