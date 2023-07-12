@@ -289,7 +289,7 @@ export async function generateLaunchMinecraftCommand({
   const parameters = `${immutableParameters} ${assetIndexParameter} ${usernameParameter} ${autoConnectParameter}`;
   return `cd ${serverFolderPath}
   ${executableText} ${variables} net.fabricmc.loader.impl.launch.knot.KnotClient ${parameters}
-  `;
+  ${isDebug ? 'pause' : ''}`;
 }
 
 export function checkFileExists(filePath: string) {
