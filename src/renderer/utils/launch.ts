@@ -10,7 +10,7 @@ export const launch = async ({
   username: string;
 }): Promise<void> => {
   // get maximum memory usage from settings
-  const { memoryUsage, autoJoin }: ISettings =
+  const { memoryUsage, autoJoin, isDebug }: ISettings =
     await window.electron.ipcRenderer.invoke('get-all-settings');
 
   const commandString = await window.electron.ipcRenderer.invoke(
@@ -20,7 +20,7 @@ export const launch = async ({
       serverName,
       memoryInGigabytes: memoryUsage,
       ...(autoJoin ? { serverIp } : {}),
-      isDebug: true,
+      isDebug,
     }
   );
 

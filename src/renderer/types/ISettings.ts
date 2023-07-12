@@ -15,6 +15,7 @@ export enum SettingsList {
   maxMemoryUsage = 'memoryUsage',
   isFullScreen = 'fullscreen',
   isAutoJoin = 'autoJoin',
+  isDebug = 'isDebug',
 }
 
 export interface ISettings {
@@ -22,4 +23,5 @@ export interface ISettings {
   [SettingsList.maxMemoryUsage]: number;
   [SettingsList.isFullScreen]: boolean;
   [SettingsList.isAutoJoin]: boolean;
+  [SettingsList.isDebug]: boolean;
 }

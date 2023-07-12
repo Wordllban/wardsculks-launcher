@@ -5,17 +5,17 @@ import {
   useMemo,
   useRef,
   useCallback,
-  useContext,
 } from 'react';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
+import { useDispatch } from 'react-redux';
 import { Button, Checkbox, InputRange, Layout, ArrowBack } from '../../common';
 import { getSystemMemory, saveMultipleSettingsOptions } from './utils';
 import { ISettings, SettingsList } from '../../../types';
 import { MIN_MEMORY } from '../../../../constants/settings';
-import { LoggerContext } from '../../../context/logger/LoggerContext';
 import { formatBytes } from '../../../../utils';
 import { LauncherLogs } from '../../../../types';
+import { addNotification } from '../../../redux';
 
 type SettingProps = {
   title: string;
@@ -59,7 +59,7 @@ function Setting(props: SettingProps) {
 }
 
 export function Settings(): ReactElement {
-  const { showMessage } = useContext(LoggerContext);
+  const dispatch = useDispatch();
   const { t } = useTranslation();
 
   const [maxMemory, setMaxMemory] = useState<number>(0);
@@ -76,11 +76,13 @@ export function Settings(): ReactElement {
         return result;
       })
       .catch((error) =>
-        showMessage({
-          message: t('FAILED_TO_GET_SETTINGS'),
-          nativeError: error,
-          type: LauncherLogs.error,
-        })
+        dispatch(
+          addNotification({
+            message: t('FAILED_TO_GET_SETTINGS'),
+            nativeError: error,
+            type: LauncherLogs.error,
+          })
+        )
       );
   }, []);
 
@@ -95,11 +97,13 @@ export function Settings(): ReactElement {
         return setMaxMemory(memoryInGB);
       })
       .catch((error) =>
-        showMessage({
-          message: t('FAILED_TO_GET_SYSTEM_MEMORY'),
-          nativeError: error,
-          type: LauncherLogs.error,
-        })
+        dispatch(
+          addNotification({
+            message: t('FAILED_TO_GET_SYSTEM_MEMORY'),
+            nativeError: error,
+            type: LauncherLogs.error,
+          })
+        )
       );
   }, []);
 
@@ -123,10 +127,12 @@ export function Settings(): ReactElement {
         name: 'debug',
         title: t('DEBUG_MODE'),
         description: t('DEBUG_MODE_DESCRIPTION'),
-        initialValue: false,
-        disabled: true,
+        initialValue: newSettings[SettingsList.isDebug],
         onCheckbox: () => {
-          // console.log(t('DEBUG_MODE'));
+          setNewSettings((prevState) => ({
+            ...prevState,
+            [SettingsList.isDebug]: !prevState[SettingsList.isDebug],
+          }));
         },
       },
       {

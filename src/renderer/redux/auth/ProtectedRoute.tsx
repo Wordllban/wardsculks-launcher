@@ -1,7 +1,8 @@
 /* eslint-disable react/jsx-no-useless-fragment */
-import { ReactElement, ReactNode, useContext } from 'react';
+import { ReactElement, ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
-import { UserContext } from './UserContext';
+import { useSelector } from 'react-redux';
+import { AppState } from '../store';
 
 type Props = {
   redirectPath?: string;
@@ -11,9 +12,9 @@ type Props = {
 function ProtectedRoute(props: Props): ReactElement {
   const { redirectPath = '/login', children } = props;
 
-  const { userData } = useContext(UserContext);
+  const access = useSelector((state: AppState) => state.auth.access);
 
-  if (!userData.access) {
+  if (!access) {
     return <Navigate to={redirectPath} replace />;
   }
 

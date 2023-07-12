@@ -1,6 +1,5 @@
 import {
   useState,
-  useContext,
   ReactElement,
   ChangeEvent,
   FormEvent,
@@ -8,7 +7,7 @@ import {
 } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { useNavigate, Link } from 'react-router-dom';
-import { auth } from '../../../services';
+import { useDispatch } from 'react-redux';
 import {
   Layout,
   Frame,
@@ -17,13 +16,13 @@ import {
   Button,
   PasswordInput,
 } from '../../common';
-import { UserContext } from '../../../context/auth/UserContext';
-import { LoggerContext } from '../../../context/logger/LoggerContext';
 import { LauncherLogs } from '../../../../types';
+import { register } from '../../../redux/auth/auth.slice';
+import { ICreateUserResponse } from '../../../services/api';
+import { addNotification, AppDispatch } from '../../../redux';
 
 export function Registration(): ReactElement {
-  const { setUserData } = useContext(UserContext);
-  const { showMessage } = useContext(LoggerContext);
+  const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -39,24 +38,23 @@ export function Registration(): ReactElement {
   ): Promise<void> => {
     event.preventDefault();
 
-    const { user, access, refresh } = await auth.registration(
-      username,
-      password,
-      email
-    );
+    const response = (await dispatch(register({ username, password, email })))
+      .payload;
+    const { user, access, refresh } = response as ICreateUserResponse;
 
     if (user && access && refresh) {
-      setUserData({ access, username: user.username });
-
       window.electron.ipcRenderer.sendMessage('save-access-token', [access]);
       window.electron.ipcRenderer.sendMessage('save-refresh-token', [refresh]);
 
       navigate('/main-menu');
     } else {
-      showMessage({
-        message: t('FAILED_TO_REGISTER'),
-        type: LauncherLogs.error,
-      });
+      dispatch(
+        addNotification({
+          message: t('FAILED_TO_REGISTER'),
+          type: LauncherLogs.error,
+          nativeError: JSON.stringify(response),
+        })
+      );
     }
   };
 

@@ -21,6 +21,7 @@ module.exports = {
     '@typescript-eslint/no-shadow': 'error',
     'consistent-return': 'off',
     'react-hooks/exhaustive-deps': 'off',
+    'prefer-destructuring': 'off',
   },
   plugins: ['@typescript-eslint'],
   parserOptions: {

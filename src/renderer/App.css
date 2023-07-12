@@ -15,6 +15,10 @@
     text-shadow: 0px 0px 8px theme(colors.main);
   }
 
+  .glow-text:active {
+    text-shadow: none;
+  }
+
   .window-menu {
     -webkit-user-select: none;
     -webkit-app-region: drag;
@@ -22,6 +26,22 @@
 
   .window-menu-button {
     -webkit-app-region: no-drag;
+  }
+
+  /* 96 is width of sprite image */
+  .loading-animation {
+    width: 96px;
+    height: 96px;
+    background: url('../../assets/icons/loading-sprite.png') no-repeat;
+    bakcground-position: 0 0;
+    animation: sculk-shrieker 1s steps(10) infinite;
+  }
+
+  /* -960 is height of sprite image */
+  @keyframes sculk-shrieker {
+    100% {
+      background-position: 0 -960px;
+    }
   }
 }
 
@@ -42,6 +62,7 @@
   body {
     font-family: 'Diary';
     color: white;
+    user-select: none;
   }
 
   label {

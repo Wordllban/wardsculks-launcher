@@ -14,7 +14,8 @@ export function Button(props: Props): ReactElement {
       {...props}
       className={clsx(
         'border-4 border-solid border-main bg-wall bg-no-repeat object-cover shadow-default outline-none transition-all',
-        'focus:glow-text hover:glow-text hover:text-main hover:shadow-[0_0_20px_2px_theme(colors.main)] focus:text-main focus-visible:shadow-[0_0_20px_2px_theme(colors.main)]',
+        'hover:glow-text hover:text-main hover:shadow-[0_0_20px_2px_theme(colors.main)] focus-visible:shadow-[0_0_20px_2px_theme(colors.main)]',
+        'active:border-cyan-650 active:text-cyan-650 active:shadow-none',
         className
       )}
     >

@@ -1,15 +1,16 @@
-import { ReactElement, useState, useContext, useCallback } from 'react';
+import { ReactElement, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import clsx from 'clsx';
+import { useSelector } from 'react-redux';
 import settingsIcon from '../../../../../assets/icons/settings.svg';
 import hideIcon from '../../../../../assets/icons/hide.svg';
 import maximizeIcon from '../../../../../assets/icons/maximize.svg';
 import minimizeIcon from '../../../../../assets/icons/minimize.svg';
 import closeIcon from '../../../../../assets/icons/close.svg';
-import { UserContext } from '../../../context/auth/UserContext';
+import { AppState } from '../../../redux';
 
 export function Menu(): ReactElement {
-  const { userData } = useContext(UserContext);
+  const accessToken = useSelector((state: AppState) => state.auth.access);
 
   const [isMaximized, setIsMaximized] = useState(false);
 
@@ -33,7 +34,7 @@ export function Menu(): ReactElement {
         'window-menu'
       )}
     >
-      {userData.access ? (
+      {accessToken ? (
         <Link
           to="/settings"
           className={clsx(

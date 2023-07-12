@@ -1,43 +1,36 @@
-import {
-  ReactElement,
-  useState,
-  useContext,
-  useEffect,
-  useCallback,
-} from 'react';
+import { ReactElement, useEffect, useCallback } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { useNavigate, Link } from 'react-router-dom';
-import { auth } from '../../../services';
-import { UserContext } from '../../../context/auth/UserContext';
-import { LoggerContext } from '../../../context/logger/LoggerContext';
+import { useDispatch, useSelector } from 'react-redux';
+import { logout } from 'renderer/redux/auth/auth.slice';
 import { Button, Dropdown, Frame, Layout } from '../../common';
 import logo from '../../../../../assets/icons/logo-big.svg';
-import { retrieveServers } from '../../../services/api';
-import { LauncherLogs } from '../../../../types';
 import { IServer } from '../../../types';
 import { launch } from '../../../utils';
+import {
+  AppDispatch,
+  AppState,
+  requestServers,
+  selectServer,
+} from '../../../redux';
 
 export function Main(): ReactElement {
+  const dispatch = useDispatch<AppDispatch>();
+  const { username } = useSelector((state: AppState) => state.auth.user);
+  const { availableServers, selectedServer } = useSelector(
+    (state: AppState) => state.main
+  );
+
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const { userData, clearUserData } = useContext(UserContext);
-  const { showMessage } = useContext(LoggerContext);
-
-  const [availableServers, setAvailableServers] = useState<IServer[]>([]);
-  const [selectedServer, setSelectedServer] = useState<IServer>();
-
-  const handleLogout = useCallback(() => {
-    auth.logout();
-    clearUserData();
-  }, [clearUserData]);
+  const handleLogout = useCallback(() => dispatch(logout()), []);
 
   const handleStartGame = useCallback(async () => {
     const gameFolder = await window.electron.ipcRenderer.invoke(
       'find-game-folder',
       selectedServer?.name
     );
-
     if (gameFolder && selectedServer) {
       // verify immutable folders
       const isVerified = await window.electron.ipcRenderer.invoke(
@@ -53,29 +46,16 @@ export function Main(): ReactElement {
         launch({
           serverName: selectedServer.name,
           serverIp: selectedServer.ip,
-          username: userData.username,
+          username,
         });
       }
     } else {
-      navigate(
-        `/downloading?serverId=${selectedServer?.id}&serverName=${selectedServer?.name}&serverIp=${selectedServer?.ip}`
-      );
+      navigate('/downloading');
     }
-  }, [navigate, selectedServer, userData.username]);
+  }, [navigate, selectedServer, username]);
 
   useEffect(() => {
-    retrieveServers()
-      .then((servers) => {
-        setAvailableServers(servers);
-        return setSelectedServer(servers[0]);
-      })
-      .catch((error) =>
-        showMessage({
-          message: t('FAILED_TO_GET_SERVERS_LIST'),
-          nativeError: error,
-          type: LauncherLogs.error,
-        })
-      );
+    dispatch(requestServers());
   }, []);
 
   return (
@@ -89,7 +69,7 @@ export function Main(): ReactElement {
                 className="text-center"
                 i18nKey="WELCOME"
                 defaults="Welcome, <br /> {{username}}"
-                values={{ username: userData.username }}
+                values={{ username }}
                 components={{ br: <br /> }}
               />
             </h1>
@@ -114,7 +94,7 @@ export function Main(): ReactElement {
         <Frame className="px-4 py-8">
           <h4 className="px-2 py-1">{t('CURRENT_SELECTED_SERVER')}</h4>
           <Dropdown<IServer>
-            onSelect={(server: IServer) => setSelectedServer(server)}
+            onSelect={(server: IServer) => dispatch(selectServer(server))}
             items={availableServers}
             defaultValue={availableServers[0]}
           />

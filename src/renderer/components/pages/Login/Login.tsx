@@ -2,13 +2,12 @@ import {
   ReactElement,
   useState,
   useEffect,
-  useContext,
   FormEvent,
   ChangeEvent,
 } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, Link } from 'react-router-dom';
-import { auth } from '../../../services';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   Button,
   Checkbox,
@@ -18,13 +17,21 @@ import {
   PasswordInput,
 } from '../../common';
 import logo from '../../../../../assets/icons/logo-big.svg';
-import { UserContext } from '../../../context/auth/UserContext';
-import { LoggerContext } from '../../../context/logger/LoggerContext';
 import { LauncherLogs } from '../../../../types';
+import {
+  logout,
+  requestTokens,
+  requestUser,
+  updateAccessToken,
+} from '../../../redux/auth/auth.slice';
+import {
+  IRefreshAccessResponse,
+  IRetrieveTokensResponse,
+} from '../../../services/api';
+import { addNotification, AppDispatch, AppState } from '../../../redux';
 
 export function Login(): ReactElement {
-  const { setUserData } = useContext(UserContext);
-  const { showMessage } = useContext(LoggerContext);
+  const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -42,10 +49,13 @@ export function Login(): ReactElement {
   ): Promise<void> => {
     event.preventDefault();
 
-    const { access, refresh } = await auth.requestTokens(username, password);
+    const response = (await dispatch(requestTokens({ username, password })))
+      .payload;
+
+    const { access, refresh } = response as IRetrieveTokensResponse;
 
     if (access && refresh) {
-      setUserData({ access, username });
+      // setUserData({ access, username });
       window.electron.ipcRenderer.sendMessage('save-access-token', [access]);
       if (isSavePassword) {
         window.electron.ipcRenderer.sendMessage('save-refresh-token', [
@@ -54,41 +64,54 @@ export function Login(): ReactElement {
       }
       navigate('/main-menu');
     } else {
-      showMessage({
-        message: t('FAILED_TO_LOGIN'),
-        type: LauncherLogs.error,
-      });
+      dispatch(
+        addNotification({
+          message: t('FAILED_TO_LOGIN'),
+          type: LauncherLogs.error,
+        })
+      );
     }
   };
 
+  let refreshToken: string = useSelector(
+    (state: AppState) => state.auth.refresh
+  );
   useEffect(() => {
     const login = async (): Promise<void> => {
       try {
-        // get saved refresh token
-        const refreshToken = await auth.getRefreshToken();
-        if (refreshToken) {
-          // get new tokens
-          const { access } = await auth.updateAccessToken(refreshToken);
-          if (access) {
-            // get user from token
-            const user = await auth.getUser(access);
-            if (user) {
-              // save new data
-              window.electron.ipcRenderer.sendMessage('save-access-token', [
-                access,
-              ]);
-              setUserData({ access, username: user.username });
-              navigate('/main-menu');
-            }
+        if (!refreshToken) {
+          refreshToken = await window.electron.ipcRenderer.invoke(
+            'get-refresh-token'
+          );
+        }
+
+        if (!refreshToken) return;
+
+        // get new tokens
+        const response = (await dispatch(updateAccessToken(refreshToken)))
+          .payload;
+
+        const { access } = response as IRefreshAccessResponse;
+        if (access) {
+          // get user from token
+          const user = (await dispatch(requestUser(access))).payload;
+          if (user) {
+            // save new data
+            window.electron.ipcRenderer.sendMessage('save-access-token', [
+              access,
+            ]);
+            navigate('/main-menu');
           }
         }
       } catch (error) {
-        showMessage({
-          type: LauncherLogs.error,
-          message: t('SESSION_EXPIRED_PLEASE_RELOGIN'),
-          nativeError: error,
-        });
-        auth.logout();
+        dispatch(
+          addNotification({
+            type: LauncherLogs.error,
+            message: t('SESSION_EXPIRED_PLEASE_RELOGIN'),
+            nativeError: error,
+          })
+        );
+        dispatch(logout());
         navigate('/login');
       }
     };

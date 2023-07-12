@@ -1,20 +1,52 @@
-import { useState, ReactElement } from 'react';
+import { useState, useEffect, ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useDispatch, useSelector } from 'react-redux';
 import { ILauncherLog, LauncherLogs } from '../../../types';
 import closeIcon from '../../../../assets/icons/close.svg';
+import { AppState } from '../store';
+import { addNotification, removeNotification } from './notifications.slice';
+
+const DEFAULT_MESSAGE_LIFE_TIME: number = 10000;
+
+/**
+ * Hook for handling notification life cycle.
+ */
+const useNotificationLifeCycle = (destroyHandler: () => void) => {
+  const [isHovered, setIsHovered] = useState(false);
+
+  // self-destroy
+  useEffect(() => {
+    // do not destroy message when it's hovered
+    if (isHovered) return;
+
+    const timer = setTimeout(destroyHandler, DEFAULT_MESSAGE_LIFE_TIME);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [isHovered]);
+
+  return setIsHovered;
+};
 
 type MessageProps = {
-  id: string;
-  message: string;
-  removeMessage: (id: string) => void;
+  message?: string;
+  removeMessage: () => void;
 };
 
 function Error(props: MessageProps & { nativeError?: unknown }): ReactElement {
   const { t } = useTranslation();
-  const { id, message, nativeError, removeMessage } = props;
+  const { message, nativeError, removeMessage } = props;
   const [showNativeError, setShowNativeError] = useState<boolean>(false);
+
+  const onMouse = useNotificationLifeCycle(removeMessage);
+
   return (
-    <div className="relative">
+    <div
+      className="relative"
+      onMouseEnter={() => onMouse(true)}
+      onMouseLeave={() => onMouse(false)}
+    >
       <div
         className="z-10 min-w-[210px] max-w-[360px] animate-opacity
      overflow-x-hidden border-2 border-solid border-red-700 bg-wall p-2 transition-opacity duration-1000"
@@ -35,7 +67,7 @@ function Error(props: MessageProps & { nativeError?: unknown }): ReactElement {
         ) : null}
       </div>
       <button
-        onClick={() => removeMessage(id)}
+        onClick={removeMessage}
         className="absolute right-3 top-[-0.5rem] z-50"
         type="button"
       >
@@ -46,9 +78,16 @@ function Error(props: MessageProps & { nativeError?: unknown }): ReactElement {
 }
 
 function Log(props: MessageProps): ReactElement {
-  const { id, message, removeMessage } = props;
+  const { message, removeMessage } = props;
+
+  const onMouse = useNotificationLifeCycle(removeMessage);
+
   return (
-    <div className="relative">
+    <div
+      className="relative"
+      onMouseEnter={() => onMouse(true)}
+      onMouseLeave={() => onMouse(false)}
+    >
       <div
         className="z-10 min-w-[210px] max-w-[360px] animate-opacity
      overflow-x-hidden border-2 border-solid border-main bg-wall p-2 transition-opacity duration-1000"
@@ -56,7 +95,7 @@ function Log(props: MessageProps): ReactElement {
         {message}
       </div>
       <button
-        onClick={() => removeMessage(id)}
+        onClick={removeMessage}
         className="absolute right-3 top-[-0.5rem] z-50"
         type="button"
       >
@@ -67,9 +106,16 @@ function Log(props: MessageProps): ReactElement {
 }
 
 function Warning(props: MessageProps): ReactElement {
-  const { id, message, removeMessage } = props;
+  const { message, removeMessage } = props;
+
+  const onMouse = useNotificationLifeCycle(removeMessage);
+
   return (
-    <div className="relative">
+    <div
+      className="relative"
+      onMouseEnter={() => onMouse(true)}
+      onMouseLeave={() => onMouse(false)}
+    >
       <div
         className="z-10 min-w-[210px] max-w-[360px] animate-opacity
      overflow-x-hidden border-2 border-solid border-orange-500 bg-wall p-2 transition-opacity duration-1000"
@@ -77,7 +123,7 @@ function Warning(props: MessageProps): ReactElement {
         {message}
       </div>
       <button
-        onClick={() => removeMessage(id)}
+        onClick={removeMessage}
         className="absolute right-3 top-[-0.5rem] z-50"
         type="button"
       >
@@ -87,30 +133,34 @@ function Warning(props: MessageProps): ReactElement {
   );
 }
 
-type MessagesListProps = {
-  messages: ILauncherLog[];
-  setMessages: (message: ILauncherLog[]) => void;
-};
-function MessagesList(props: MessagesListProps): ReactElement {
-  const { messages, setMessages } = props;
+function MessagesList(): ReactElement {
+  const { t } = useTranslation();
+  const dispatch = useDispatch();
+  const messages = useSelector(
+    (state: AppState) => state.notifications.messages
+  );
 
-  const removeMessage = (id: string) => {
-    const newMessages = messages.filter((message) => message.id !== id);
-    setMessages(newMessages);
-  };
+  window.electron.ipcRenderer.on('logger', (message: ILauncherLog) => {
+    dispatch(addNotification(message));
+  });
 
   return (
     <div className="absolute bottom-2 right-2 max-h-[85vh] overflow-y-auto pt-4">
       <div className="flex w-[380px] flex-col gap-4 transition-all">
         {messages.length > 0
-          ? messages.map(({ id, message, nativeError, type }) => {
+          ? messages.map(({ id, message, key, nativeError, type }) => {
+              const removeMessage = () => {
+                dispatch(removeNotification(id));
+              };
+
+              const messageText = key ? t(key) : message;
+
               switch (type) {
                 case LauncherLogs.error:
                   return (
                     <Error
                       key={`${id}-error`}
-                      id={id}
-                      message={message}
+                      message={messageText}
                       nativeError={nativeError}
                       removeMessage={removeMessage}
                     />
@@ -119,8 +169,7 @@ function MessagesList(props: MessagesListProps): ReactElement {
                   return (
                     <Warning
                       key={`${id}-warning`}
-                      id={id}
-                      message={message}
+                      message={messageText}
                       removeMessage={removeMessage}
                     />
                   );
@@ -128,8 +177,7 @@ function MessagesList(props: MessagesListProps): ReactElement {
                   return (
                     <Log
                       key={`${id}-log`}
-                      id={id}
-                      message={message}
+                      message={messageText}
                       removeMessage={removeMessage}
                     />
                   );

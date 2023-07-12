@@ -9,9 +9,14 @@ export type LauncherLogsTypes =
   | LauncherLogs.log
   | LauncherLogs.warning;
 
+/**
+ * You should pass `message` or `key` at one time.
+ */
 export interface ILauncherLog {
-  id: string;
-  message: string;
+  id: number;
+  message?: string;
+  // translation key
+  key?: string;
   type: LauncherLogsTypes;
-  nativeError?: unknown;
+  nativeError?: any;
 }

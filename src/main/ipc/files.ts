@@ -53,6 +53,7 @@ ipcMain.on('game-install', async (_, serverInfo: string[]) => {
   const main = getMainWindow();
   const [serverId, serverName] = serverInfo;
   const serverFolderPath = getAppDataPath(`${GAME_FOLDER_NAME}/${serverName}`);
+
   // create game folder
   mkdirSync(serverFolderPath, { recursive: true });
 
@@ -128,14 +129,16 @@ ipcMain.on('game-install', async (_, serverInfo: string[]) => {
       })
       .catch((error) => {
         return main?.webContents.send('logger', {
+          type: LauncherLogs.error,
           message: 'Error during installation',
-          nativeError: error,
+          nativeError: (error as Error).message,
         });
       });
   } catch (error) {
     main?.webContents.send('logger', {
+      type: LauncherLogs.error,
       message: 'Error during installation',
-      nativeError: error,
+      nativeError: (error as Error).message,
     });
   }
 });
@@ -152,7 +155,7 @@ ipcMain.handle('find-game-folder', async (_, serverName: string) => {
   } catch (error) {
     main?.webContents.send('logger', {
       message: 'Game folder not found, starting installation',
-      nativeError: error,
+      nativeError: (error as Error).message,
       type: LauncherLogs.warning,
     });
   }
@@ -181,7 +184,7 @@ ipcMain.handle(
       serverName,
       memoryInGigabytes,
       serverIp,
-      isDebug
+      isDebug,
     });
   }
 );
@@ -230,7 +233,7 @@ ipcMain.handle(
       main?.webContents.send('logger', {
         message: 'Error during file verification',
         type: LauncherLogs.error,
-        nativeError: error,
+        nativeError: (error as Error).message,
       });
     }
   }
@@ -311,7 +314,6 @@ ipcMain.on(
       } else {
         main?.webContents.send('logger', {
           message: 'Launching game, be patient.',
-          nativeError: error,
           type: LauncherLogs.log,
         });
       }

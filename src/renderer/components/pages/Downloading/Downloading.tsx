@@ -1,24 +1,20 @@
-import {
-  ReactElement,
-  useState,
-  useEffect,
-  useContext,
-  useMemo,
-  useRef,
-} from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { ReactElement, useState, useEffect, useRef } from 'react';
 import { Trans } from 'react-i18next';
+import { useSelector } from 'react-redux';
 import { ArrowBack, Layout } from '../../common';
 import { ProgressBar } from './ProgressBar';
 import { launch } from '../../../utils';
-import { UserContext } from '../../../context/auth/UserContext';
+import { AppState } from '../../../redux';
+import { IServer } from '../../../types';
 
 const FINISHED_PROGRESS = 100;
 
 export function Downloading(): ReactElement {
-  const { userData } = useContext(UserContext);
+  const { username } = useSelector((state: AppState) => state.auth.user);
+  const { ip, name, id } = useSelector(
+    (state: AppState) => state.main.selectedServer
+  ) as IServer;
   const logRef = useRef<HTMLDivElement>(null);
-  const [params] = useSearchParams();
 
   const [downloadingStatus, setDownloadingStatus] = useState({
     progress: 0,
@@ -29,17 +25,13 @@ export function Downloading(): ReactElement {
     },
   });
 
-  const serverId = useMemo(() => params.get('serverId'), [params]);
-  const serverName = useMemo(() => params.get('serverName'), [params]);
-  const serverIp = useMemo(() => params.get('serverIp'), [params]);
-
   window.electron.ipcRenderer.on('downloaded-size', (value) => {
     if (value.progress > downloadingStatus.progress) {
       setDownloadingStatus(value);
     }
 
-    if (value.progress === FINISHED_PROGRESS && serverName && serverIp) {
-      launch({ serverName, serverIp, username: userData.username });
+    if (value.progress === FINISHED_PROGRESS && name && ip) {
+      launch({ serverName: name, serverIp: ip, username });
     }
   });
 
@@ -68,11 +60,8 @@ export function Downloading(): ReactElement {
   }, []);
 
   useEffect(() => {
-    window.electron.ipcRenderer.sendMessage('game-install', [
-      serverId,
-      serverName,
-    ]);
-  }, [serverId, serverName]);
+    window.electron.ipcRenderer.sendMessage('game-install', [id, name]);
+  }, [id, name]);
 
   return (
     <Layout mainBackground="bg-update-bg">

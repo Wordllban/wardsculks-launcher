@@ -24,7 +24,7 @@ export interface IUser {
 }
 
 export interface ICreateUserResponse extends IRetrieveTokensResponse {
-  user: IUser | null;
+  user: IUser;
 }
 
 export const createUser = (data: {
@@ -48,12 +48,12 @@ export const getUserFromToken = (accessToken: string) => {
   });
 };
 
-export interface IRefreshTokensResponse {
+export interface IRefreshAccessResponse {
   access: string;
 }
 
 export const refreshAccessToken = (refreshToken: string) => {
-  return client.post<IRefreshTokensResponse, any /* { refresh: string } */>(
+  return client.post<IRefreshAccessResponse, { refresh: string }>(
     'users/auth/token/refresh',
     {
       refresh: refreshToken,
