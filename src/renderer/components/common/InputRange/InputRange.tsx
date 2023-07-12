@@ -45,7 +45,7 @@ export function InputRange(props: Props): ReactElement {
                   ? 'text-right'
                   : options[2].toString().split('').length >= 2 && index === 1
                   ? 'text-center'
-                  : 'text-start'
+                  : 'text-center'
               )}
             >
               {option}

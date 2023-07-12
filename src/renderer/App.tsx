@@ -17,7 +17,7 @@ import { saveMultipleSettingsOptions } from './components/pages/Settings/utils';
 
 const DEFAULT_INITIAL_SETTINGS: ISettings = {
   isInitial: false,
-  '-Xmx': 2,
+  memoryUsage: 2,
   fullscreen: false,
   autoJoin: false,
 };

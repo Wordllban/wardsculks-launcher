@@ -8,4 +8,6 @@ export const errors: Record<string, string> = {
   FAILED_TO_CREATE_INITIAL_SETTINGS:
     'Не вдалось створити стандартні налаштування',
   FAILED_TO_GET_SERVERS_LIST: 'Не вдалось отримати список доступних серверів',
+  SESSION_EXPIRED_PLEASE_RELOGIN:
+    'Час сеансу вичерпаний. Будь ласка, увійдіть ще раз',
 };

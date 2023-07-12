@@ -14,7 +14,8 @@ import { Button, Dropdown, Frame, Layout } from '../../common';
 import logo from '../../../../../assets/icons/logo-big.svg';
 import { retrieveServers } from '../../../services/api';
 import { LauncherLogs } from '../../../../types';
-import { SettingsList, IServer } from '../../../types';
+import { IServer } from '../../../types';
+import { launch } from '../../../utils';
 
 export function Main(): ReactElement {
   const navigate = useNavigate();
@@ -37,7 +38,7 @@ export function Main(): ReactElement {
       selectedServer?.name
     );
 
-    if (gameFolder) {
+    if (gameFolder && selectedServer) {
       // verify immutable folders
       const isVerified = await window.electron.ipcRenderer.invoke(
         'verify-folders',
@@ -49,36 +50,15 @@ export function Main(): ReactElement {
       );
 
       if (isVerified) {
-        // get maximum memory usage from settings
-        const gameMemoryUsage = await window.electron.ipcRenderer.invoke(
-          'get-setting',
-          SettingsList.maxMemoryUsage
-        );
-
-        const commandString = await window.electron.ipcRenderer.invoke(
-          'create-launch-command',
-          {
-            username: userData.username,
-            serverName: selectedServer?.name || '',
-            memoryInGigabytes: gameMemoryUsage,
-          }
-        );
-
-        await window.electron.ipcRenderer.sendMessage('create-file', {
-          serverName: selectedServer?.name,
-          format: 'bat',
-          name: 'launch',
-          content: commandString,
-        });
-
-        window.electron.ipcRenderer.sendMessage('execute-file', {
-          path: 'launch.bat',
-          serverName: selectedServer?.name,
+        launch({
+          serverName: selectedServer.name,
+          serverIp: selectedServer.ip,
+          username: userData.username,
         });
       }
     } else {
       navigate(
-        `/downloading?serverId=${selectedServer?.id}&serverName=${selectedServer?.name}`
+        `/downloading?serverId=${selectedServer?.id}&serverName=${selectedServer?.name}&serverIp=${selectedServer?.ip}`
       );
     }
   }, [navigate, selectedServer, userData.username]);
@@ -120,7 +100,11 @@ export function Main(): ReactElement {
           </div>
         </Frame>
         <div className="flex h-full flex-col items-center justify-end">
-          <Button className="w-[314px] py-4 text-22" onClick={handleStartGame}>
+          <Button
+            className="w-[314px] py-4 text-22"
+            onClick={handleStartGame}
+            disabled={!selectedServer}
+          >
             {t('START_GAME')}
           </Button>
           <p className="mt-5 text-center">

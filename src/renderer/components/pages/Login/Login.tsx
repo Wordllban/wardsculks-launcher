@@ -1,9 +1,10 @@
 import {
   ReactElement,
   useState,
+  useEffect,
+  useContext,
   FormEvent,
   ChangeEvent,
-  useContext,
 } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, Link } from 'react-router-dom';
@@ -59,6 +60,41 @@ export function Login(): ReactElement {
       });
     }
   };
+
+  useEffect(() => {
+    const login = async (): Promise<void> => {
+      try {
+        // get saved refresh token
+        const refreshToken = await auth.getRefreshToken();
+        if (refreshToken) {
+          // get new tokens
+          const { access } = await auth.updateAccessToken(refreshToken);
+          if (access) {
+            // get user from token
+            const user = await auth.getUser(access);
+            if (user) {
+              // save new data
+              window.electron.ipcRenderer.sendMessage('save-access-token', [
+                access,
+              ]);
+              setUserData({ access, username: user.username });
+              navigate('/main-menu');
+            }
+          }
+        }
+      } catch (error) {
+        showMessage({
+          type: LauncherLogs.error,
+          message: t('SESSION_EXPIRED_PLEASE_RELOGIN'),
+          nativeError: error,
+        });
+        auth.logout();
+        navigate('/login');
+      }
+    };
+
+    login();
+  }, []);
 
   return (
     <Layout mainBackground="bg-login-bg">

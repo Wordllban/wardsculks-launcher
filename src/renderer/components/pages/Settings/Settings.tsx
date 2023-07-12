@@ -184,7 +184,7 @@ export function Settings(): ReactElement {
   return (
     <Layout mainBackground="bg-settings-bg">
       <ArrowBack
-        position="absolute left-[1rem]"
+        position="absolute left-0 top-0"
         hasConfirmation={hasSettingsChanged}
         confirmationWindowTitle={t('UNSAVED_SETTINGS_CONFIRMATION_TITLE')}
         confirmationWindowDescription={t(

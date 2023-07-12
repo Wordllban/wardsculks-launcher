@@ -10,6 +10,7 @@ type Props = {
   hasConfirmation?: boolean;
   confirmationWindowTitle?: string;
   confirmationWindowDescription?: string;
+  disabled?: boolean;
 };
 
 /**
@@ -21,6 +22,7 @@ export function ArrowBack(props: Props): ReactElement {
     hasConfirmation,
     confirmationWindowTitle,
     confirmationWindowDescription,
+    disabled = false,
   } = props;
   const [showConfirmation, setShowConfirmation] = useState<boolean>(false);
 
@@ -37,17 +39,18 @@ export function ArrowBack(props: Props): ReactElement {
 
   return (
     <>
-      <span
+      <button
         onClick={handleGoBack}
-        className={clsx('cursor-pointer', position)}
-        role="button"
+        className={clsx('window-menu-button cursor-pointer p-4', position)}
         tabIndex={0}
         onKeyDown={(event: KeyboardEvent) => {
           if (event.key === 'Enter') handleGoBack();
         }}
+        type="button"
+        disabled={disabled}
       >
         <img src={arrowIcon} alt="arrow back" />
-      </span>
+      </button>
       {showConfirmation && (
         <ConfirmationWindow
           handleConfirmation={handleGoBack}

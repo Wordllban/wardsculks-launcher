@@ -7,9 +7,10 @@ import {
   ReactElement,
   useCallback,
 } from 'react';
+import { v4 as uuid } from 'uuid';
 import MessagesList from './MessagesList';
 import { ILauncherLog } from '../../../types';
-import { v4 as uuid } from 'uuid';
+
 interface ILauncherLogsContext {
   showMessage: (message: Omit<ILauncherLog, 'id'>) => void;
 }

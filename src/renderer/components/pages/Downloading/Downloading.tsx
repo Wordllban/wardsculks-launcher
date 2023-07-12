@@ -1,13 +1,24 @@
-import { ReactElement, useState, useEffect, useMemo, useRef } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import {
+  ReactElement,
+  useState,
+  useEffect,
+  useContext,
+  useMemo,
+  useRef,
+} from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Trans } from 'react-i18next';
-import { Layout } from '../../common';
+import { ArrowBack, Layout } from '../../common';
 import { ProgressBar } from './ProgressBar';
+import { launch } from '../../../utils';
+import { UserContext } from '../../../context/auth/UserContext';
 
 const FINISHED_PROGRESS = 100;
 
 export function Downloading(): ReactElement {
-  const navigate = useNavigate();
+  const { userData } = useContext(UserContext);
+  const logRef = useRef<HTMLDivElement>(null);
+  const [params] = useSearchParams();
 
   const [downloadingStatus, setDownloadingStatus] = useState({
     progress: 0,
@@ -18,21 +29,19 @@ export function Downloading(): ReactElement {
     },
   });
 
+  const serverId = useMemo(() => params.get('serverId'), [params]);
+  const serverName = useMemo(() => params.get('serverName'), [params]);
+  const serverIp = useMemo(() => params.get('serverIp'), [params]);
+
   window.electron.ipcRenderer.on('downloaded-size', (value) => {
     if (value.progress > downloadingStatus.progress) {
       setDownloadingStatus(value);
     }
 
-    if (value.progress === FINISHED_PROGRESS) {
-      navigate('/main-menu');
+    if (value.progress === FINISHED_PROGRESS && serverName && serverIp) {
+      launch({ serverName, serverIp, username: userData.username });
     }
   });
-
-  const logRef = useRef<HTMLDivElement>(null);
-  const [params] = useSearchParams();
-
-  const serverId = useMemo(() => params.get('serverId'), [params]);
-  const serverName = useMemo(() => params.get('serverName'), [params]);
 
   useEffect(() => {
     window.electron.ipcRenderer.on(
@@ -67,6 +76,10 @@ export function Downloading(): ReactElement {
 
   return (
     <Layout mainBackground="bg-update-bg">
+      <ArrowBack
+        position="absolute left-0 top-0"
+        disabled={downloadingStatus.progress !== FINISHED_PROGRESS}
+      />
       <div className="flex h-full flex-col items-center justify-end gap-6">
         <div className="flex w-full flex-row gap-6">
           <span className="glow-text flex h-48 w-[15%] grow-0 items-center justify-center bg-black/60 p-12 px-4 text-lg text-main">

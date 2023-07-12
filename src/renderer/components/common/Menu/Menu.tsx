@@ -1,5 +1,6 @@
 import { ReactElement, useState, useContext, useCallback } from 'react';
 import { Link } from 'react-router-dom';
+import clsx from 'clsx';
 import settingsIcon from '../../../../../assets/icons/settings.svg';
 import hideIcon from '../../../../../assets/icons/hide.svg';
 import maximizeIcon from '../../../../../assets/icons/maximize.svg';
@@ -26,24 +27,38 @@ export function Menu(): ReactElement {
   }, []);
 
   return (
-    <nav className="fixed flex w-full items-center justify-end">
+    <nav
+      className={clsx(
+        'fixed flex w-full items-center justify-end',
+        'window-menu'
+      )}
+    >
       {userData.access ? (
         <Link
           to="/settings"
-          className="flex h-10 w-12 cursor-pointer items-center justify-center hover:bg-main/30"
+          className={clsx(
+            'flex h-10 w-12 cursor-pointer items-center justify-center hover:bg-main/30',
+            'window-menu-button'
+          )}
         >
           <img src={settingsIcon} alt="settings" />
         </Link>
       ) : null}
       <button
-        className="flex h-10 w-12 cursor-pointer items-center justify-center hover:bg-main/30"
+        className={clsx(
+          'flex h-10 w-12 cursor-pointer items-center justify-center hover:bg-main/30',
+          'window-menu-button'
+        )}
         onClick={handleHide}
         type="button"
       >
         <img src={hideIcon} alt="minimize" />
       </button>
       <button
-        className="flex h-10 w-12 items-center justify-center hover:bg-main/30"
+        className={clsx(
+          'flex h-10 w-12 cursor-pointer items-center justify-center hover:bg-main/30',
+          'window-menu-button'
+        )}
         onClick={handleMinMax}
         type="button"
       >
@@ -53,7 +68,10 @@ export function Menu(): ReactElement {
         />
       </button>
       <button
-        className="flex h-10 w-12 items-center justify-center hover:bg-red-600/80"
+        className={clsx(
+          'flex h-10 w-12 cursor-pointer items-center justify-center hover:bg-red-600/80',
+          'window-menu-button'
+        )}
         onClick={handleClose}
         type="button"
       >

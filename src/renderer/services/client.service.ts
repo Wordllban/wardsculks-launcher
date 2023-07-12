@@ -29,6 +29,14 @@ class ClientService {
     });
   }
 
+  async updateInterceptor(accessToken: string) {
+    this.client.interceptors.request.use(async (config) => {
+      config.headers.Authorization = `Bearer ${accessToken}`;
+
+      return config;
+    });
+  }
+
   async get<Response>(
     url: string,
     config?: AxiosRequestConfig

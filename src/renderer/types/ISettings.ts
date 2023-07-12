@@ -2,7 +2,7 @@
  * `isInitial` - boolean, if initial key doesn't exists in config,
  *  it's first time user opens app
  *
- * `-Xmx` - number, maximum memory that can be used by Minecraft
+ * `maxMemoryUsage` - number, maximum memory that can be used by Minecraft
  *
  * `-Dorg.lwjgl.opengl.Window.undecorated` - boolean, open in fullscreen
  *
@@ -12,7 +12,7 @@
 
 export enum SettingsList {
   isInitial = 'isInitial',
-  maxMemoryUsage = '-Xmx',
+  maxMemoryUsage = 'memoryUsage',
   isFullScreen = 'fullscreen',
   isAutoJoin = 'autoJoin',
 }

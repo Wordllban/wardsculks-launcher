@@ -7,4 +7,5 @@ export const errors: Record<string, string> = {
   FAILED_TO_GET_SYSTEM_MEMORY: 'Failed to get system memory size',
   FAILED_TO_CREATE_INITIAL_SETTINGS: 'Failed to create initial settings',
   FAILED_TO_GET_SERVERS_LIST: 'Failed to retrieve list of accessible servers',
+  SESSION_EXPIRED_PLEASE_RELOGIN: 'Session expired. Please, login again',
 };

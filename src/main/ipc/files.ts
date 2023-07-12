@@ -196,32 +196,40 @@ ipcMain.handle(
     const axios = getAxios();
     const main = getMainWindow();
     const serverFolder = getServerFolder(serverName);
-    // request release
-    const { data: release } = await axios.get<IRelease>(
-      `${process.env.API_URL}/files/servers/${serverId}/releases/latest`,
-      {
-        responseType: 'json',
-      }
-    );
+    try {
+      // request release
+      const { data: release } = await axios.get<IRelease>(
+        `${process.env.API_URL}/files/servers/${serverId}/releases/latest`,
+        {
+          responseType: 'json',
+        }
+      );
 
-    const { files } = release;
+      const { files } = release;
 
-    const foldersPaths = foldersNames.map((folderName: string) => {
-      return join(serverFolder, folderName);
-    });
+      const foldersPaths = foldersNames.map((folderName: string) => {
+        return join(serverFolder, folderName);
+      });
 
-    foldersPaths.forEach((folderPath: string) => {
-      verifyFolder(folderPath, files, serverFolder);
-    });
+      foldersPaths.forEach((folderPath: string) => {
+        verifyFolder(folderPath, files, serverFolder);
+      });
 
-    await sleep(3000);
+      await sleep(3000);
 
-    main?.webContents.send('logger', {
-      message: 'Folders passed the verification',
-      type: LauncherLogs.log,
-    });
+      main?.webContents.send('logger', {
+        message: 'Folders passed the verification',
+        type: LauncherLogs.log,
+      });
 
-    return true;
+      return true;
+    } catch (error) {
+      main?.webContents.send('logger', {
+        message: 'Error during file verification',
+        type: LauncherLogs.error,
+        nativeError: error,
+      });
+    }
   }
 );
 
@@ -299,7 +307,7 @@ ipcMain.on(
         });
       } else {
         main?.webContents.send('logger', {
-          message: 'Launch file created successfully.',
+          message: 'Launching game, be patient.',
           nativeError: error,
           type: LauncherLogs.log,
         });

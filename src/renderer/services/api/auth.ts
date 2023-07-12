@@ -37,3 +37,26 @@ export const createUser = (data: {
     ...data,
   });
 };
+
+export interface IGetUserFromTokenResponse extends IUser {}
+
+export const getUserFromToken = (accessToken: string) => {
+  return client.get<IGetUserFromTokenResponse>('users/user/current-user-info', {
+    headers: {
+      Authorization: accessToken,
+    },
+  });
+};
+
+export interface IRefreshTokensResponse {
+  access: string;
+}
+
+export const refreshAccessToken = (refreshToken: string) => {
+  return client.post<IRefreshTokensResponse, any /* { refresh: string } */>(
+    'users/auth/token/refresh',
+    {
+      refresh: refreshToken,
+    }
+  );
+};

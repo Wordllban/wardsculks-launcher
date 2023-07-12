@@ -89,6 +89,7 @@ export async function downloadFile(
  * @returns {string} hash
  */
 export const sha256 = async (filePath: string): Promise<string> => {
+  const main = getMainWindow();
   return new Promise((resolve, reject) => {
     const read = createReadStream(filePath);
     const hash = createHash('sha256');
@@ -102,9 +103,13 @@ export const sha256 = async (filePath: string): Promise<string> => {
       resolve(hashed);
     });
 
-    read.on('error', (err) => {
-      console.error('Error reading file:', err);
-      reject(err);
+    read.on('error', (error) => {
+      main?.webContents.send('logger', {
+        message: 'Failed to read file',
+        nativeError: error,
+        type: LauncherLogs.error,
+      });
+      reject(error);
     });
   });
 };

@@ -1,14 +1,15 @@
 {
-  "description": "WardSculks Minecraft Launcher",
+  "name": "wardsculks-launcher",
+  "version": "0.0.1",
+  "description": "Launcher for WardSculks project. Ukrainian Minecraft servers.",
   "keywords": [
     "electron",
     "react",
     "typescript",
-    "ts",
-    "tailwindcss",
+    "tailwindCSS",
     "webpack",
-    "hot",
-    "reload"
+    "minecraft",
+    "launcher"
   ],
   "homepage": "https://github.com/Ward-Sculks/electron-launcher",
   "bugs": {
@@ -155,7 +156,7 @@
     "prettier-plugin-tailwindcss": "^0.2.3",
     "react-refresh": "^0.14.0",
     "react-test-renderer": "^18.2.0",
-    "rimraf": "^4.1.2",
+    "rimraf": "^4.2.0",
     "sass": "^1.58.0",
     "sass-loader": "^13.2.0",
     "style-loader": "^3.3.1",
@@ -174,8 +175,8 @@
     "webpack-merge": "^5.8.0"
   },
   "build": {
-    "productName": "WardSculks Minecraft Launcher",
-    "appId": "org.erb.ElectronReact",
+    "productName": "WardSculks Launcher",
+    "appId": "org.WardSculks",
     "asar": true,
     "asarUnpack": "**\\*.{node,dll}",
     "files": [
@@ -236,9 +237,6 @@
       "owner": "electron-react-boilerplate",
       "repo": "electron-react-boilerplate"
     }
-  },
-  "collective": {
-    "url": "https://opencollective.com/electron-react-boilerplate-594"
   },
   "devEngines": {
     "node": ">=14.x",

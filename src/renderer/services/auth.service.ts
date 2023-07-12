@@ -1,12 +1,15 @@
 /* eslint no-console: off */
-/* eslint class-methods-use-this: ["error", { "exceptMethods": ["registration"] }] */
+/* eslint class-methods-use-this: ["error", { "exceptMethods": ["registration", "getUser", "updateAccessToken"] }] */
 
 import {
   ICreateUserResponse,
   IRetrieveTokensResponse,
   createUser,
+  getUserFromToken,
+  refreshAccessToken,
   retrieveTokens,
 } from './api';
+import client from './client.service';
 
 class AuthService {
   private access: string | null = null;
@@ -142,6 +145,26 @@ class AuthService {
     window.electron.ipcRenderer.sendMessage('logout');
     this.access = null;
     this.refresh = null;
+  }
+
+  async getUser(accessToken: string) {
+    try {
+      const { data } = await getUserFromToken(accessToken);
+      return data;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async updateAccessToken(refreshToken: string) {
+    try {
+      const { data } = await refreshAccessToken(refreshToken);
+      await client.updateInterceptor(data.access);
+      return data;
+    } catch (error) {
+      console.error(error);
+      return { access: null };
+    }
   }
 }
 
