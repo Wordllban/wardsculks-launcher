@@ -251,20 +251,19 @@ export async function generateLaunchMinecraftCommand({
   memoryInGigabytes,
   serverName,
   serverIp,
+  isDebug,
 }: {
   username: string;
   memoryInGigabytes: number;
   serverName: string | null;
   serverIp?: string;
+  isDebug: boolean;
 }): Promise<string> {
   const serverFolderPath = getAppDataPath(`${GAME_FOLDER_NAME}/${serverName}`);
   const librariesFolderPath = join(serverFolderPath, 'libraries');
-  const executableText = `start ${join(
-    serverFolderPath,
-    'jre',
-    'bin',
-    'javaw.exe'
-  )}`;
+  const executableText = isDebug
+    ? join(serverFolderPath, 'jre', 'bin', 'java.exe')
+    : `start ${join(serverFolderPath, 'jre', 'bin', 'javaw.exe')}`;
   // todo: get java.exe path for diff OS
   const librariesPaths = getAllFilePaths(librariesFolderPath);
   const librariesString = librariesPaths.reduce((accumulator, libraryPath) => {

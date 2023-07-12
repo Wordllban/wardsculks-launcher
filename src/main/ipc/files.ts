@@ -167,11 +167,13 @@ ipcMain.handle(
       memoryInGigabytes,
       serverName,
       serverIp,
+      isDebug,
     }: {
       username: string;
       memoryInGigabytes: number;
       serverName: string | null;
       serverIp?: string;
+      isDebug: boolean;
     }
   ) => {
     return generateLaunchMinecraftCommand({
@@ -179,6 +181,7 @@ ipcMain.handle(
       serverName,
       memoryInGigabytes,
       serverIp,
+      isDebug
     });
   }
 );

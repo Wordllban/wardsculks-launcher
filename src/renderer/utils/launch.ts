@@ -20,6 +20,7 @@ export const launch = async ({
       serverName,
       memoryInGigabytes: memoryUsage,
       ...(autoJoin ? { serverIp } : {}),
+      isDebug: true,
     }
   );
 
