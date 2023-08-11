@@ -85,7 +85,10 @@ export function Login(): ReactElement {
           );
         }
 
-        if (!refreshToken) return;
+        if (!refreshToken) {
+          dispatch(logout());
+          return;
+        }
 
         // get new tokens
         const response = (await dispatch(updateAccessToken(refreshToken)))
@@ -102,6 +105,8 @@ export function Login(): ReactElement {
             ]);
             navigate('/main-menu');
           }
+        } else {
+          throw new Error(t('SESSION_EXPIRED_PLEASE_RELOGIN'));
         }
       } catch (error) {
         dispatch(
