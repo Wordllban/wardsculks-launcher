@@ -43,7 +43,7 @@ export interface IGetUserFromTokenResponse extends IUser {}
 export const getUserFromToken = (accessToken: string) => {
   return client.get<IGetUserFromTokenResponse>('users/user/current-user-info', {
     headers: {
-      Authorization: accessToken,
+      Authorization: `Bearer ${accessToken}`,
     },
   });
 };

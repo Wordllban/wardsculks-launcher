@@ -55,7 +55,7 @@ export function Login(): ReactElement {
     const { access, refresh } = response as IRetrieveTokensResponse;
 
     if (access && refresh) {
-      // setUserData({ access, username });
+      await dispatch(requestUser(access));
       window.electron.ipcRenderer.sendMessage('save-access-token', [access]);
       if (isSavePassword) {
         window.electron.ipcRenderer.sendMessage('save-refresh-token', [

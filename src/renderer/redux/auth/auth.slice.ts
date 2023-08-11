@@ -142,6 +142,11 @@ const authSlice = createSlice({
       window.electron.ipcRenderer.sendMessage('logout');
       state.access = '';
       state.refresh = '';
+      state.user = {
+        username: '',
+        email: '',
+        id: -1,
+      };
     },
   },
   extraReducers: (builder) => {
