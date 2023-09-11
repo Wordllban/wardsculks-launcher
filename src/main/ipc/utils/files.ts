@@ -153,7 +153,7 @@ export async function verifyFileHash(
     return hash === expectedHash;
   } catch (error) {
     main?.webContents.send('logger', {
-      message: 'Error during file verification',
+      key: 'SOME_FILES_WAS_BROKEN',
       nativeError: error,
       type: LauncherLogs.error,
     });
@@ -218,8 +218,7 @@ export function verifyFolder(
         const { url, size } = fileInfo;
 
         main?.webContents.send('logger', {
-          message:
-            'Some of game files was broken, starting their re-installation',
+          key: 'SOME_FILES_WAS_BROKEN',
           type: LauncherLogs.warning,
         });
         await downloadFile(url, filePath, '', size);
@@ -232,14 +231,14 @@ export function verifyFolder(
 
     Promise.all(filesToVerify).catch((error) => {
       main?.webContents.send('logger', {
-        message: 'Error during folders verification',
+        key: 'ERROR_DURING_FILE_VERIFICATION',
         nativeError: error,
         type: LauncherLogs.error,
       });
     });
   } catch (error) {
     main?.webContents.send('logger', {
-      message: 'Error during folder verification',
+      key: 'ERROR_DURING_FILE_VERIFICATION',
       nativeError: error,
       type: LauncherLogs.error,
     });

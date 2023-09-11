@@ -1,11 +1,13 @@
 import { Resource } from 'i18next';
-import { errors } from './errors';
+import errors from './errors';
+import logs from './logs';
 import globalTranslation from '../global';
 
 const translation: Resource = {
   translation: {
     ...globalTranslation,
     ...errors,
+    ...logs,
     LOGIN: 'Вхід',
     LOGIN_FIELD: "Ім'я користувача",
     LOGOUT: 'Вийти',

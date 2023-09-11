@@ -32,13 +32,18 @@ export function Main(): ReactElement {
       selectedServer?.name
     );
     if (gameFolder && selectedServer) {
+      const localReleaseVersion = await window.electron.ipcRenderer.invoke(
+        'get-local-release-version',
+        selectedServer.name
+      );
       // verify immutable folders
       const isVerified = await window.electron.ipcRenderer.invoke(
         'verify-folders',
         {
-          foldersNames: selectedServer?.immutableFolders,
-          serverName: selectedServer?.name,
-          serverId: selectedServer?.id,
+          foldersNames: selectedServer.immutableFolders,
+          serverName: selectedServer.name,
+          serverId: selectedServer.id,
+          isUpToDateRelease: selectedServer.version === localReleaseVersion,
         }
       );
 

@@ -1,6 +1,7 @@
 import { ipcMain, BrowserWindow, shell } from 'electron';
 import { dirname, basename, join } from 'path';
 import { existsSync, mkdirSync, readFile, writeFile, stat } from 'fs';
+import { readFile as readFileAsync } from 'fs/promises';
 import pLimit from 'p-limit';
 import getAppDataPath from 'appdata-path';
 import { promisify } from 'util';
@@ -9,6 +10,7 @@ import {
   GAME_FOLDER_NAME,
   LAUNCH_OPTIONS_FILE,
   MAX_REQUEST_RETRIES,
+  RELEASE_FILE_NAME,
 } from '../../constants/files';
 import MenuBuilder from '../menu';
 import { sleep } from '../util';
@@ -26,12 +28,18 @@ import { IFileInformation, LauncherLogs } from '../../types';
 import getAxios from '../services/axios';
 
 /**
+ * TODO: split this file(os file system events, game file system events)
+ * TODO: refactor logger/error/warning messages for translations
+ */
+
+/**
  * IPC handlers related to file system
  */
 
 interface IRelease {
   files: Record<string, IFileInformation>;
   totalSize: number;
+  version: string;
 }
 
 ipcMain.on('open-remote-file', async (_, url) => {
@@ -67,6 +75,21 @@ ipcMain.on('game-install', async (_, serverInfo: string[]) => {
         responseType: 'json',
       }
     );
+
+    // save release.json locally
+    writeFile(
+      join(serverFolderPath, RELEASE_FILE_NAME),
+      JSON.stringify(release, null, 2),
+      'utf-8',
+      (err) => {
+        if (err) {
+          console.error('Error writing file:', err);
+        } else {
+          console.log(`Release saved successfully.`);
+        }
+      }
+    );
+
     // limit number of request at time during downloading
     const limit = pLimit(25);
 
@@ -130,14 +153,14 @@ ipcMain.on('game-install', async (_, serverInfo: string[]) => {
       .catch((error) => {
         return main?.webContents.send('logger', {
           type: LauncherLogs.error,
-          message: 'Error during installation',
+          key: 'ERROR_DURING_INSTALLATION',
           nativeError: (error as Error).message,
         });
       });
   } catch (error) {
     main?.webContents.send('logger', {
       type: LauncherLogs.error,
-      message: 'Error during installation',
+      key: 'ERROR_DURING_INSTALLATION',
       nativeError: (error as Error).message,
     });
   }
@@ -154,7 +177,7 @@ ipcMain.handle('find-game-folder', async (_, serverName: string) => {
     return stats.isDirectory() ? path : '';
   } catch (error) {
     main?.webContents.send('logger', {
-      message: 'Game folder not found, starting installation',
+      key: 'GAME_FOLDER_NOT_FOUND',
       nativeError: (error as Error).message,
       type: LauncherLogs.warning,
     });
@@ -197,21 +220,38 @@ ipcMain.handle(
       foldersNames,
       serverName,
       serverId,
-    }: { foldersNames: string[]; serverName: string; serverId: string }
+      isUpToDateRelease,
+    }: {
+      foldersNames: string[];
+      serverName: string;
+      serverId: string;
+      isUpToDateRelease: boolean;
+    }
   ) => {
     const axios = getAxios();
     const main = getMainWindow();
     const serverFolder = getServerFolder(serverName);
     try {
-      // request release
-      const { data: release } = await axios.get<IRelease>(
-        `${process.env.API_URL}/files/servers/${serverId}/releases/latest`,
-        {
-          responseType: 'json',
-        }
-      );
+      let localRelease;
 
-      const { files } = release;
+      if (isUpToDateRelease) {
+        const releasePath = join(
+          getServerFolder(serverName),
+          RELEASE_FILE_NAME
+        );
+        localRelease = JSON.parse(await readFileAsync(releasePath, 'utf-8'));
+      } else {
+        // request release
+        const { data } = await axios.get<IRelease>(
+          `${process.env.API_URL}/files/servers/${serverId}/releases/latest`,
+          {
+            responseType: 'json',
+          }
+        );
+        localRelease = data;
+      }
+
+      const { files } = localRelease;
 
       const foldersPaths = foldersNames.map((folderName: string) => {
         return join(serverFolder, folderName);
@@ -224,14 +264,14 @@ ipcMain.handle(
       await sleep(3000);
 
       main?.webContents.send('logger', {
-        message: 'Folders passed the verification',
+        key: 'FOLDER_VERIFICATION_PASSED',
         type: LauncherLogs.log,
       });
 
       return true;
     } catch (error) {
       main?.webContents.send('logger', {
-        message: 'Error during file verification',
+        key: 'ERROR_DURING_FILE_VERIFICATION',
         type: LauncherLogs.error,
         nativeError: (error as Error).message,
       });
@@ -338,3 +378,9 @@ ipcMain.on(
     shell.openPath(filePath);
   }
 );
+
+ipcMain.handle('get-local-release-version', async (_, serverName: string) => {
+  const releasePath = join(getServerFolder(serverName), RELEASE_FILE_NAME);
+  const release = JSON.parse(await readFileAsync(releasePath, 'utf-8'));
+  return release.version;
+});

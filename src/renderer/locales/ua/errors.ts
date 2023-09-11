@@ -1,4 +1,4 @@
-export const errors: Record<string, string> = {
+const errors: Record<string, string> = {
   SHOW_NATIVE_ERROR: 'Показати нативну помилку',
   HIDE_NATIVE_ERROR: 'Сховати нативну помилку',
   FAILED_TO_LOGIN: 'Не вдалось увійти',
@@ -10,4 +10,12 @@ export const errors: Record<string, string> = {
   FAILED_TO_GET_SERVERS_LIST: 'Не вдалось отримати список доступних серверів',
   SESSION_EXPIRED_PLEASE_RELOGIN:
     'Час сеансу вичерпаний. Будь ласка, увійдіть ще раз',
+  ERROR_DURING_INSTALLATION: 'Сталась помилка при завантаженні гри',
+  GAME_FOLDER_NOT_FOUND: 'Тека гри не знайдена, починаємо встановлення',
+  ERROR_DURING_FILE_VERIFICATION:
+    'Сталась помилка при перевірці ігрових файлів',
+  SOME_FILES_WAS_BROKEN:
+    'Деякі файли гри були пошкоджені, починаємо їх перевстановлення',
 };
+
+export default errors;

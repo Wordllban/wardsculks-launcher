@@ -10,6 +10,7 @@ type FilesChannels =
   | 'update-launch-options'
   | 'create-file'
   | 'check-exists'
-  | 'execute-file';
+  | 'execute-file'
+  | 'get-local-release-version';
 
 export default FilesChannels;
