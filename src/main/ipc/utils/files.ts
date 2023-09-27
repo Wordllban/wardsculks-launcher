@@ -8,13 +8,13 @@ import {
   accessSync,
 } from 'fs';
 import { createHash } from 'crypto';
-import { basename, join, sep } from 'path';
-import getAppDataPath from 'appdata-path';
+import { basename, join, relative } from 'path';
 import { sleep } from '../../util';
 import { getMainWindow } from '../../main';
-import { IFileInformation, LauncherLogs } from '../../../types';
-import { GAME_FOLDER_NAME } from '../../../constants/files';
+import { LauncherLogs, ReleaseFileList } from '../../../types';
+
 import getAxios from '../../services/axios';
+import { filterObjectKeys } from '../../../utils';
 
 export async function downloadFile(
   url: string,
@@ -22,7 +22,7 @@ export async function downloadFile(
   fileName: string,
   fileSize: number,
   maxRetries: number = 10
-): Promise<void | null> {
+): Promise<void> {
   const fileFullPath = join(filePath, fileName);
   const writer = createWriteStream(fileFullPath);
 
@@ -75,12 +75,11 @@ export async function downloadFile(
       await sleep(2000);
       return downloadFile(url, filePath, fileName, fileSize, maxRetries - 1);
     }
-    main?.webContents.send(
+    return main?.webContents.send(
       'downloading-log',
       `Failed to download file: ${fileName}`
     );
   }
-  return null;
 }
 
 /**
@@ -88,7 +87,7 @@ export async function downloadFile(
  * @param {string} filePath
  * @returns {string} hash
  */
-export const sha256 = async (filePath: string): Promise<string> => {
+export const sha256 = (filePath: string): Promise<string> => {
   const main = getMainWindow();
   return new Promise((resolve, reject) => {
     const read = createReadStream(filePath);
@@ -194,112 +193,67 @@ export function getAllFilePaths(
   );
 }
 
-export function verifyFolder(
+/**
+ * Verifying files in immutable folders. Unnecessary files will be deleted.
+ *
+ * Returns array of damaged files, that should be re-installed.
+ * @param {String} folderPath
+ * @param {ReleaseFileList} files
+ * @param {String} serverPath
+ *
+ * @returns array of damaged files, that should be re-installed.
+ */
+export async function verifyFolder(
   folderPath: string,
-  files: Record<string, IFileInformation>,
+  files: ReleaseFileList,
   serverPath: string
 ) {
   const main = getMainWindow();
+
+  const filesToReinstall = filterObjectKeys(files, (keyToCheck: string) =>
+    keyToCheck.includes(basename(folderPath))
+  );
+
   try {
-    const filePaths = getAllFilePaths(folderPath, false);
-    const filesToVerify = filePaths.map(async (path: string) => {
-      const fileInfo: IFileInformation | undefined = files[path];
-      const filePath = join(serverPath, path);
-      if (fileInfo) {
-        const verification: boolean = await verifyFileHash(
-          filePath,
-          fileInfo.hash
-        );
+    const filePaths = getAllFilePaths(folderPath, true);
 
-        if (verification) {
-          return;
+    await Promise.all(
+      filePaths.map(async (file) => {
+        const relativePath = relative(serverPath, file).replaceAll('\\', '/');
+        const fileInfo = files[relativePath];
+
+        if (fileInfo) {
+          const isHashEqual: boolean = await verifyFileHash(
+            file,
+            fileInfo.hash
+          );
+          if (isHashEqual) {
+            delete filesToReinstall[relativePath];
+          }
+        } else {
+          // remove unnecessary file
+          unlinkSync(file);
         }
+      })
+    );
 
-        const { url, size } = fileInfo;
-
-        main?.webContents.send('logger', {
-          key: 'SOME_FILES_WAS_BROKEN',
-          type: LauncherLogs.warning,
-        });
-        await downloadFile(url, filePath, '', size);
-      } else {
-        // delete file if there is no path
-        // gg cheats
-        unlinkSync(filePath);
-      }
-    });
-
-    Promise.all(filesToVerify).catch((error) => {
-      main?.webContents.send('logger', {
-        key: 'ERROR_DURING_FILE_VERIFICATION',
-        nativeError: error,
-        type: LauncherLogs.error,
-      });
-    });
+    return filesToReinstall;
   } catch (error) {
     main?.webContents.send('logger', {
       key: 'ERROR_DURING_FILE_VERIFICATION',
       nativeError: error,
       type: LauncherLogs.error,
     });
+
+    return {};
   }
 }
 
-export async function generateLaunchMinecraftCommand({
-  username,
-  memoryInGigabytes,
-  serverName,
-  serverIp,
-  isDebug,
-}: {
-  username: string;
-  memoryInGigabytes: number;
-  serverName: string | null;
-  serverIp?: string;
-  isDebug: boolean;
-}): Promise<string> {
-  const serverFolderPath = getAppDataPath(`${GAME_FOLDER_NAME}/${serverName}`);
-  const librariesFolderPath = join(serverFolderPath, 'libraries');
-  const executableText = isDebug
-    ? join(serverFolderPath, 'jre', 'bin', 'java.exe')
-    : `start ${join(serverFolderPath, 'jre', 'bin', 'javaw.exe')}`;
-  // todo: get java.exe path for diff OS
-  const librariesPaths = getAllFilePaths(librariesFolderPath);
-  const librariesString = librariesPaths.reduce((accumulator, libraryPath) => {
-    return `${
-      accumulator +
-      libraryPath
-        .replace(`${serverFolderPath + sep}`, '')
-        .replace(/\\[^\\]+$/, '\\*')
-    };`;
-  }, '');
-  const librariesVariable = `-cp "${librariesString}"`;
-  const memoryVariable = `-Xmx${memoryInGigabytes}G`;
-  const variables = `${memoryVariable} ${librariesVariable}`;
-
-  const immutableParameters =
-    '--gameDir . --assetsDir assets --accessToken 0 --tweakClass fabric.loader.Tweaker';
-  const assetIndexVersion = basename(
-    getAllFilePaths(join(serverFolderPath, 'assets', 'indexes'))[0]
-  ).replace('.json', '');
-  const assetIndexParameter = `--assetIndex ${assetIndexVersion}`;
-  const usernameParameter = `--username ${username}`;
-  const autoConnectParameter = serverIp ? `--server ${serverIp}` : '';
-  const parameters = `${immutableParameters} ${assetIndexParameter} ${usernameParameter} ${autoConnectParameter}`;
-  return `cd ${serverFolderPath}
-  ${executableText} ${variables} net.fabricmc.loader.impl.launch.knot.KnotClient ${parameters}
-  ${isDebug ? 'pause' : ''}`;
-}
-
-export function checkFileExists(filePath: string) {
+export function checkFileExists(filePath: string): boolean {
   try {
     accessSync(filePath, constants.F_OK);
     return true;
   } catch (error) {
     return false;
   }
-}
-
-export function getServerFolder(serverName: string) {
-  return getAppDataPath(`${GAME_FOLDER_NAME}/${serverName}`);
 }

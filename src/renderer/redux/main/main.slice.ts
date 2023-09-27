@@ -34,13 +34,20 @@ export const requestServers = createAsyncThunk(
 export interface MainState {
   isLoading: boolean;
   availableServers: IServer[];
-  selectedServer: IServer | null;
+  selectedServer: IServer;
 }
 
 const initialState: MainState = {
   isLoading: false,
   availableServers: [],
-  selectedServer: null,
+  selectedServer: {
+    id: -1,
+    title: '',
+    name: '',
+    immutableFolders: [],
+    ip: '',
+    version: '',
+  },
 };
 
 const mainSlice = createSlice({
@@ -57,7 +64,8 @@ const mainSlice = createSlice({
         requestServers.fulfilled,
         (state, action: PayloadAction<IRequestServersResponse[]>) => {
           state.availableServers = action.payload;
-          state.selectedServer = action.payload[0] || null;
+          state.selectedServer =
+            action.payload[0] || initialState.selectedServer;
           state.isLoading = false;
         }
       )

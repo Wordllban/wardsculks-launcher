@@ -13,9 +13,7 @@ const errors: Record<string, string> = {
   ERROR_DURING_INSTALLATION: 'Сталась помилка при завантаженні гри',
   GAME_FOLDER_NOT_FOUND: 'Тека гри не знайдена, починаємо встановлення',
   ERROR_DURING_FILE_VERIFICATION:
-    'Сталась помилка при перевірці ігрових файлів',
-  SOME_FILES_WAS_BROKEN:
-    'Деякі файли гри були пошкоджені, починаємо їх перевстановлення',
+    'Сталась помилка при перевірці ігрових файлів, будь ласка, спробуйте ще раз',
 };
 
 export default errors;

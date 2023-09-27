@@ -1,5 +1,5 @@
 import { ReactElement, useState, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import clsx from 'clsx';
 import { useSelector } from 'react-redux';
 import settingsIcon from '../../../../../assets/icons/settings.svg';
@@ -11,7 +11,7 @@ import { AppState } from '../../../redux';
 
 export function Menu(): ReactElement {
   const accessToken = useSelector((state: AppState) => state.auth.access);
-
+  const location = useLocation();
   const [isMaximized, setIsMaximized] = useState(false);
 
   const handleHide = useCallback(() => {
@@ -34,7 +34,7 @@ export function Menu(): ReactElement {
         'window-menu'
       )}
     >
-      {accessToken ? (
+      {accessToken && location.pathname !== '/downloading' ? (
         <Link
           to="/settings"
           className={clsx(

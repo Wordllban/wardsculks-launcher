@@ -10,9 +10,8 @@ const errors: Record<string, string> = {
   SESSION_EXPIRED_PLEASE_RELOGIN: 'Session expired. Please, login again',
   ERROR_DURING_INSTALLATION: 'Error during installation',
   GAME_FOLDER_NOT_FOUND: 'Game folder not found, starting installation',
-  ERROR_DURING_FILE_VERIFICATION: 'Error during file verification',
-  SOME_FILES_WAS_BROKEN:
-    'Some of game files was broken, starting their re-installation',
+  ERROR_DURING_FILE_VERIFICATION:
+    'Error during file verification, please try again',
 };
 
 export default errors;

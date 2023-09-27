@@ -6,7 +6,6 @@ import { logout } from 'renderer/redux/auth/auth.slice';
 import { Button, Dropdown, Frame, Layout } from '../../common';
 import logo from '../../../../../assets/icons/logo-big.svg';
 import { IServer } from '../../../types';
-import { launch } from '../../../utils';
 import {
   AppDispatch,
   AppState,
@@ -26,38 +25,9 @@ export function Main(): ReactElement {
 
   const handleLogout = useCallback(() => dispatch(logout()), []);
 
-  const handleStartGame = useCallback(async () => {
-    const gameFolder = await window.electron.ipcRenderer.invoke(
-      'find-game-folder',
-      selectedServer?.name
-    );
-    if (gameFolder && selectedServer) {
-      const localReleaseVersion = await window.electron.ipcRenderer.invoke(
-        'get-local-release-version',
-        selectedServer.name
-      );
-      // verify immutable folders
-      const isVerified = await window.electron.ipcRenderer.invoke(
-        'verify-folders',
-        {
-          foldersNames: selectedServer.immutableFolders,
-          serverName: selectedServer.name,
-          serverId: selectedServer.id,
-          isUpToDateRelease: selectedServer.version === localReleaseVersion,
-        }
-      );
-
-      if (isVerified) {
-        launch({
-          serverName: selectedServer.name,
-          serverIp: selectedServer.ip,
-          username,
-        });
-      }
-    } else {
-      navigate('/downloading');
-    }
-  }, [navigate, selectedServer, username]);
+  const handleStartGame = () => {
+    navigate('/downloading');
+  };
 
   useEffect(() => {
     dispatch(requestServers());
@@ -88,7 +58,8 @@ export function Main(): ReactElement {
           <Button
             className="w-[314px] py-4 text-22"
             onClick={handleStartGame}
-            disabled={!selectedServer}
+            // todo: also disable if minecraft already running
+            disabled={!selectedServer || availableServers.length === 0}
           >
             {t('START_GAME')}
           </Button>

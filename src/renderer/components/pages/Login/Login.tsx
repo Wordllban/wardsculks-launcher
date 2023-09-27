@@ -25,6 +25,7 @@ import {
   updateAccessToken,
 } from '../../../redux/auth/auth.slice';
 import {
+  IGetUserFromTokenResponse,
   IRefreshAccessResponse,
   IRetrieveTokensResponse,
 } from '../../../services/api';
@@ -97,7 +98,8 @@ export function Login(): ReactElement {
         const { access } = response as IRefreshAccessResponse;
         if (access) {
           // get user from token
-          const user = (await dispatch(requestUser(access))).payload;
+          const user = (await dispatch(requestUser(access)))
+            .payload as IGetUserFromTokenResponse;
           if (user) {
             // save new data
             window.electron.ipcRenderer.sendMessage('save-access-token', [
