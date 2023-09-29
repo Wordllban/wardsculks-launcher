@@ -1,8 +1,7 @@
-import { ReactElement, Suspense, useEffect } from 'react';
+import { ReactElement, Suspense } from 'react';
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
-import { useTranslation } from 'react-i18next';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import {
   Login,
   Main,
@@ -11,23 +10,7 @@ import {
   Downloading,
   Menu,
 } from './components';
-import { SettingsList, ISettings } from './types';
-import { LauncherLogs } from '../types';
-import { saveMultipleSettingsOptions } from './components/pages/Settings/utils';
-import {
-  addNotification,
-  AppState,
-  Notifications,
-  ProtectedRoute,
-} from './redux';
-
-const DEFAULT_INITIAL_SETTINGS: ISettings = {
-  isInitial: false,
-  memoryUsage: 2,
-  fullscreen: false,
-  autoJoin: false,
-  isDebug: false,
-};
+import { AppState, Notifications, ProtectedRoute } from './redux';
 
 function Loader(): ReactElement {
   return (
@@ -38,32 +21,6 @@ function Loader(): ReactElement {
 }
 
 export default function App() {
-  const dispatch = useDispatch();
-  const { t } = useTranslation();
-
-  /**
-   * Create initial settings when app first time opened
-   */
-  useEffect(() => {
-    window.electron.ipcRenderer
-      .invoke('has-setting', [SettingsList.isInitial])
-      .then((isInitialSettings: boolean) => {
-        if (!isInitialSettings) {
-          return saveMultipleSettingsOptions(DEFAULT_INITIAL_SETTINGS);
-        }
-        return isInitialSettings;
-      })
-      .catch((error) =>
-        dispatch(
-          addNotification({
-            message: t('FAILED_TO_CREATE_INITIAL_SETTINGS'),
-            nativeError: error,
-            type: LauncherLogs.error,
-          })
-        )
-      );
-  }, []);
-
   const isLoading: boolean = useSelector(
     (state: AppState) => state.auth.isLoading || state.main.isLoading
   );

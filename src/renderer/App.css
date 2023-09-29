@@ -19,6 +19,10 @@
     text-shadow: none;
   }
 
+  .text-wrap {
+    text-wrap: 'wrap';
+  }
+
   .window-menu {
     -webkit-user-select: none;
     -webkit-app-region: drag;
@@ -89,8 +93,6 @@
   }
 
   input[type='range']::-webkit-slider-runnable-track {
-    padding-left: 12px;
-    padding-right: 12px;
     height: 3px;
     cursor: pointer;
     animate: 0.2s;

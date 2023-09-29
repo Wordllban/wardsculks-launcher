@@ -1,4 +1,4 @@
-import { ISettings } from '../types';
+import { ISettings } from '../../types';
 
 export const launch = async ({
   serverName,

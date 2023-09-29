@@ -212,9 +212,10 @@ ipcMain.on(
     }
   ) => {
     const main = getMainWindow();
+    console.log('serverName: ', serverName);
     const serverFolder = getServerFolder(serverName);
     const optionsPath = join(serverFolder, LAUNCH_OPTIONS_FILE);
-
+    console.log('serverFolder:::', serverFolder);
     readFile(optionsPath, 'utf-8', (error, data) => {
       if (error) {
         return main?.webContents.send('logger', {

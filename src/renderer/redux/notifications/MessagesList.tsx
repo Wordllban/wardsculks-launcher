@@ -2,9 +2,9 @@ import { useState, useEffect, ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { ILauncherLog, LauncherLogs } from '../../../types';
-import closeIcon from '../../../../assets/icons/close.svg';
 import { AppState } from '../store';
 import { addNotification, removeNotification } from './notifications.slice';
+import { CloseIcon } from '../../components/common/icons';
 
 const DEFAULT_MESSAGE_LIFE_TIME: number = 10000;
 
@@ -61,7 +61,7 @@ function Error(props: MessageProps & { nativeError?: unknown }): ReactElement {
               {t(!showNativeError ? 'SHOW_NATIVE_ERROR' : 'HIDE_NATIVE_ERROR')}
             </button>
             {showNativeError ? (
-              <div className="flex">{`${nativeError}`}</div>
+              <div className="text-wrap flex max-w-[360px]">{`${nativeError}`}</div>
             ) : null}
           </div>
         ) : null}
@@ -71,7 +71,7 @@ function Error(props: MessageProps & { nativeError?: unknown }): ReactElement {
         className="absolute right-3 top-[-0.5rem] z-50"
         type="button"
       >
-        <img src={closeIcon} alt="close" width={20} height={20} />
+        <CloseIcon width={20} height={20} />
       </button>
     </div>
   );
@@ -99,7 +99,7 @@ function Log(props: MessageProps): ReactElement {
         className="absolute right-3 top-[-0.5rem] z-50"
         type="button"
       >
-        <img src={closeIcon} alt="close" width={20} height={20} />
+        <CloseIcon width={20} height={20} />
       </button>
     </div>
   );
@@ -127,7 +127,7 @@ function Warning(props: MessageProps): ReactElement {
         className="absolute right-3 top-[-0.5rem] z-50"
         type="button"
       >
-        <img src={closeIcon} alt="close" width={20} height={20} />
+        <CloseIcon width={20} height={20} />
       </button>
     </div>
   );

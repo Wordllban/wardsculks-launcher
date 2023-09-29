@@ -1,6 +1,6 @@
 import clsx from 'clsx';
-import { useState, ReactElement, useEffect } from 'react';
-import arrowIcon from '../../../../../assets/icons/arrow.svg';
+import { useState, ReactElement, useEffect, KeyboardEvent } from 'react';
+import { ArrowIcon } from '../icons';
 
 export interface IDropdownItem {
   title: string;
@@ -27,6 +27,12 @@ export function Dropdown<T extends IDropdownItem>(
     setSelected(item);
     setIsOpen(false);
   };
+  const handleSelectKeyboard = (
+    event: KeyboardEvent<HTMLLIElement>,
+    item: T
+  ) => {
+    if (event.key === 'Enter') handleSelect(item);
+  };
 
   useEffect(() => {
     if (defaultValue) {
@@ -34,42 +40,47 @@ export function Dropdown<T extends IDropdownItem>(
     }
   }, [defaultValue]);
 
-  // todo: change button to input with type menu
+  const handleOpen = () => setIsOpen(!isOpen);
+  const handleOpenKeyboard = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'Enter') handleOpen();
+  };
+
   return (
-    <div className="flex flex-col text-sm">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex cursor-pointer items-center gap-2"
-        type="button"
+    <div className="flex flex-col text-sm" role="button">
+      <div
+        onClick={handleOpen}
+        onKeyDown={handleOpenKeyboard}
+        className="flex w-[140px] cursor-pointer items-center justify-between gap-2 bg-black/80 px-2 py-1 text-start"
+        tabIndex={0}
+        role="button"
       >
-        <span className="w-[140px] bg-black/80 px-2 py-1 text-start">
-          {selected?.title}
-        </span>
-        <img
-          src={arrowIcon}
-          alt="close-open"
-          className={isOpen ? 'rotate-[-90deg]' : 'rotate-90'}
-        />
-      </button>
+        {selected?.title}
+        <ArrowIcon className={isOpen ? 'rotate-[-90deg]' : 'rotate-90'} />
+      </div>
       {isOpen ? (
         <div className="relative">
-          <div className="absolute flex flex-col bg-black/80">
+          <ul className="absolute flex flex-col bg-black/80" role="listbox">
             {items.map((item: T) => (
-              <button
+              <li
                 className={clsx(
                   {
                     'bg-slate-800': item.title === selected?.title,
                   },
-                  'flex w-[140px] justify-start px-2 py-1'
+                  'focus: flex w-[140px] justify-start px-2 py-1'
                 )}
                 onClick={() => handleSelect(item)}
+                onKeyDown={(event: KeyboardEvent<HTMLLIElement>) =>
+                  handleSelectKeyboard(event, item)
+                }
                 key={`${item.title}-server`}
-                type="button"
+                tabIndex={-1}
+                role="option"
+                aria-selected={selected?.title === item.title}
               >
                 {item.title}
-              </button>
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
       ) : null}
     </div>

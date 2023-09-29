@@ -8,14 +8,13 @@ import {
 } from 'react';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Button, Checkbox, InputRange, Layout, ArrowBack } from '../../common';
 import { getSystemMemory, saveMultipleSettingsOptions } from './utils';
-import { ISettings, SettingsList } from '../../../types';
+import { ISettings, SettingsList, LauncherLogs } from '../../../../types';
 import { MIN_MEMORY } from '../../../../constants/settings';
 import { formatBytes } from '../../../../utils';
-import { LauncherLogs } from '../../../../types';
-import { addNotification } from '../../../redux';
+import { AppState, addNotification } from '../../../redux';
 
 type SettingProps = {
   title: string;
@@ -61,6 +60,8 @@ function Setting(props: SettingProps) {
 export function Settings(): ReactElement {
   const dispatch = useDispatch();
   const { t } = useTranslation();
+
+  const { name } = useSelector((state: AppState) => state.main.selectedServer);
 
   const [maxMemory, setMaxMemory] = useState<number>(0);
 
@@ -127,11 +128,14 @@ export function Settings(): ReactElement {
         name: 'debug',
         title: t('DEBUG_MODE'),
         description: t('DEBUG_MODE_DESCRIPTION'),
-        initialValue: newSettings[SettingsList.isDebug],
+        initialValue: newSettings[SettingsList.isDebug]?.value,
         onCheckbox: () => {
           setNewSettings((prevState) => ({
             ...prevState,
-            [SettingsList.isDebug]: !prevState[SettingsList.isDebug],
+            [SettingsList.isDebug]: {
+              value: !prevState[SettingsList.isDebug].value,
+              type: prevState[SettingsList.isDebug].type,
+            },
           }));
         },
       },
@@ -139,11 +143,14 @@ export function Settings(): ReactElement {
         name: 'auto-join',
         title: t('AUTO_JOIN_SERVER'),
         description: t('AUTO_JOIN_SERVER_DESCRIPTION'),
-        initialValue: newSettings[SettingsList.isAutoJoin],
+        initialValue: newSettings[SettingsList.isAutoJoin]?.value,
         onCheckbox: () => {
           setNewSettings((prevState) => ({
             ...prevState,
-            [SettingsList.isAutoJoin]: !prevState[SettingsList.isAutoJoin],
+            [SettingsList.isAutoJoin]: {
+              value: !prevState[SettingsList.isAutoJoin].value,
+              type: prevState[SettingsList.isAutoJoin].type,
+            },
           }));
         },
       },
@@ -151,19 +158,14 @@ export function Settings(): ReactElement {
         name: 'fullscreen',
         title: t('FULLSCREEN_MODE'),
         description: t('FULLSCREEN_MODE_DESCRIPTION'),
-        initialValue: newSettings[SettingsList.isFullScreen],
-        // todo: do not apply changes to options without save
-        disabled: true,
+        initialValue: newSettings[SettingsList.isFullScreen]?.value,
         onCheckbox: () => {
-          window.electron.ipcRenderer.sendMessage('update-launch-options', {
-            key: 'fullscreen',
-            value: !newSettings.fullscreen,
-            serverName: 'test',
-          });
           setNewSettings((prevState) => ({
             ...prevState,
-            [SettingsList.isFullScreen]:
-              !newSettings[SettingsList.isFullScreen],
+            [SettingsList.isFullScreen]: {
+              value: !newSettings[SettingsList.isFullScreen].value,
+              type: newSettings[SettingsList.isFullScreen].type,
+            },
           }));
         },
       },
@@ -172,7 +174,7 @@ export function Settings(): ReactElement {
   );
 
   const handleSaveSettings = () => {
-    saveMultipleSettingsOptions(newSettings);
+    saveMultipleSettingsOptions(newSettings, name);
     getCurrentSettings();
   };
 
@@ -180,12 +182,14 @@ export function Settings(): ReactElement {
     () =>
       Object.keys(currentSettings.current).some((key) => {
         return (
-          currentSettings.current[key as SettingsList] !==
-          newSettings[key as SettingsList]
+          currentSettings.current[key as SettingsList].value !==
+          newSettings[key as SettingsList].value
         );
       }),
     [newSettings]
   );
+
+  // add type launch setting & in-game setting
 
   return (
     <Layout mainBackground="bg-settings-bg">
@@ -207,11 +211,16 @@ export function Settings(): ReactElement {
             onChangeHandler={(e) => {
               setNewSettings((prevState) => ({
                 ...prevState,
-                [SettingsList.maxMemoryUsage]: Number(e.target.value),
+                [SettingsList.maxMemoryUsage]: {
+                  value: Number(e.target.value),
+                  type: newSettings[SettingsList.maxMemoryUsage].type,
+                },
               }));
             }}
             className="mb-6"
-            initialValue={Number(newSettings[SettingsList.maxMemoryUsage])}
+            initialValue={Number(
+              newSettings[SettingsList.maxMemoryUsage]?.value
+            )}
           />
           {settingsWithCheckboxes.map((setting) => (
             <Setting {...setting} key={`${setting.name}-setting`} />

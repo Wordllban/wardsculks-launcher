@@ -9,10 +9,6 @@ import { getMainWindow } from '../main';
 import { LauncherLogs } from '../../types';
 
 /**
- * TODO: refactor logger/error/warning messages for translations
- */
-
-/**
  * IPC handlers related to file system
  */
 

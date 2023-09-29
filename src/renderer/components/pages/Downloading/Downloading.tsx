@@ -34,7 +34,8 @@ export function Downloading(): ReactElement {
       return setDownloadingStatus(value);
     }
 
-    if (value.progress === FINISHED_PROGRESS && name && ip) {
+    if (value.progress === FINISHED_PROGRESS && !value.isVerify) {
+      setDownloadingStatus({ ...value, downloadedSize: { value: 0 } });
       launch({ serverName: name, serverIp: ip, username });
     }
   });
@@ -115,7 +116,7 @@ export function Downloading(): ReactElement {
     <Layout mainBackground="bg-update-bg">
       <ArrowBack
         position="absolute left-0 top-0"
-        disabled={downloadingStatus.progress !== FINISHED_PROGRESS}
+        disabled={downloadingStatus.progress < FINISHED_PROGRESS}
       />
       <div className="flex h-full flex-col items-center justify-end gap-6">
         <div className="flex w-full flex-row gap-6">

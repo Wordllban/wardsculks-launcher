@@ -33,19 +33,13 @@ export function InputRange(props: Props): ReactElement {
       {options && (
         <datalist
           id="memory"
-          className="relative flex w-[280px] justify-between"
+          className="relative flex w-[320px] justify-between"
         >
-          {options.map((option: number, index) => (
+          {options.map((option: number) => (
             <option
               key={`datalist-option-${option}`}
               className={clsx(
-                'w-6 p-0', // TODO: try to update with child selectors
-                index === 0 ||
-                  (options[2].toString().split('').length >= 2 && index > 2)
-                  ? 'text-right'
-                  : options[2].toString().split('').length >= 2 && index === 1
-                  ? 'text-center'
-                  : 'text-center'
+                'w-3 p-0 text-center first:ml-[-8px] first:mr-[6px]'
               )}
             >
               {option}
@@ -54,22 +48,24 @@ export function InputRange(props: Props): ReactElement {
         </datalist>
       )}
       <div className="relative">
-        <span className="glow-text absolute left-[-4rem] top-[-0.25rem] w-20 text-main">
+        <span className="glow-text absolute left-[-4.75rem] top-[-0.25rem] w-20 text-main">
           {initialValue || value} GB
         </span>
-        <input
-          type="range"
-          min={min}
-          max={max}
-          step={step}
-          className={clsx('w-[285px]', className)}
-          onChange={(event: ChangeEvent<HTMLInputElement>) => {
-            if (onChangeHandler) onChangeHandler(event);
-            setValue(event.target.value);
-          }}
-          list="memory"
-          value={initialValue || value}
-        />
+        <div className="flex items-center justify-center">
+          <input
+            type="range"
+            min={min}
+            max={max}
+            step={step}
+            className={clsx('w-[325px]', className)}
+            onChange={(event: ChangeEvent<HTMLInputElement>) => {
+              if (onChangeHandler) onChangeHandler(event);
+              setValue(event.target.value);
+            }}
+            list="memory"
+            value={initialValue || value}
+          />
+        </div>
       </div>
     </div>
   );

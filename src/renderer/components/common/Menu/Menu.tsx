@@ -2,12 +2,14 @@ import { ReactElement, useState, useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import clsx from 'clsx';
 import { useSelector } from 'react-redux';
-import settingsIcon from '../../../../../assets/icons/settings.svg';
-import hideIcon from '../../../../../assets/icons/hide.svg';
-import maximizeIcon from '../../../../../assets/icons/maximize.svg';
-import minimizeIcon from '../../../../../assets/icons/minimize.svg';
-import closeIcon from '../../../../../assets/icons/close.svg';
 import { AppState } from '../../../redux';
+import {
+  CloseIcon,
+  HideIcon,
+  MaximizeIcon,
+  MinimizeIcon,
+  SettingsIcon,
+} from '../icons';
 
 export function Menu(): ReactElement {
   const accessToken = useSelector((state: AppState) => state.auth.access);
@@ -42,7 +44,7 @@ export function Menu(): ReactElement {
             'window-menu-button'
           )}
         >
-          <img src={settingsIcon} alt="settings" />
+          <SettingsIcon />
         </Link>
       ) : null}
       <button
@@ -53,7 +55,7 @@ export function Menu(): ReactElement {
         onClick={handleHide}
         type="button"
       >
-        <img src={hideIcon} alt="minimize" />
+        <HideIcon />
       </button>
       <button
         className={clsx(
@@ -63,10 +65,7 @@ export function Menu(): ReactElement {
         onClick={handleMinMax}
         type="button"
       >
-        <img
-          src={isMaximized ? minimizeIcon : maximizeIcon}
-          alt="maximize or restore"
-        />
+        {isMaximized ? <MinimizeIcon /> : <MaximizeIcon />}
       </button>
       <button
         className={clsx(
@@ -76,7 +75,7 @@ export function Menu(): ReactElement {
         onClick={handleClose}
         type="button"
       >
-        <img src={closeIcon} alt="close" />
+        <CloseIcon />
       </button>
     </nav>
   );

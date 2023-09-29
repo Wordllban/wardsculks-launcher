@@ -18,10 +18,36 @@ export enum SettingsList {
   isDebug = 'isDebug',
 }
 
+export enum SETTINGS_TYPE {
+  GAME = 'GAME',
+  LAUNCH = 'LAUNCH',
+}
+
 export interface ISettings {
-  [SettingsList.isInitial]: boolean;
-  [SettingsList.maxMemoryUsage]: number;
-  [SettingsList.isFullScreen]: boolean;
-  [SettingsList.isAutoJoin]: boolean;
-  [SettingsList.isDebug]: boolean;
+  [SettingsList.isInitial]: {
+    value: boolean;
+    type: SETTINGS_TYPE.LAUNCH;
+  };
+  /**
+   * LAUNCH SETTINGS
+   */
+  [SettingsList.maxMemoryUsage]: {
+    value: number;
+    type: SETTINGS_TYPE.LAUNCH;
+  };
+  [SettingsList.isAutoJoin]: {
+    value: boolean;
+    type: SETTINGS_TYPE.LAUNCH;
+  };
+  [SettingsList.isDebug]: {
+    value: boolean;
+    type: SETTINGS_TYPE.LAUNCH;
+  };
+  /**
+   * GAME SETTINGS
+   */
+  [SettingsList.isFullScreen]: {
+    value: boolean;
+    type: SETTINGS_TYPE.GAME;
+  };
 }

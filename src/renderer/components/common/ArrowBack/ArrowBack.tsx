@@ -2,8 +2,8 @@ import { useNavigate } from 'react-router-dom';
 import { KeyboardEvent, ReactElement, useState, useCallback } from 'react';
 import clsx from 'clsx';
 import { useKeyPress } from '../../../hooks/useKeyPress';
-import arrowIcon from '../../../../../assets/icons/arrow.svg';
 import ConfirmationWindow from '../ConfirmationWindow/ConfirmationWindow';
+import { ArrowIcon } from '../icons';
 
 type Props = {
   position?: string;
@@ -49,7 +49,7 @@ export function ArrowBack(props: Props): ReactElement {
         type="button"
         disabled={disabled}
       >
-        <img src={arrowIcon} alt="arrow back" />
+        <ArrowIcon />
       </button>
       {showConfirmation && (
         <ConfirmationWindow

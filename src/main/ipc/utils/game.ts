@@ -34,7 +34,7 @@ export async function generateLaunchMinecraftCommand({
   const executableText = isDebug
     ? join(serverFolderPath, 'jre', 'bin', 'java.exe')
     : `start ${join(serverFolderPath, 'jre', 'bin', 'javaw.exe')}`;
-  // todo: get java.exe path for diff OS
+  // todo: get java path for diff OS
   const librariesPaths = getAllFilePaths(librariesFolderPath);
   const librariesString = librariesPaths.reduce((accumulator, libraryPath) => {
     return `${
@@ -132,13 +132,6 @@ export async function downloadReleaseFiles(
     clearInterval(downloadingTimer);
 
     const serverFolderSize = getFolderSize(serverFolderPath);
-
-    main?.webContents.send('downloaded-size', {
-      progress: 100,
-      downloadedSize: {
-        value: 0,
-      },
-    });
 
     if (serverFolderSize === totalSize) {
       return main?.webContents.send(

@@ -1,7 +1,6 @@
 import { useState, ReactElement } from 'react';
 import { Input, InputProps } from '../Input';
-import closedEyeIcon from '../../../../../assets/icons/closed-eye.svg';
-import eyeIcon from '../../../../../assets/icons/eye.svg';
+import { EyeIcon, ClosedEyeIcon } from '../icons';
 
 export function PasswordInput(props: InputProps): ReactElement {
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -16,7 +15,11 @@ export function PasswordInput(props: InputProps): ReactElement {
         onClick={handleShowPassword}
         type="button"
       >
-        <img src={showPassword ? eyeIcon : closedEyeIcon} alt="show password" />
+        {showPassword ? (
+          <EyeIcon width={24} height={20} />
+        ) : (
+          <ClosedEyeIcon width={24} height={20} />
+        )}
       </button>
     </span>
   );
