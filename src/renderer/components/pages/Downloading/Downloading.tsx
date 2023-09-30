@@ -34,7 +34,7 @@ export function Downloading(): ReactElement {
       return setDownloadingStatus(value);
     }
 
-    if (value.progress === FINISHED_PROGRESS && !value.isVerify) {
+    if (value.progress > FINISHED_PROGRESS) {
       setDownloadingStatus({ ...value, downloadedSize: { value: 0 } });
       launch({ serverName: name, serverIp: ip, username });
     }

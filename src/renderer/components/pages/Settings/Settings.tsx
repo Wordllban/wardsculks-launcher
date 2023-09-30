@@ -9,6 +9,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { Button, Checkbox, InputRange, Layout, ArrowBack } from '../../common';
 import { getSystemMemory, saveMultipleSettingsOptions } from './utils';
 import { ISettings, SettingsList, LauncherLogs } from '../../../../types';
@@ -58,6 +59,7 @@ function Setting(props: SettingProps) {
 }
 
 export function Settings(): ReactElement {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const { t } = useTranslation();
 
@@ -175,7 +177,7 @@ export function Settings(): ReactElement {
 
   const handleSaveSettings = () => {
     saveMultipleSettingsOptions(newSettings, name);
-    getCurrentSettings();
+    navigate('/main-menu');
   };
 
   const hasSettingsChanged: boolean = useMemo(

@@ -18,9 +18,9 @@ export const launch = async ({
     {
       username,
       serverName,
-      memoryInGigabytes: memoryUsage,
-      ...(autoJoin ? { serverIp } : {}),
-      isDebug,
+      memoryInGigabytes: memoryUsage.value,
+      ...(autoJoin.value ? { serverIp } : {}),
+      isDebug: isDebug.value,
     }
   );
 
