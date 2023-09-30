@@ -33,14 +33,12 @@ export function InputRange(props: Props): ReactElement {
       {options && (
         <datalist
           id="memory"
-          className="relative flex w-[320px] justify-between"
+          className="relative flex w-[320px] justify-between [&>*:nth-child(2)]:ml-[-8px]"
         >
           {options.map((option: number) => (
             <option
               key={`datalist-option-${option}`}
-              className={clsx(
-                'w-3 p-0 text-center first:ml-[-8px] first:mr-[6px]'
-              )}
+              className={clsx('w-3 p-0 text-center')}
             >
               {option}
             </option>

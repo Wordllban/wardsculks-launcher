@@ -10,17 +10,12 @@ import {
   downloadReleaseFiles,
   generateLaunchMinecraftCommand,
   getServerFolder,
+  requestServerRelease,
+  saveReleaseFile,
   verifyFolder,
 } from './utils';
 import { getMainWindow } from '../main';
-import { LauncherLogs, ReleaseFileList } from '../../types';
-import getAxios from '../services/axios';
-
-interface IRelease {
-  files: ReleaseFileList;
-  totalSize: number;
-  version: string;
-}
+import { IRelease, LauncherLogs } from '../../types';
 
 ipcMain.on('game-install', async (_, serverInfo: string[]) => {
   const main = getMainWindow();
@@ -30,35 +25,23 @@ ipcMain.on('game-install', async (_, serverInfo: string[]) => {
   // create game folder
   mkdirSync(serverFolderPath, { recursive: true });
 
-  const axios = getAxios();
-
   try {
     // request release
-    const { data: release } = await axios.get<IRelease>(
-      `${process.env.API_URL}/files/servers/${serverId}/releases/latest`,
-      {
-        responseType: 'json',
-      }
-    );
+    const release = await requestServerRelease(serverId);
 
     // save release.json locally
-    // todo: create utility function wrapper for writeFile
-    writeFile(
-      join(serverFolderPath, RELEASE_FILE_NAME),
-      JSON.stringify(release, null, 2),
-      'utf-8',
-      (err) => {
-        if (err) {
-          console.error('Error writing file:', err);
-        } else {
-          console.log(`Release saved successfully.`);
-        }
-      }
-    );
+    await saveReleaseFile(serverFolderPath, release);
 
     const { files, totalSize } = release;
 
-    await downloadReleaseFiles(files, serverFolderPath, totalSize);
+    await downloadReleaseFiles(files, serverFolderPath, totalSize).then(() => {
+      return main?.webContents.send('downloaded-size', {
+        progress: 100,
+        downloadedSize: {
+          value: 0,
+        },
+      });
+    });
   } catch (error) {
     main?.webContents.send('logger', {
       type: LauncherLogs.error,
@@ -84,7 +67,6 @@ ipcMain.handle(
       isUpToDateRelease: boolean;
     }
   ) => {
-    const axios = getAxios();
     const main = getMainWindow();
     const serverFolder = getServerFolder(serverName);
     try {
@@ -103,13 +85,7 @@ ipcMain.handle(
         localRelease = JSON.parse(await readFileAsync(releasePath, 'utf-8'));
       } else {
         // request release
-        const { data } = await axios.get(
-          `${process.env.API_URL}/files/servers/${serverId}/releases/latest`,
-          {
-            responseType: 'json',
-          }
-        );
-        localRelease = JSON.parse(data);
+        localRelease = await requestServerRelease(serverId);
       }
 
       const { files, totalSize } = localRelease;
@@ -223,15 +199,17 @@ ipcMain.on(
         });
       }
 
-      const regex = new RegExp(`(\r\n|\r|\n)${key}:.+`, 'g');
+      const regex = new RegExp(`${EOL}${key}:.+`, 'g');
 
       const modifiedContent = data.replace(regex, `${EOL}${key}:${value}`);
 
       writeFile(optionsPath, modifiedContent, 'utf8', (err) => {
         if (err) {
-          console.error('Error writing file:', err);
-        } else {
-          console.log(`Text replaced successfully.`);
+          return main?.webContents.send('logger', {
+            message: 'Failed to update setting',
+            nativeError: err,
+            type: LauncherLogs.error,
+          });
         }
       });
     });

@@ -8,6 +8,7 @@ import { ProgressBar } from './ProgressBar';
 import { launch } from '../../../utils';
 import { AppDispatch, AppState, addNotification } from '../../../redux';
 import { FINISHED_PROGRESS } from './constants';
+import { MemorySizing } from '../../../../utils';
 
 export function Downloading(): ReactElement {
   const navigate = useNavigate();
@@ -25,20 +26,21 @@ export function Downloading(): ReactElement {
     progress: 0,
     downloadedSize: {
       value: 0,
-      size: 'Bytes',
+      size: MemorySizing.BYTES,
     },
   });
 
-  window.electron.ipcRenderer.on('downloaded-size', (value) => {
-    if (value.progress > downloadingStatus.progress) {
-      return setDownloadingStatus(value);
-    }
+  useEffect(() => {
+    window.electron.ipcRenderer.on('downloaded-size', (value) => {
+      if (value.progress > downloadingStatus.progress) {
+        return setDownloadingStatus(value);
+      }
 
-    if (value.progress > FINISHED_PROGRESS) {
-      setDownloadingStatus({ ...value, downloadedSize: { value: 0 } });
-      launch({ serverName: name, serverIp: ip, username });
-    }
-  });
+      if (value.progress >= FINISHED_PROGRESS) {
+        launch({ serverName: name, serverIp: ip, username });
+      }
+    });
+  }, [downloadingStatus, name, ip, username]);
 
   window.electron.ipcRenderer.on('downloading-log', (message: string): void => {
     if (!logRef.current) return;
@@ -74,7 +76,10 @@ export function Downloading(): ReactElement {
     if (gameFolder) {
       const localReleaseVersion = await window.electron.ipcRenderer.invoke(
         'get-local-release-version',
-        name
+        {
+          serverName: name,
+          serverId: id,
+        }
       );
 
       // verify immutable folders
@@ -125,8 +130,14 @@ export function Downloading(): ReactElement {
               i18nKey="DOWNLOADING_SPEED"
               defaults="{{value}} {{size}}/S"
               values={{
-                value: downloadingStatus.downloadedSize.value,
-                size: downloadingStatus.downloadedSize.size || 'Bytes',
+                value:
+                  downloadingStatus.progress >= FINISHED_PROGRESS
+                    ? 0
+                    : downloadingStatus.downloadedSize.value,
+                size:
+                  downloadingStatus.progress >= FINISHED_PROGRESS
+                    ? MemorySizing.BYTES
+                    : downloadingStatus.downloadedSize.size,
               }}
               components={{ br: <br /> }}
             />

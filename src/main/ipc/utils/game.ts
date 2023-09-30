@@ -1,16 +1,16 @@
 import { dirname, basename, join, sep } from 'path';
 import getAppDataPath from 'appdata-path';
-import { existsSync, mkdirSync } from 'fs';
-
+import { existsSync, mkdirSync, writeFile } from 'fs';
 import promiseLimit from 'p-limit';
 import {
   GAME_FOLDER_NAME,
   MAX_REQUEST_RETRIES,
+  RELEASE_FILE_NAME,
 } from '../../../constants/files';
 import { downloadFile, getAllFilePaths, getFolderSize } from './files';
 import { formatBytes } from '../../../utils';
 import { getMainWindow } from '../../main';
-import { ReleaseFileList } from '../../../types';
+import { IRelease, LauncherLogs, ReleaseFileList } from '../../../types';
 
 export function getServerFolder(serverName: string): string {
   return getAppDataPath(`${GAME_FOLDER_NAME}/${serverName}`);
@@ -81,7 +81,7 @@ export const downloadingProgressSubscription = (
   return setInterval(() => {
     // todo: find a way to optimize this calculation
     const serverFolderSize = getFolderSize(serverFolderPath);
-    const progress = Math.floor((serverFolderSize / totalSize) * 100);
+    const progress = Math.round((serverFolderSize / totalSize) * 100);
     const downloadedSize = formatBytes(
       (serverFolderSize - prevServerFolderSize) / 2,
       1
@@ -133,7 +133,7 @@ export async function downloadReleaseFiles(
 
     const serverFolderSize = getFolderSize(serverFolderPath);
 
-    if (serverFolderSize === totalSize) {
+    if (serverFolderSize >= totalSize) {
       return main?.webContents.send(
         'downloading-log',
         'Installation completed successfully. \n'
@@ -146,3 +146,25 @@ export async function downloadReleaseFiles(
     );
   });
 }
+
+export const saveReleaseFile = async (
+  serverFolderPath: string,
+  release: IRelease
+) => {
+  // todo: create utility function wrapper for writeFile
+  const main = getMainWindow();
+  writeFile(
+    join(serverFolderPath, RELEASE_FILE_NAME),
+    JSON.stringify(release, null, 2),
+    'utf-8',
+    (error) => {
+      if (error) {
+        main?.webContents.send('logger', {
+          message: 'Failed to save release',
+          nativeError: error,
+          type: LauncherLogs.error,
+        });
+      }
+    }
+  );
+};

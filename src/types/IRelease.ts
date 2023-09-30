@@ -8,3 +8,9 @@ export interface IFileInformation {
  * `key` - file location path
  */
 export type ReleaseFileList = Record<string, IFileInformation>;
+
+export interface IRelease {
+  files: ReleaseFileList;
+  totalSize: number;
+  version: string;
+}

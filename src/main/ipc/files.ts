@@ -4,7 +4,12 @@ import { writeFile } from 'fs';
 import { readFile as readFileAsync } from 'fs/promises';
 import { RELEASE_FILE_NAME } from '../../constants/files';
 import MenuBuilder from '../menu';
-import { checkFileExists, getServerFolder } from './utils';
+import {
+  checkFileExists,
+  getServerFolder,
+  requestServerRelease,
+  saveReleaseFile,
+} from './utils';
 import { getMainWindow } from '../main';
 import { LauncherLogs } from '../../types';
 
@@ -80,8 +85,23 @@ ipcMain.on(
   }
 );
 
-ipcMain.handle('get-local-release-version', async (_, serverName: string) => {
-  const releasePath = join(getServerFolder(serverName), RELEASE_FILE_NAME);
-  const release = JSON.parse(await readFileAsync(releasePath, 'utf-8'));
-  return release.version;
-});
+ipcMain.handle(
+  'get-local-release-version',
+  async (
+    _,
+    { serverName, serverId }: { serverName: string; serverId: string }
+  ) => {
+    const serverFolderPath = getServerFolder(serverName);
+    const releasePath = join(serverFolderPath, RELEASE_FILE_NAME);
+
+    const isReleaseFileExists = checkFileExists(releasePath);
+
+    if (isReleaseFileExists) {
+      const release = JSON.parse(await readFileAsync(releasePath, 'utf-8'));
+      return release.version;
+    }
+    const release = await requestServerRelease(serverId);
+    await saveReleaseFile(serverFolderPath, release);
+    return release.version;
+  }
+);

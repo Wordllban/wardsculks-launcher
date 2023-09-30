@@ -13,9 +13,11 @@ import { useNavigate } from 'react-router-dom';
 import { Button, Checkbox, InputRange, Layout, ArrowBack } from '../../common';
 import { getSystemMemory, saveMultipleSettingsOptions } from './utils';
 import { ISettings, SettingsList, LauncherLogs } from '../../../../types';
-import { MIN_MEMORY } from '../../../../constants/settings';
 import { formatBytes } from '../../../../utils';
 import { AppState, addNotification } from '../../../redux';
+
+const MIN_MEMORY = 1;
+const RANGE_STEP_MEMORY = 1;
 
 type SettingProps = {
   title: string;
@@ -209,7 +211,7 @@ export function Settings(): ReactElement {
             min={MIN_MEMORY}
             max={maxMemory}
             options={availableOptions}
-            step={0.5}
+            step={RANGE_STEP_MEMORY}
             onChangeHandler={(e) => {
               setNewSettings((prevState) => ({
                 ...prevState,

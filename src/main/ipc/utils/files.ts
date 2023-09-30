@@ -122,8 +122,7 @@ export function getFolderSize(folderPath: string) {
     files.forEach((file) => {
       const filePath = join(directory, file);
       const stats = statSync(filePath);
-
-      if (stats.isFile()) {
+      if (stats.isFile() && !file.includes('release')) {
         totalSize += stats.size;
       } else if (stats.isDirectory()) {
         calculateFolderSize(filePath);
