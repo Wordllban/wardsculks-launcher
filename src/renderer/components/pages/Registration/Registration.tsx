@@ -96,7 +96,8 @@ export function Registration(): ReactElement {
               }
               minLength={6}
               required
-              errorMessage={t('INVALID_PASSWORD')}
+              pattern="^(?!.*(qwe|QWE|123))(?=.*\d)(?=.*[A-Z]).{6,}$"
+              errorMessage={t('WEAK_PASSWORD')}
             />
             <Input
               name="email"

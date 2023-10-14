@@ -31,6 +31,8 @@ const translation: Resource = {
     SAVE_CHANGES: 'Save',
     INVALID_LOGIN: 'Invalid username',
     INVALID_PASSWORD: 'Invalid password',
+    WEAK_PASSWORD:
+      'Your password must be at least 6 characters long and contain at least 1 number and 1 capital letter. qwe or 123 is too simple',
     INVALID_EMAIL: 'Invalid email',
     REGISTRATION: 'Registration',
     CONFIRM_AGREEMENT: 'I agree with <wrapper>terms</wrapper> of use',

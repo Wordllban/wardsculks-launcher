@@ -32,6 +32,8 @@ const translation: Resource = {
     SAVE_CHANGES: 'Зберегти',
     INVALID_LOGIN: "Неправильне ім'я користувача",
     INVALID_PASSWORD: 'Неправильний пароль',
+    WEAK_PASSWORD:
+      'Ваш пароль повинен містити від 6 символів, мати хоча б 1 цифру та 1 велику літеру. qwe чи 123 - надто просто',
     INVALID_EMAIL: 'Неправильна пошта',
     REGISTRATION: 'Реєстрація',
     CONFIRM_AGREEMENT: 'Я погоджуюсь з <wrapper>правилами</wrapper> проєкту',
