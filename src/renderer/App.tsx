@@ -1,4 +1,4 @@
-import { ReactElement, Suspense } from 'react';
+import { useState, ReactElement, Suspense } from 'react';
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
 import { useSelector } from 'react-redux';
@@ -12,18 +12,25 @@ import {
 } from './components';
 import { AppState, Notifications, ProtectedRoute } from './redux';
 
-function Loader(): ReactElement {
+function GlobalLoader(): ReactElement {
   return (
-    <div className="absolute left-0 top-0 z-[999] flex h-full w-full flex-col items-center justify-center bg-black/80">
+    <div className="absolute left-0 top-0 z-[99] flex h-full w-full flex-col items-center justify-center bg-black/80">
       <div className="loading-animation" />
     </div>
   );
 }
 
 export default function App() {
-  const isLoading: boolean = useSelector(
+  const [appUpdating, setAppUpdating] = useState<boolean>(false);
+  const isFetching: boolean = useSelector(
     (state: AppState) => state.auth.isLoading || state.main.isLoading
   );
+
+  const isLoading = appUpdating || isFetching;
+
+  window.electron.ipcRenderer.on('app-update-downloading', (value: boolean) => {
+    setAppUpdating(value);
+  });
 
   return (
     <div className="relative">
@@ -59,7 +66,7 @@ export default function App() {
         </Router>
         <Notifications />
       </Suspense>
-      {isLoading && <Loader />}
+      {isLoading && <GlobalLoader />}
     </div>
   );
 }

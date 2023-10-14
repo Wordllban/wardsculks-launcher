@@ -13,6 +13,8 @@ const errors: Record<string, string> = {
   GAME_FOLDER_NOT_FOUND: 'Тека гри не знайдена, починаємо встановлення',
   ERROR_DURING_FILE_VERIFICATION:
     'Сталась помилка при перевірці ігрових файлів, будь ласка, спробуйте ще раз',
+  ERROR_DURING_APP_UPDATE:
+    'Не вдалось оновити застосунок, будь ласка, перезапустіть застосунок',
 };
 
 export default errors;

@@ -14,7 +14,9 @@ export type Channels =
   | FilesChannels
   | OsChannels
   | StoreChannels
-  | MenuChannels;
+  | MenuChannels
+  // auto-updater channels
+  | 'app-update-downloading';
 
 const electronHandler = {
   ipcRenderer: {

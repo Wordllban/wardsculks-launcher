@@ -3,6 +3,10 @@ const logs: Record<string, string> = {
   LAUNCHING_GAME: 'Запуск гри, очікуйте',
   SOME_FILES_WAS_BROKEN:
     'Деякі файли гри були пошкоджені, починаємо їх перевстановлення',
+  CHECKING_FOR_APP_UPDATE: 'Перевіряємо версію застосунку...',
+  APP_UPDATE_AVAILABLE: 'Доступна нова версія, починаємо встановлення',
+  APP_UPDATE_DOWNLOADED_RESTART:
+    'Оновлення встановлено успішно, перезапуск застосунку через 3 секунди',
 };
 
 export default logs;

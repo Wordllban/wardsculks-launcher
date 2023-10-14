@@ -1,6 +1,6 @@
 {
   "name": "wardsculks-launcher",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Launcher for WardSculks project. Ukrainian Minecraft servers.",
   "keywords": [
     "electron",
@@ -15,9 +15,10 @@
   "bugs": {
     "url": "https://github.com/Ward-Sculks/electron-launcher/issues"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Ward-Sculks/electron-launcher.git"
+  "repository": "https://github.com/Ward-Sculks/wardsculks-launcher",
+  "publish": {
+    "provider": "github",
+    "releaseType": "release"
   },
   "license": "MIT",
   "main": "./src/main/main.ts",
@@ -177,7 +178,7 @@
   },
   "build": {
     "productName": "WardSculks Launcher",
-    "appId": "org.WardSculks",
+    "appId": "org.wardsculks.com",
     "asar": true,
     "asarUnpack": "**\\*.{node,dll}",
     "files": [
@@ -236,8 +237,8 @@
     ],
     "publish": {
       "provider": "github",
-      "owner": "electron-react-boilerplate",
-      "repo": "electron-react-boilerplate"
+      "owner": "Ward-Sculks",
+      "repo": "wardsculks-launcher"
     }
   },
   "devEngines": {

@@ -48,7 +48,7 @@ function Error(props: MessageProps & { nativeError?: unknown }): ReactElement {
       onMouseLeave={() => onMouse(false)}
     >
       <div
-        className="z-10 min-w-[210px] max-w-[360px] animate-opacity
+        className="z-[100] min-w-[210px] max-w-[360px] animate-opacity
      overflow-x-hidden border-2 border-solid border-red-700 bg-wall p-2 transition-opacity duration-1000"
       >
         {message}
@@ -68,7 +68,7 @@ function Error(props: MessageProps & { nativeError?: unknown }): ReactElement {
       </div>
       <button
         onClick={removeMessage}
-        className="absolute right-3 top-[-0.5rem] z-50"
+        className="absolute right-3 top-[-0.5rem] z-[150]"
         type="button"
       >
         <CloseIcon width={20} height={20} />
@@ -89,14 +89,14 @@ function Log(props: MessageProps): ReactElement {
       onMouseLeave={() => onMouse(false)}
     >
       <div
-        className="z-10 min-w-[210px] max-w-[360px] animate-opacity
+        className="z-[100] min-w-[210px] max-w-[360px] animate-opacity
      overflow-x-hidden border-2 border-solid border-main bg-wall p-2 transition-opacity duration-1000"
       >
         {message}
       </div>
       <button
         onClick={removeMessage}
-        className="absolute right-3 top-[-0.5rem] z-50"
+        className="absolute right-3 top-[-0.5rem] z-[150]"
         type="button"
       >
         <CloseIcon width={20} height={20} />
@@ -117,14 +117,14 @@ function Warning(props: MessageProps): ReactElement {
       onMouseLeave={() => onMouse(false)}
     >
       <div
-        className="z-10 min-w-[210px] max-w-[360px] animate-opacity
+        className="z-[100] min-w-[210px] max-w-[360px] animate-opacity
      overflow-x-hidden border-2 border-solid border-orange-500 bg-wall p-2 transition-opacity duration-1000"
       >
         {message}
       </div>
       <button
         onClick={removeMessage}
-        className="absolute right-3 top-[-0.5rem] z-50"
+        className="absolute right-3 top-[-0.5rem] z-[150]"
         type="button"
       >
         <CloseIcon width={20} height={20} />

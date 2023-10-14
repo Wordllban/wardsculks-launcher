@@ -11,6 +11,7 @@ const errors: Record<string, string> = {
   GAME_FOLDER_NOT_FOUND: 'Game folder not found, starting installation',
   ERROR_DURING_FILE_VERIFICATION:
     'Error during file verification, please try again',
+  ERROR_DURING_APP_UPDATE: 'Error during app update, please make app re-start',
 };
 
 export default errors;
