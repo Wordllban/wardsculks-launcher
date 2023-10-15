@@ -1,6 +1,6 @@
 import { dirname, basename, join, sep } from 'path';
-import getAppDataPath from 'appdata-path';
 import { existsSync, mkdirSync, writeFile } from 'fs';
+import getAppDataPath from 'appdata-path';
 import promiseLimit from 'p-limit';
 import {
   GAME_FOLDER_NAME,
@@ -16,7 +16,7 @@ export function getServerFolder(serverName: string): string {
   return getAppDataPath(`${GAME_FOLDER_NAME}/${serverName}`);
 }
 
-export async function generateLaunchMinecraftCommand({
+export async function generateLaunchMinecraftCommandFabric({
   username,
   memoryInGigabytes,
   serverName,
@@ -59,6 +59,76 @@ export async function generateLaunchMinecraftCommand({
   const parameters = `${immutableParameters} ${assetIndexParameter} ${usernameParameter} ${autoConnectParameter}`;
   return `cd ${serverFolderPath}
   ${executableText} ${variables} net.fabricmc.loader.impl.launch.knot.KnotClient ${parameters}
+  ${isDebug ? 'pause' : ''}`;
+}
+
+export async function generateLaunchMinecraftCommand({
+  username,
+  memoryInGigabytes,
+  serverName,
+  serverIp,
+  isDebug,
+}: {
+  username: string;
+  memoryInGigabytes: number;
+  serverName: string;
+  serverIp?: string;
+  isDebug: boolean;
+}): Promise<string> {
+  const serverFolderPath = getServerFolder(serverName);
+  const librariesFolderPath = join(serverFolderPath, 'libraries');
+  const executableText = isDebug
+    ? join(serverFolderPath, 'jre', 'bin', 'java.exe')
+    : `start ${join(serverFolderPath, 'jre', 'bin', 'javaw.exe')}`;
+  // todo: get java path for diff OS
+  const librariesPaths = getAllFilePaths(librariesFolderPath);
+  const librariesStrings = librariesPaths.reduce(
+    (accumulator: string[], libraryPath) => {
+      if (
+        libraryPath.includes(`oceanlabs`) ||
+        libraryPath.includes(`minecraft${sep}client`) ||
+        libraryPath.includes('ForgeAutoRenamingTool') ||
+        libraryPath.includes('google')
+      ) {
+        return accumulator;
+      }
+
+      const newPath = libraryPath
+        .replace(`${serverFolderPath + sep}`, '')
+        .replace(/\\[^\\]+$/, '\\*');
+
+      if (accumulator.includes(newPath)) {
+        return accumulator;
+      }
+      return [...accumulator, newPath];
+    },
+    []
+  );
+  const librariesString = librariesStrings.reduce(
+    (accumulator, libraryString) => {
+      return `${accumulator + libraryString};`;
+    },
+    ''
+  );
+  const librariesVariable = `-cp "libraries${sep}com${sep}google${sep}code${sep}findbugs${sep}jsr305${sep}3.0.2${sep}*;libraries${sep}com${sep}google${sep}code${sep}gson${sep}gson${sep}2.8.7${sep}*;libraries${sep}com${sep}google${sep}code${sep}gson${sep}gson${sep}2.8.9${sep}*;libraries${sep}com${sep}google${sep}errorprone${sep}error_prone_annotations${sep}2.1.3${sep}*;libraries${sep}com${sep}google${sep}guava${sep}failureaccess${sep}1.0.1${sep}*;libraries${sep}com${sep}google${sep}guava${sep}guava${sep}31.0.1-jre${sep}*;libraries${sep}com${sep}google${sep}j2objc${sep}j2objc-annotations${sep}1.1${sep}*;${librariesString}"`;
+  const memoryVariable = `-Xmx${memoryInGigabytes}G`;
+  const immutableVariables =
+    '-XX:+UnlockExperimentalVMOptions -XX:+UseG1GC -XX:G1NewSizePercent=20 -XX:G1ReservePercent=20 -XX:MaxGCPauseMillis=50 -XX:G1HeapRegionSize=32M';
+  const pVariables = `-p "libraries/cpw/mods/bootstraplauncher/1.1.2/bootstraplauncher-1.1.2.jar;libraries/cpw/mods/securejarhandler/2.1.4/securejarhandler-2.1.4.jar;libraries/org/ow2/asm/asm-commons/9.5/asm-commons-9.5.jar;libraries/org/ow2/asm/asm-util/9.5/asm-util-9.5.jar;libraries/org/ow2/asm/asm-analysis/9.5/asm-analysis-9.5.jar;libraries/org/ow2/asm/asm-tree/9.5/asm-tree-9.5.jar;libraries/org/ow2/asm/asm/9.5/asm-9.5.jar;libraries/net/minecraftforge/JarJarFileSystems/0.3.16/JarJarFileSystems-0.3.16.jar"`;
+  const dVariables = `-Djava.net.preferIPv6Addresses=system -DignoreList=bootstraplauncher,securejarhandler,asm-commons,asm-util,asm-analysis,asm-tree,asm,JarJarFileSystems,client-extra,fmlcore,javafmllanguage,lowcodelanguage,mclanguage,forge-,1.19.2-forge-43.3.0.jar -DmergeModules=jna-5.10.0.jar,jna-platform-5.10.0.jar -DlibraryDirectory=libraries${sep}`;
+  const addVariables = `--add-modules ALL-MODULE-PATH --add-opens java.base/java.util.jar=cpw.mods.securejarhandler --add-opens java.base/java.lang.invoke=cpw.mods.securejarhandler --add-exports java.base/sun.security.util=cpw.mods.securejarhandler --add-exports jdk.naming.dns/com.sun.jndi.dns=java.naming`;
+  const variables = `${memoryVariable} ${immutableVariables} ${librariesVariable} ${dVariables} ${pVariables} ${addVariables}`;
+  const immutableParameters =
+    '--gameDir . --assetsDir assets --accessToken 0 --launchTarget forgeclient --fml.forgeGroup net.minecraftforge --fml.forgeVersion 43.3.2 --fml.mcVersion 1.19.2 --fml.mcpVersion 20220805.130853 --version release';
+  const assetIndexVersion = basename(
+    getAllFilePaths(join(serverFolderPath, 'assets', 'indexes'))[0]
+  ).replace('.json', '');
+  const assetIndexParameter = `--assetIndex ${assetIndexVersion}`;
+  const usernameParameter = `--username ${username}`;
+  const autoConnectParameter = serverIp ? `--server ${serverIp}` : '';
+  const parameters = `${immutableParameters} ${assetIndexParameter} ${usernameParameter} ${autoConnectParameter}`;
+  return `cd ${serverFolderPath}
+  ${executableText} ${variables} cpw.mods.bootstraplauncher.BootstrapLauncher ${parameters}
   ${isDebug ? 'pause' : ''}`;
 }
 
