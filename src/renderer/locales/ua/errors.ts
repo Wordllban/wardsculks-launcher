@@ -5,7 +5,6 @@ const errors: Record<string, string> = {
   FAILED_TO_REGISTER: 'Не вдалось зареєструватись',
   FAILED_TO_GET_SETTINGS: 'Не вдалось отримати поточні налаштування',
   FAILED_TO_GET_SYSTEM_MEMORY: "Не вдалось отримати об'єм ОЗУ системи",
-
   FAILED_TO_GET_SERVERS_LIST: 'Не вдалось отримати список доступних серверів',
   SESSION_EXPIRED_PLEASE_RELOGIN:
     'Час сеансу вичерпаний. Будь ласка, увійдіть ще раз',
@@ -15,6 +14,7 @@ const errors: Record<string, string> = {
     'Сталась помилка при перевірці ігрових файлів, будь ласка, спробуйте ще раз',
   ERROR_DURING_APP_UPDATE:
     'Не вдалось оновити застосунок, будь ласка, перезапустіть застосунок',
+  FAILED_TO_GET_SERVER_INFO: 'Не вдалось отримати інформацію про сервер',
 };
 
 export default errors;

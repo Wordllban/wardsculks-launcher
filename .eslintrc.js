@@ -22,6 +22,7 @@ module.exports = {
     'consistent-return': 'off',
     'react-hooks/exhaustive-deps': 'off',
     'prefer-destructuring': 'off',
+    'no-new': 'off',
   },
   plugins: ['@typescript-eslint'],
   parserOptions: {

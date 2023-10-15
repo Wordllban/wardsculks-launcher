@@ -9,6 +9,8 @@ import { IServer } from '../../../types';
 import {
   AppDispatch,
   AppState,
+  getServerOnline,
+  requestJavaServerInfo,
   requestServers,
   selectServer,
 } from '../../../redux';
@@ -19,6 +21,7 @@ export function Main(): ReactElement {
   const { availableServers, selectedServer } = useSelector(
     (state: AppState) => state.main
   );
+  const serverOnline = useSelector(getServerOnline);
 
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -31,6 +34,7 @@ export function Main(): ReactElement {
 
   useEffect(() => {
     dispatch(requestServers());
+    dispatch(requestJavaServerInfo());
   }, []);
 
   return (
@@ -64,7 +68,7 @@ export function Main(): ReactElement {
             {t('START_GAME')}
           </Button>
           <p className="mt-5 text-center">
-            {t('ONLINE')} <span className="glow-text">{256}</span>
+            {t('ONLINE')} <span className="glow-text">{serverOnline}</span>
           </p>
         </div>
         <Frame className="px-4 py-8">

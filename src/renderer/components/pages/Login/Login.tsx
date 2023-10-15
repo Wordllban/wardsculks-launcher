@@ -29,7 +29,13 @@ import {
   IRefreshAccessResponse,
   IRetrieveTokensResponse,
 } from '../../../services/api';
-import { addNotification, AppDispatch, AppState } from '../../../redux';
+import {
+  addNotification,
+  AppDispatch,
+  AppState,
+  getServerOnline,
+  requestJavaServerInfo,
+} from '../../../redux';
 
 export function Login(): ReactElement {
   const dispatch = useDispatch<AppDispatch>();
@@ -38,8 +44,9 @@ export function Login(): ReactElement {
 
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
-
   const [isSavePassword, setSavePassword] = useState<boolean>(false);
+
+  const serverOnline = useSelector(getServerOnline);
 
   const handleSavePassword = (): void => {
     setSavePassword(!isSavePassword);
@@ -126,6 +133,10 @@ export function Login(): ReactElement {
     login();
   }, []);
 
+  useEffect(() => {
+    dispatch(requestJavaServerInfo());
+  }, []);
+
   return (
     <Layout mainBackground="bg-login-bg">
       <div className="flex h-full items-center gap-10">
@@ -196,9 +207,9 @@ export function Login(): ReactElement {
           <img src={logo} alt="wardsculks" />
           <p className="text-center">
             {/**
-             * TODO: Fetch real live online
+             * if we will have multiple servers in future, we will need to sum online from all servers of remove this
              */}
-            {t('ONLINE')} <span className="glow-text">{256}</span>
+            {t('ONLINE')} <span className="glow-text">{serverOnline}</span>
           </p>
         </div>
       </div>

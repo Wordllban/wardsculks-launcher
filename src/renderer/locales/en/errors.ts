@@ -5,13 +5,14 @@ const errors: Record<string, string> = {
   FAILED_TO_REGISTER: 'Failed to register',
   FAILED_TO_GET_SETTINGS: 'Failed to get settings',
   FAILED_TO_GET_SYSTEM_MEMORY: 'Failed to get system memory size',
-  FAILED_TO_GET_SERVERS_LIST: 'Failed to retrieve list of accessible servers',
+  FAILED_TO_GET_SERVERS_LIST: 'Failed to retrieve list of available servers',
   SESSION_EXPIRED_PLEASE_RELOGIN: 'Session expired. Please, login again',
   ERROR_DURING_INSTALLATION: 'Error during installation',
   GAME_FOLDER_NOT_FOUND: 'Game folder not found, starting installation',
   ERROR_DURING_FILE_VERIFICATION:
     'Error during file verification, please try again',
   ERROR_DURING_APP_UPDATE: 'Error during app update, please make app re-start',
+  FAILED_TO_GET_SERVER_INFO: 'Failed to retrieve server information',
 };
 
 export default errors;

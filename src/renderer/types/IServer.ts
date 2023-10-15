@@ -6,3 +6,13 @@ export interface IServer {
   ip: string;
   version: string;
 }
+
+export interface IServerInfo {
+  online: boolean;
+  host: string;
+  players: {
+    online: number;
+    max: number;
+    list: [];
+  };
+}

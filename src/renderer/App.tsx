@@ -23,7 +23,8 @@ function GlobalLoader(): ReactElement {
 export default function App() {
   const [appUpdating, setAppUpdating] = useState<boolean>(false);
   const isFetching: boolean = useSelector(
-    (state: AppState) => state.auth.isLoading || state.main.isLoading
+    (state: AppState) =>
+      state.auth.isLoading || state.main.isLoading || state.server.isLoading
   );
 
   const isLoading = appUpdating || isFetching;
