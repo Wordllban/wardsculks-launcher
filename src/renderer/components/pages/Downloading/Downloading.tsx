@@ -28,19 +28,30 @@ export function Downloading(): ReactElement {
       value: 0,
       size: MemorySizing.BYTES,
     },
+    firstTimeDownloading: false,
   });
 
   useEffect(() => {
     window.electron.ipcRenderer.on('downloaded-size', (value) => {
-      if (value.progress > downloadingStatus.progress) {
-        return setDownloadingStatus(value);
-      }
-
-      if (value.progress >= FINISHED_PROGRESS) {
-        launch({ serverName: name, serverIp: ip, username });
-      }
+      return setDownloadingStatus(value);
     });
-  }, [downloadingStatus, name, ip, username]);
+  }, []);
+
+  useEffect(() => {
+    if (
+      downloadingStatus.progress >= FINISHED_PROGRESS &&
+      downloadingStatus.firstTimeDownloading
+    ) {
+      console.log('launching', downloadingStatus.firstTimeDownloading);
+      launch({ serverName: name, serverIp: ip, username });
+    }
+  }, [
+    downloadingStatus.progress,
+    downloadingStatus.downloadedSize.size,
+    name,
+    ip,
+    username,
+  ]);
 
   window.electron.ipcRenderer.on('downloading-log', (message: string): void => {
     if (!logRef.current) return;
@@ -93,6 +104,8 @@ export function Downloading(): ReactElement {
         }
       );
 
+      console.log('isVerified: ', isVerified);
+
       if (isVerified) {
         launch({
           serverName: name,
@@ -114,6 +127,7 @@ export function Downloading(): ReactElement {
   }, [ip, name, id, version, immutableFolders, username]);
 
   useEffect(() => {
+    console.log('handleStart:::');
     handleStartGame();
   }, []);
 

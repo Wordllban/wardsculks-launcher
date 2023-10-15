@@ -160,6 +160,7 @@ export const downloadingProgressSubscription = (
     main?.webContents.send('downloaded-size', {
       progress,
       downloadedSize,
+      firstTimeDownloading: false,
     });
     prevServerFolderSize = serverFolderSize;
   }, interval);
@@ -209,11 +210,6 @@ export async function downloadReleaseFiles(
         'Installation completed successfully. \n'
       );
     }
-
-    return main?.webContents.send(
-      'downloading-log',
-      'Something went wrong. Try again. \n'
-    );
   });
 }
 

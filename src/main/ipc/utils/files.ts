@@ -209,9 +209,9 @@ export async function verifyFolder(
 ) {
   const main = getMainWindow();
 
-  const filesToReinstall = filterObjectKeys(files, (keyToCheck: string) =>
-    keyToCheck.includes(basename(folderPath))
-  );
+  const filesToReinstall = filterObjectKeys(files, (keyToCheck: string) => {
+    return keyToCheck.startsWith(basename(folderPath));
+  });
 
   try {
     const filePaths = getAllFilePaths(folderPath, true);

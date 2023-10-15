@@ -1,6 +1,6 @@
 {
   "name": "wardsculks-launcher",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Launcher for WardSculks project. Ukrainian Minecraft servers.",
   "keywords": [
     "electron",

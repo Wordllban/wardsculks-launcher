@@ -57,16 +57,18 @@ export function Menu(): ReactElement {
       >
         <HideIcon />
       </button>
-      <button
-        className={clsx(
-          'flex h-10 w-12 cursor-pointer items-center justify-center hover:bg-main/30',
-          'window-menu-button'
-        )}
-        onClick={handleMinMax}
-        type="button"
-      >
-        {isMaximized ? <MinimizeIcon /> : <MaximizeIcon />}
-      </button>
+      {window.env.NODE_ENV === 'development' && (
+        <button
+          className={clsx(
+            'flex h-10 w-12 cursor-pointer items-center justify-center hover:bg-main/30',
+            'window-menu-button'
+          )}
+          onClick={handleMinMax}
+          type="button"
+        >
+          {isMaximized ? <MinimizeIcon /> : <MaximizeIcon />}
+        </button>
+      )}
       <button
         className={clsx(
           'flex h-10 w-12 cursor-pointer items-center justify-center hover:bg-red-600/80',

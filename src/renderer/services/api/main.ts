@@ -16,7 +16,7 @@ export interface IRequestJavaServerInfoResponse extends IServerInfo {}
 
 export const getJavaSeverInfo = async (): Promise<any> => {
   const info = await fetch(
-    'https://api.mcstatus.io/v2/status/java/mc.wardsculks'
+    'https://api.mcstatus.io/v2/status/java/mc.wardsculks.me'
   ).then((response) => response.json());
 
   return info;

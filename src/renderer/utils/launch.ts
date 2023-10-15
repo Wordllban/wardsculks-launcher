@@ -31,6 +31,7 @@ export const launch = async ({
     content: commandString,
   });
 
+  console.log('launching:::');
   window.electron.ipcRenderer.sendMessage('execute-file', {
     path: 'launch.bat',
     serverName,

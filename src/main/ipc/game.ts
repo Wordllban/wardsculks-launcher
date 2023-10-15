@@ -40,6 +40,7 @@ ipcMain.on('game-install', async (_, serverInfo: string[]) => {
         downloadedSize: {
           value: 0,
         },
+        firstTimeDownloading: true,
       });
     });
   } catch (error) {
@@ -69,6 +70,17 @@ ipcMain.handle(
   ) => {
     const main = getMainWindow();
     const serverFolder = getServerFolder(serverName);
+
+    const finishedMessage = () => {
+      main?.webContents.send('downloaded-size', {
+        progress: 100,
+        downloadedSize: {
+          value: 0,
+        },
+        firstTimeDownloading: false,
+      });
+    };
+
     try {
       main?.webContents.send(
         'downloading-log',
@@ -94,17 +106,10 @@ ipcMain.handle(
         return join(serverFolder, folderName);
       });
 
-      let filesToReinstall = {};
-
-      await Promise.all(
-        foldersPaths.map(async (folderPath) => {
-          const damagedFiles = await verifyFolder(
-            folderPath,
-            files,
-            serverFolder
-          );
-          filesToReinstall = { ...filesToReinstall, ...damagedFiles };
-        })
+      const [filesToReinstall] = await Promise.all(
+        foldersPaths.map(async (folderPath) =>
+          verifyFolder(folderPath, files, serverFolder)
+        )
       );
 
       if (Object.keys(filesToReinstall).length) {
@@ -117,24 +122,22 @@ ipcMain.handle(
           filesToReinstall,
           serverFolder,
           totalSize,
-          300
+          500
         );
+
+        finishedMessage();
+        return true;
       } else {
         await sleep(3000);
         main?.webContents.send('downloading-log', 'Ready to start! \n');
-        main?.webContents.send('downloaded-size', {
-          progress: 100,
-          downloadedSize: {
-            value: 0,
-          },
-        });
         main?.webContents.send('logger', {
           key: 'FOLDER_VERIFICATION_PASSED',
           type: LauncherLogs.log,
         });
-      }
 
-      return true;
+        finishedMessage();
+        return true;
+      }
     } catch (error) {
       main?.webContents.send('logger', {
         key: 'ERROR_DURING_FILE_VERIFICATION',
