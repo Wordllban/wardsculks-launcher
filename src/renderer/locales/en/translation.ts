@@ -22,7 +22,8 @@ const translation: Resource = {
     START_GAME: 'Start',
     WELCOME: 'Welcome, <br /> {{username}}',
     DEBUG_MODE: 'Debug',
-    DEBUG_MODE_DESCRIPTION: 'Enable debug mode for client startup',
+    DEBUG_MODE_DESCRIPTION:
+      'A debug file will be created in the server folder on game launch',
     AUTO_JOIN_SERVER: 'Auto Join',
     AUTO_JOIN_SERVER_DESCRIPTION: 'Automatically join the server on startup',
     FULLSCREEN_MODE: 'Fullscreen Mode',

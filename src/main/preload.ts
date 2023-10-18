@@ -7,6 +7,7 @@ import {
   OsChannels,
   AuthChannels,
   FilesChannels,
+  GameChannels,
 } from './ipc/types';
 
 export type Channels =
@@ -15,6 +16,7 @@ export type Channels =
   | OsChannels
   | StoreChannels
   | MenuChannels
+  | GameChannels
   // auto-updater channels
   | 'app-update-downloading';
 

@@ -28,6 +28,7 @@ import {
   IGetUserFromTokenResponse,
   IRefreshAccessResponse,
   IRetrieveTokensResponse,
+  IUser,
 } from '../../../services/api';
 import {
   addNotification,
@@ -63,7 +64,11 @@ export function Login(): ReactElement {
     const { access, refresh } = response as IRetrieveTokensResponse;
 
     if (access && refresh) {
-      await dispatch(requestUser(access));
+      const user = (await dispatch(requestUser(access))).payload as IUser;
+      if (!user || !user?.id) {
+        dispatch(logout());
+        return;
+      }
       window.electron.ipcRenderer.sendMessage('save-access-token', [access]);
       if (isSavePassword) {
         window.electron.ipcRenderer.sendMessage('save-refresh-token', [

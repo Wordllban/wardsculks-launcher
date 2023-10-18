@@ -210,6 +210,7 @@ export async function downloadReleaseFiles(
         'Installation completed successfully. \n'
       );
     }
+    return null;
   });
 }
 

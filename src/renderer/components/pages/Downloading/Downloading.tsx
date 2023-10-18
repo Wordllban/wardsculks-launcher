@@ -42,7 +42,6 @@ export function Downloading(): ReactElement {
       downloadingStatus.progress >= FINISHED_PROGRESS &&
       downloadingStatus.firstTimeDownloading
     ) {
-      console.log('launching', downloadingStatus.firstTimeDownloading);
       launch({ serverName: name, serverIp: ip, username });
     }
   }, [
@@ -104,8 +103,6 @@ export function Downloading(): ReactElement {
         }
       );
 
-      console.log('isVerified: ', isVerified);
-
       if (isVerified) {
         launch({
           serverName: name,
@@ -127,7 +124,6 @@ export function Downloading(): ReactElement {
   }, [ip, name, id, version, immutableFolders, username]);
 
   useEffect(() => {
-    console.log('handleStart:::');
     handleStartGame();
   }, []);
 
@@ -157,7 +153,7 @@ export function Downloading(): ReactElement {
             />
           </span>
           <div
-            className="h-48 w-[80%] grow overflow-x-auto bg-black/60 p-4 text-xs"
+            className="h-48 w-[80%] grow select-text overflow-x-auto bg-black/60 p-4 text-xs"
             ref={logRef}
           />
         </div>

@@ -43,7 +43,7 @@ function Error(props: MessageProps & { nativeError?: unknown }): ReactElement {
 
   return (
     <div
-      className="relative"
+      className="relative select-text"
       onMouseEnter={() => onMouse(true)}
       onMouseLeave={() => onMouse(false)}
     >
@@ -61,7 +61,9 @@ function Error(props: MessageProps & { nativeError?: unknown }): ReactElement {
               {t(!showNativeError ? 'SHOW_NATIVE_ERROR' : 'HIDE_NATIVE_ERROR')}
             </button>
             {showNativeError ? (
-              <div className="text-wrap flex max-w-[360px]">{`${nativeError}`}</div>
+              <div className="text-wrap flex max-w-[360px]">{`${JSON.stringify(
+                nativeError
+              )}`}</div>
             ) : null}
           </div>
         ) : null}
@@ -84,7 +86,7 @@ function Log(props: MessageProps): ReactElement {
 
   return (
     <div
-      className="relative"
+      className="relative select-text"
       onMouseEnter={() => onMouse(true)}
       onMouseLeave={() => onMouse(false)}
     >
@@ -112,7 +114,7 @@ function Warning(props: MessageProps): ReactElement {
 
   return (
     <div
-      className="relative"
+      className="relative select-text"
       onMouseEnter={() => onMouse(true)}
       onMouseLeave={() => onMouse(false)}
     >

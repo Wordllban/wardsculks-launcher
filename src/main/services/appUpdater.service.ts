@@ -27,7 +27,7 @@ export default class AppUpdater {
     autoUpdater.on('error', (message) => {
       main.webContents.send('logger', {
         key: 'ERROR_DURING_APP_UPDATE',
-        nativeError: JSON.stringify(message),
+        nativeError: message,
         type: 'error',
       });
       handleLoading(false);

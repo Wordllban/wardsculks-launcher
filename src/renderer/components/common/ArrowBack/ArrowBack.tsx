@@ -41,7 +41,10 @@ export function ArrowBack(props: Props): ReactElement {
     <>
       <button
         onClick={handleGoBack}
-        className={clsx('window-menu-button cursor-pointer p-4', position)}
+        className={clsx(
+          'window-menu-button flex h-10 w-11 cursor-pointer items-center p-4 hover:bg-main/30',
+          position
+        )}
         tabIndex={0}
         onKeyDown={(event: KeyboardEvent) => {
           if (event.key === 'Enter') handleGoBack();
