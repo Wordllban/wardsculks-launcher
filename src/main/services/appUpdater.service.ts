@@ -1,6 +1,6 @@
 import { autoUpdater } from 'electron-updater';
 import { BrowserWindow } from 'electron';
-import { sleep } from '../util';
+import { sleep } from '../../utils';
 
 /**
  * App auto-updater service. Use it only inside `main` process.

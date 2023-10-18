@@ -7,7 +7,7 @@ import { promisify } from 'util';
 import { spawn } from 'child_process';
 import { store } from '../services';
 import { LAUNCH_OPTIONS_FILE, RELEASE_FILE_NAME } from '../../constants/files';
-import { sleep } from '../util';
+import { sleep } from '../../utils';
 import {
   downloadReleaseFiles,
   generateLaunchMinecraftCommand,
@@ -112,15 +112,8 @@ ipcMain.handle(
       // for new releases we verifying whole game
       const foldersPaths = [serverFolder];
 
-      const filesToIgnore = ['release.json', 'debugger'];
       const [filesToReinstall] = await Promise.all(
         foldersPaths.map(async (folderPath) => {
-          const isIgnoredFile = filesToIgnore.some((ignore) =>
-            folderPath.includes(ignore)
-          );
-
-          if (isIgnoredFile) return {};
-
           return verifyFolder(
             folderPath,
             files,
@@ -129,7 +122,7 @@ ipcMain.handle(
           );
         })
       );
-      console.log('all: ', filesToReinstall);
+
       if (Object.keys(filesToReinstall).length) {
         main?.webContents.send('logger', {
           key: 'SOME_FILES_WAS_BROKEN',
@@ -268,7 +261,9 @@ ipcMain.handle(
       serverIp?: string;
     }
   ) => {
-    const main = getMainWindow();
+    //const main = getMainWindow();
+    // isDebug is not in use right now, due to Forge issues
+    // todo: make debug to start game with console
     const { memoryUsage, autoJoin, isDebug } = store.getAll();
 
     const command = await generateLaunchMinecraftCommand({
@@ -291,11 +286,11 @@ ipcMain.handle(
     const gameProcess = spawn(args[2], args.slice(3), {
       detached: true,
       cwd: serverFolder,
+      stdio: 'inherit',
     });
 
-    if (isDebug.value) {
+    /*     if (isDebug.value) {
       const debugFilePath = join(serverFolder, 'debugger.txt');
-
       // clear previous debug file, or create if it not exists
       writeFile(debugFilePath, '', (error) => {
         if (error) {
@@ -307,7 +302,7 @@ ipcMain.handle(
         }
       });
 
-      gameProcess.stdout.on('data', (data) => {
+      gameProcess.stdout?.on('data', (data) => {
         appendFile(debugFilePath, data.toString() + EOL, (error) => {
           if (error) {
             main?.webContents.send('logger', {
@@ -318,7 +313,7 @@ ipcMain.handle(
           }
         });
       });
-    }
+    } */
 
     gameProcess.unref();
   }

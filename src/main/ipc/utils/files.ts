@@ -9,7 +9,7 @@ import {
 } from 'fs';
 import { createHash } from 'crypto';
 import { basename, join, relative } from 'path';
-import { sleep } from '../../util';
+import { sleep } from '../../../utils';
 import { getMainWindow } from '../../main';
 import { LauncherLogs, ReleaseFileList } from '../../../types';
 
