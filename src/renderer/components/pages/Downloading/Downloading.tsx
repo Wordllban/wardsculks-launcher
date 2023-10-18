@@ -96,7 +96,7 @@ export function Downloading(): ReactElement {
       const isVerified = await window.electron.ipcRenderer.invoke(
         'verify-folders',
         {
-          foldersNames: immutableFolders,
+          immutableFolders,
           serverName: name,
           serverId: id,
           isUpToDateRelease: version === localReleaseVersion,

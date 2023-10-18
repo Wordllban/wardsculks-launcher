@@ -59,12 +59,12 @@ ipcMain.handle(
   async (
     _,
     {
-      foldersNames,
+      immutableFolders,
       serverName,
       serverId,
       isUpToDateRelease,
     }: {
-      foldersNames: string[];
+      immutableFolders: string[];
       serverName: string;
       serverId: string;
       isUpToDateRelease: boolean;
@@ -91,6 +91,7 @@ ipcMain.handle(
 
       let localRelease: IRelease;
 
+      // request release if it is outdated
       if (isUpToDateRelease) {
         const releasePath = join(
           getServerFolder(serverName),
@@ -98,22 +99,37 @@ ipcMain.handle(
         );
         localRelease = JSON.parse(await readFileAsync(releasePath, 'utf-8'));
       } else {
-        // request release
         localRelease = await requestServerRelease(serverId);
       }
 
       const { files, totalSize } = localRelease;
 
-      const foldersPaths = foldersNames.map((folderName: string) => {
+      /* const foldersPaths = isUpToDateRelease
+      ? foldersNames.map((folderName: string) => {
         return join(serverFolder, folderName);
-      });
+      })
+      : [serverFolder]; */
+      // for new releases we verifying whole game
+      const foldersPaths = [serverFolder];
 
+      const filesToIgnore = ['release.json', 'debugger'];
       const [filesToReinstall] = await Promise.all(
-        foldersPaths.map(async (folderPath) =>
-          verifyFolder(folderPath, files, serverFolder)
-        )
-      );
+        foldersPaths.map(async (folderPath) => {
+          const isIgnoredFile = filesToIgnore.some((ignore) =>
+            folderPath.includes(ignore)
+          );
 
+          if (isIgnoredFile) return {};
+
+          return verifyFolder(
+            folderPath,
+            files,
+            serverFolder,
+            immutableFolders
+          );
+        })
+      );
+      console.log('all: ', filesToReinstall);
       if (Object.keys(filesToReinstall).length) {
         main?.webContents.send('logger', {
           key: 'SOME_FILES_WAS_BROKEN',
