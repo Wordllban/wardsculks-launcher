@@ -9,6 +9,7 @@ type FilesChannels =
   | 'verify-folders'
   | 'update-launch-options'
   | 'create-file'
+  | 'delete-file'
   | 'check-exists'
   | 'execute-file'
   | 'get-local-release-version';

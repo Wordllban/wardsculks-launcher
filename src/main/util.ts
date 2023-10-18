@@ -25,10 +25,3 @@ export function resolveFilesURL(fileName: string) {
 export function resolveFilesPath(fileName: string) {
   return `${path.resolve(__dirname, '../../assets/files', fileName)}`;
 }
-
-export async function sleep(sleepTime: number): Promise<null> {
-  await new Promise((resolve) => {
-    setTimeout(resolve, sleepTime);
-  });
-  return null;
-}

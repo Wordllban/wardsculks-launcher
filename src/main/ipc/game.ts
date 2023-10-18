@@ -1,11 +1,13 @@
 import { ipcMain } from 'electron';
 import { join } from 'path';
-import { mkdirSync, readFile, writeFile, stat } from 'fs';
+import { mkdirSync, readFile, appendFile, writeFile, stat } from 'fs';
 import { readFile as readFileAsync } from 'fs/promises';
 import { EOL } from 'os';
 import { promisify } from 'util';
+import { spawn } from 'child_process';
+import { store } from '../services';
 import { LAUNCH_OPTIONS_FILE, RELEASE_FILE_NAME } from '../../constants/files';
-import { sleep } from '../util';
+import { sleep } from '../../utils';
 import {
   downloadReleaseFiles,
   generateLaunchMinecraftCommand,
@@ -57,12 +59,12 @@ ipcMain.handle(
   async (
     _,
     {
-      foldersNames,
+      immutableFolders,
       serverName,
       serverId,
       isUpToDateRelease,
     }: {
-      foldersNames: string[];
+      immutableFolders: string[];
       serverName: string;
       serverId: string;
       isUpToDateRelease: boolean;
@@ -89,6 +91,7 @@ ipcMain.handle(
 
       let localRelease: IRelease;
 
+      // request release if it is outdated
       if (isUpToDateRelease) {
         const releasePath = join(
           getServerFolder(serverName),
@@ -96,20 +99,28 @@ ipcMain.handle(
         );
         localRelease = JSON.parse(await readFileAsync(releasePath, 'utf-8'));
       } else {
-        // request release
         localRelease = await requestServerRelease(serverId);
       }
 
       const { files, totalSize } = localRelease;
 
-      const foldersPaths = foldersNames.map((folderName: string) => {
+      /* const foldersPaths = isUpToDateRelease
+      ? foldersNames.map((folderName: string) => {
         return join(serverFolder, folderName);
-      });
+      })
+      : [serverFolder]; */
+      // for new releases we verifying whole game
+      const foldersPaths = [serverFolder];
 
       const [filesToReinstall] = await Promise.all(
-        foldersPaths.map(async (folderPath) =>
-          verifyFolder(folderPath, files, serverFolder)
-        )
+        foldersPaths.map(async (folderPath) => {
+          return verifyFolder(
+            folderPath,
+            files,
+            serverFolder,
+            immutableFolders
+          );
+        })
       );
 
       if (Object.keys(filesToReinstall).length) {
@@ -127,17 +138,16 @@ ipcMain.handle(
 
         finishedMessage();
         return true;
-      } else {
-        await sleep(3000);
-        main?.webContents.send('downloading-log', 'Ready to start! \n');
-        main?.webContents.send('logger', {
-          key: 'FOLDER_VERIFICATION_PASSED',
-          type: LauncherLogs.log,
-        });
-
-        finishedMessage();
-        return true;
       }
+      await sleep(3000);
+      main?.webContents.send('downloading-log', 'Ready to start! \n');
+      main?.webContents.send('logger', {
+        key: 'FOLDER_VERIFICATION_PASSED',
+        type: LauncherLogs.log,
+      });
+
+      finishedMessage();
+      return true;
     } catch (error) {
       main?.webContents.send('logger', {
         key: 'ERROR_DURING_FILE_VERIFICATION',
@@ -236,3 +246,75 @@ ipcMain.handle('find-game-folder', async (_, serverName: string) => {
     });
   }
 });
+
+ipcMain.handle(
+  'launch-game',
+  async (
+    _,
+    {
+      username,
+      serverName,
+      serverIp,
+    }: {
+      username: string;
+      serverName: string;
+      serverIp?: string;
+    }
+  ) => {
+    //const main = getMainWindow();
+    // isDebug is not in use right now, due to Forge issues
+    // todo: make debug to start game with console
+    const { memoryUsage, autoJoin, isDebug } = store.getAll();
+
+    const command = await generateLaunchMinecraftCommand({
+      username,
+      serverName,
+      memoryInGigabytes: memoryUsage.value,
+      ...(autoJoin.value ? { serverIp } : {}),
+      isDebug: isDebug.value,
+    });
+
+    const serverFolder = getServerFolder(serverName);
+    const args = command
+      .split(' ')
+      // remove empty arguments
+      .filter((arg) => arg.length > 0)
+      .map((arg) => {
+        return arg.replaceAll('"', '').trim();
+      });
+
+    const gameProcess = spawn(args[2], args.slice(3), {
+      detached: true,
+      cwd: serverFolder,
+      stdio: 'inherit',
+    });
+
+    /*     if (isDebug.value) {
+      const debugFilePath = join(serverFolder, 'debugger.txt');
+      // clear previous debug file, or create if it not exists
+      writeFile(debugFilePath, '', (error) => {
+        if (error) {
+          main?.webContents.send('logger', {
+            key: 'FAILED_TO_CREATE_DEBUG_FILE',
+            nativeError: error,
+            type: LauncherLogs.error,
+          });
+        }
+      });
+
+      gameProcess.stdout?.on('data', (data) => {
+        appendFile(debugFilePath, data.toString() + EOL, (error) => {
+          if (error) {
+            main?.webContents.send('logger', {
+              key: 'FAILED_TO_CREATE_DEBUG_FILE',
+              nativeError: error,
+              type: LauncherLogs.error,
+            });
+          }
+        });
+      });
+    } */
+
+    gameProcess.unref();
+  }
+);

@@ -9,7 +9,7 @@ import {
 } from 'fs';
 import { createHash } from 'crypto';
 import { basename, join, relative } from 'path';
-import { sleep } from '../../util';
+import { sleep } from '../../../utils';
 import { getMainWindow } from '../../main';
 import { LauncherLogs, ReleaseFileList } from '../../../types';
 
@@ -205,14 +205,21 @@ export function getAllFilePaths(
 export async function verifyFolder(
   folderPath: string,
   files: ReleaseFileList,
-  serverPath: string
+  serverPath: string,
+  immutableFolders: string[]
 ) {
   const main = getMainWindow();
 
-  const filesToReinstall = filterObjectKeys(files, (keyToCheck: string) => {
-    return keyToCheck.startsWith(basename(folderPath));
-  });
+  // we passing whole server folder to verify when new release
+  /* const isNewRelease = folderPath === serverPath;
 
+  const filesToReinstall = isNewRelease
+    ? files
+    : filterObjectKeys(files, (keyToCheck: string) => {
+        return keyToCheck.startsWith(basename(folderPath));
+      }); */
+
+  const filesToReinstall = files;
   try {
     const filePaths = getAllFilePaths(folderPath, true);
 
@@ -230,8 +237,13 @@ export async function verifyFolder(
             delete filesToReinstall[relativePath];
           }
         } else {
-          // remove unnecessary file
-          unlinkSync(file);
+          // remove unnecessary file from immutable folders
+          const inImmutableFolder = immutableFolders.some((folder: string) =>
+            relativePath.includes(folder)
+          );
+          if (inImmutableFolder) {
+            unlinkSync(file);
+          }
         }
       })
     );

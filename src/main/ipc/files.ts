@@ -1,7 +1,10 @@
 import { ipcMain, BrowserWindow, shell } from 'electron';
 import { join } from 'path';
-import { writeFile } from 'fs';
-import { readFile as readFileAsync } from 'fs/promises';
+import {
+  readFile as readFileAsync,
+  writeFile as writeFileAsync,
+  unlink as unlinkAsync,
+} from 'fs/promises';
 import { RELEASE_FILE_NAME } from '../../constants/files';
 import MenuBuilder from '../menu';
 import {
@@ -32,9 +35,9 @@ ipcMain.on('open-remote-file', async (_, url) => {
   window.loadURL(url);
 });
 
-ipcMain.on(
+ipcMain.handle(
   'create-file',
-  (
+  async (
     _,
     {
       path = '',
@@ -55,7 +58,7 @@ ipcMain.on(
     const serverFolder = getServerFolder(serverName);
     const filePath = join(join(serverFolder, path), `${name}.${format}`);
 
-    writeFile(filePath, content, 'utf-8', (error) => {
+    await writeFileAsync(filePath, content, 'utf-8').catch((error) => {
       if (error) {
         main?.webContents.send('logger', {
           message: 'Failed to create file',
@@ -76,12 +79,15 @@ ipcMain.handle(
   }
 );
 
-ipcMain.on(
+ipcMain.handle(
   'execute-file',
-  (_, { path, serverName }: { path: string; serverName: string }) => {
+  async (
+    _,
+    { filePath, serverName }: { filePath: string; serverName: string }
+  ) => {
     const serverFolder = getServerFolder(serverName);
-    const filePath = join(serverFolder, path);
-    shell.openPath(filePath);
+    const path = join(serverFolder, filePath);
+    return shell.openPath(path);
   }
 );
 
@@ -105,3 +111,14 @@ ipcMain.handle(
     return release.version;
   }
 );
+
+ipcMain.handle('delete-file', async (_, { serverName, filePath }) => {
+  const serverFolder = getServerFolder(serverName);
+  const path = join(serverFolder, filePath);
+
+  const isExists = checkFileExists(path);
+
+  if (isExists) {
+    return unlinkAsync(path);
+  }
+});

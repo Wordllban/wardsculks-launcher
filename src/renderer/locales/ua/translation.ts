@@ -22,7 +22,8 @@ const translation: Resource = {
     START_GAME: 'Почати гру',
     WELCOME: 'Вітаємо, <br /> {{username}}',
     DEBUG_MODE: 'Налагодження',
-    DEBUG_MODE_DESCRIPTION: 'Увімкнути режим налагодження для запуску клієнта',
+    DEBUG_MODE_DESCRIPTION:
+      'Під час запуску гри буде створений файл налагодження у папці серверу',
     AUTO_JOIN_SERVER: 'Автоматичний вхід',
     AUTO_JOIN_SERVER_DESCRIPTION:
       'Увімкнути автоматичний вхід на сервер при запуску клієнта',

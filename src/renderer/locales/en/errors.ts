@@ -13,6 +13,7 @@ const errors: Record<string, string> = {
     'Error during file verification, please try again',
   ERROR_DURING_APP_UPDATE: 'Error during app update, please make app re-start',
   FAILED_TO_GET_SERVER_INFO: 'Failed to retrieve server information',
+  FAILED_TO_CREATE_DEBUG_FILE: 'Failed to create debug file',
 };
 
 export default errors;

@@ -15,6 +15,7 @@ const errors: Record<string, string> = {
   ERROR_DURING_APP_UPDATE:
     'Не вдалось оновити застосунок, будь ласка, перезапустіть застосунок',
   FAILED_TO_GET_SERVER_INFO: 'Не вдалось отримати інформацію про сервер',
+  FAILED_TO_CREATE_DEBUG_FILE: 'Не вдалось створити файл налагодження',
 };
 
 export default errors;

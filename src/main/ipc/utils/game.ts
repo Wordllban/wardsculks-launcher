@@ -77,9 +77,8 @@ export async function generateLaunchMinecraftCommand({
 }): Promise<string> {
   const serverFolderPath = getServerFolder(serverName);
   const librariesFolderPath = join(serverFolderPath, 'libraries');
-  const executableText = isDebug
-    ? join(serverFolderPath, 'jre', 'bin', 'java.exe')
-    : `start ${join(serverFolderPath, 'jre', 'bin', 'javaw.exe')}`;
+  const executableText = join(serverFolderPath, 'jre', 'bin', 'java.exe');
+
   // todo: get java path for diff OS
   const librariesPaths = getAllFilePaths(librariesFolderPath);
   const librariesStrings = librariesPaths.reduce(
@@ -129,7 +128,7 @@ export async function generateLaunchMinecraftCommand({
   const parameters = `${immutableParameters} ${assetIndexParameter} ${usernameParameter} ${autoConnectParameter}`;
   return `cd ${serverFolderPath}
   ${executableText} ${variables} cpw.mods.bootstraplauncher.BootstrapLauncher ${parameters}
-  ${isDebug ? 'pause' : ''}`;
+  ${isDebug && 'pause'}`;
 }
 
 /**
@@ -210,6 +209,7 @@ export async function downloadReleaseFiles(
         'Installation completed successfully. \n'
       );
     }
+    return null;
   });
 }
 
