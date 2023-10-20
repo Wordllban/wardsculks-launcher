@@ -1,6 +1,6 @@
 import { ipcMain } from 'electron';
 import { join } from 'path';
-import { mkdirSync, readFile, appendFile, writeFile, stat } from 'fs';
+import { mkdirSync, readFile, /* appendFile, */ writeFile, stat } from 'fs';
 import { readFile as readFileAsync } from 'fs/promises';
 import { EOL } from 'os';
 import { promisify } from 'util';
@@ -261,7 +261,7 @@ ipcMain.handle(
       serverIp?: string;
     }
   ) => {
-    //const main = getMainWindow();
+    // const main = getMainWindow();
     // isDebug is not in use right now, due to Forge issues
     // todo: make debug to start game with console
     const { memoryUsage, autoJoin, isDebug } = store.getAll();

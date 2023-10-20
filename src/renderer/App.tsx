@@ -9,6 +9,7 @@ import {
   Settings,
   Downloading,
   Menu,
+  ForgotPassword,
 } from './components';
 import { AppState, Notifications, ProtectedRoute } from './redux';
 
@@ -59,10 +60,7 @@ export default function App() {
               }
             />
             <Route index path="/downloading" element={<Downloading />} />
-            <Route
-              path="/forgot-password"
-              element={<h1 className="bg-black">RESET PASSOWORD</h1>}
-            />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
           </Routes>
         </Router>
         <Notifications />
