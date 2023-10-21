@@ -218,6 +218,12 @@ export async function verifyFolder(
         return keyToCheck.startsWith(basename(folderPath));
       }); */
 
+  /**
+   * temp hardcoded array of files to ignore checks
+   * todo: delete it when release.json will contain files to ignore field
+   */
+  const filesToIgnore: string[] = ['options.txt', 'client-config.snbt'];
+
   const filesToReinstall = files;
   try {
     const filePaths = getAllFilePaths(folderPath, true);
@@ -225,6 +231,16 @@ export async function verifyFolder(
     await Promise.all(
       filePaths.map(async (file) => {
         const relativePath = relative(serverPath, file).replaceAll('\\', '/');
+
+        if (
+          filesToIgnore.some((toIgnore: string) =>
+            relativePath.includes(toIgnore)
+          )
+        ) {
+          delete filesToReinstall[relativePath];
+          return;
+        }
+
         const fileInfo = files[relativePath];
 
         if (fileInfo) {

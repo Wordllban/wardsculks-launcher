@@ -262,8 +262,6 @@ ipcMain.handle(
     }
   ) => {
     // const main = getMainWindow();
-    // isDebug is not in use right now, due to Forge issues
-    // todo: make debug to start game with console
     const { memoryUsage, autoJoin, isDebug } = store.getAll();
 
     const command = await generateLaunchMinecraftCommand({

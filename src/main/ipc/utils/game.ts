@@ -1,4 +1,4 @@
-import { dirname, basename, join, sep } from 'path';
+import { dirname, basename, join, sep, normalize } from 'path';
 import { existsSync, mkdirSync, writeFile } from 'fs';
 import getAppDataPath from 'appdata-path';
 import promiseLimit from 'p-limit';
@@ -75,7 +75,7 @@ export async function generateLaunchMinecraftCommand({
   serverIp?: string;
   isDebug: boolean;
 }): Promise<string> {
-  const serverFolderPath = getServerFolder(serverName);
+  const serverFolderPath = normalize(getServerFolder(serverName));
   const librariesFolderPath = join(serverFolderPath, 'libraries');
   const executableText = join(serverFolderPath, 'jre', 'bin', 'java.exe');
 
@@ -126,7 +126,9 @@ export async function generateLaunchMinecraftCommand({
   const usernameParameter = `--username ${username}`;
   const autoConnectParameter = serverIp ? `--server ${serverIp}` : '';
   const parameters = `${immutableParameters} ${assetIndexParameter} ${usernameParameter} ${autoConnectParameter}`;
-  return `cd ${serverFolderPath}
+
+  return `chcp 65001
+  cd ${serverFolderPath}
   ${executableText} ${variables} cpw.mods.bootstraplauncher.BootstrapLauncher ${parameters}
   ${isDebug && 'pause'}`;
 }
