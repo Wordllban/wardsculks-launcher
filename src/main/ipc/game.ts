@@ -281,7 +281,7 @@ ipcMain.handle(
         return arg.replaceAll('"', '').trim();
       });
 
-    const gameProcess = spawn(args[2], args.slice(3), {
+    const gameProcess = spawn(args[4], args.slice(5), {
       detached: true,
       cwd: serverFolder,
       stdio: 'inherit',
