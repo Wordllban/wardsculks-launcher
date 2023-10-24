@@ -49,7 +49,7 @@ ipcMain.on('game-install', async (_, serverInfo: string[]) => {
     main?.webContents.send('logger', {
       type: LauncherLogs.error,
       key: 'ERROR_DURING_INSTALLATION',
-      nativeError: (error as Error).message,
+      nativeError: JSON.stringify(error),
     });
   }
 });
@@ -152,7 +152,7 @@ ipcMain.handle(
       main?.webContents.send('logger', {
         key: 'ERROR_DURING_FILE_VERIFICATION',
         type: LauncherLogs.error,
-        nativeError: (error as Error).message,
+        nativeError: JSON.stringify(error),
       });
     }
   }
@@ -207,7 +207,7 @@ ipcMain.on(
       if (error) {
         return main?.webContents.send('logger', {
           message: 'Failed to update setting',
-          nativeError: error,
+          nativeError: JSON.stringify(error),
           type: LauncherLogs.error,
         });
       }
@@ -220,7 +220,7 @@ ipcMain.on(
         if (err) {
           return main?.webContents.send('logger', {
             message: 'Failed to update setting',
-            nativeError: err,
+            nativeError: JSON.stringify(error),
             type: LauncherLogs.error,
           });
         }
@@ -241,7 +241,6 @@ ipcMain.handle('find-game-folder', async (_, serverName: string) => {
   } catch (error) {
     main?.webContents.send('logger', {
       key: 'GAME_FOLDER_NOT_FOUND',
-      nativeError: (error as Error).message,
       type: LauncherLogs.warning,
     });
   }
@@ -294,7 +293,7 @@ ipcMain.handle(
         if (error) {
           main?.webContents.send('logger', {
             key: 'FAILED_TO_CREATE_DEBUG_FILE',
-            nativeError: error,
+            nativeError: JSON.stringify(error),
             type: LauncherLogs.error,
           });
         }
@@ -305,7 +304,7 @@ ipcMain.handle(
           if (error) {
             main?.webContents.send('logger', {
               key: 'FAILED_TO_CREATE_DEBUG_FILE',
-              nativeError: error,
+              nativeError: JSON.stringify(error),
               type: LauncherLogs.error,
             });
           }

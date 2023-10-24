@@ -62,7 +62,7 @@ ipcMain.handle(
       if (error) {
         main?.webContents.send('logger', {
           message: 'Failed to create file',
-          nativeError: error,
+          nativeError: JSON.stringify(error),
           type: LauncherLogs.error,
         });
       }

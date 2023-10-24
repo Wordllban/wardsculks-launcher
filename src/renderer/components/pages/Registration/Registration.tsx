@@ -52,7 +52,7 @@ export function Registration(): ReactElement {
         addNotification({
           message: t('FAILED_TO_REGISTER'),
           type: LauncherLogs.error,
-          nativeError: response,
+          nativeError: JSON.stringify(response),
         })
       );
     }

@@ -1,6 +1,7 @@
 import { useState, useEffect, ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
+import clsx from 'clsx';
 import { ILauncherLog, LauncherLogs } from '../../../types';
 import { AppState } from '../store';
 import { addNotification, removeNotification } from './notifications.slice';
@@ -34,12 +35,22 @@ type MessageProps = {
   removeMessage: () => void;
 };
 
-function Error(props: MessageProps & { nativeError?: unknown }): ReactElement {
+function Error(props: MessageProps & { nativeError?: string }): ReactElement {
   const { t } = useTranslation();
   const { message, nativeError, removeMessage } = props;
   const [showNativeError, setShowNativeError] = useState<boolean>(false);
 
   const onMouse = useNotificationLifeCycle(removeMessage);
+
+  /**
+   * we are receiving native errors as unserialized string
+   * because of IPC restrictions
+   * so we are serializing it back to object
+   */
+  const parsedNativeError = nativeError ? JSON.parse(nativeError) : {};
+  const nativeErrorKeys = parsedNativeError
+    ? Object.keys(parsedNativeError)
+    : [];
 
   return (
     <div
@@ -48,8 +59,12 @@ function Error(props: MessageProps & { nativeError?: unknown }): ReactElement {
       onMouseLeave={() => onMouse(false)}
     >
       <div
-        className="z-[100] min-w-[210px] max-w-[360px] animate-opacity
-     overflow-x-hidden border-2 border-solid border-red-700 bg-wall p-2 transition-opacity duration-1000"
+        className={clsx(
+          'z-[100] min-w-[210px]  p-2',
+          'animate-opacity overflow-x-hidden transition-opacity duration-1000',
+          'whitespace-normal border-2 border-solid border-red-700 bg-wall',
+          showNativeError ? 'max-h-[360px] max-w-[720px]' : 'max-w-[360px]'
+        )}
       >
         {message}
         {nativeError ? (
@@ -61,9 +76,15 @@ function Error(props: MessageProps & { nativeError?: unknown }): ReactElement {
               {t(!showNativeError ? 'SHOW_NATIVE_ERROR' : 'HIDE_NATIVE_ERROR')}
             </button>
             {showNativeError ? (
-              <div className="text-wrap flex max-w-[360px]">{`${JSON.stringify(
-                nativeError
-              )}`}</div>
+              <ul className="mt-4 max-w-[360px]">
+                {nativeErrorKeys.map((errorKey: string) => {
+                  return (
+                    <li className="text-wrap" key={errorKey}>
+                      {errorKey}: <span>{parsedNativeError[errorKey]}</span>
+                    </li>
+                  );
+                })}
+              </ul>
             ) : null}
           </div>
         ) : null}

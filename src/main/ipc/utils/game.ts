@@ -229,7 +229,7 @@ export const saveReleaseFile = async (
       if (error) {
         main?.webContents.send('logger', {
           message: 'Failed to save release',
-          nativeError: error,
+          nativeError: JSON.stringify(error),
           type: LauncherLogs.error,
         });
       }

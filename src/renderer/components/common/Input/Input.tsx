@@ -2,6 +2,7 @@ import { InputHTMLAttributes, ReactElement, useState } from 'react';
 import clsx from 'clsx';
 
 export type InputProps = {
+  fullWidth?: boolean;
   errorMessage?: string;
   className?: string;
 } & InputHTMLAttributes<HTMLInputElement>;
@@ -16,6 +17,7 @@ export function Input(props: InputProps): ReactElement {
     maxLength = 999,
     pattern,
     required = false,
+    fullWidth = false,
     errorMessage,
     className,
   } = props;
@@ -23,7 +25,7 @@ export function Input(props: InputProps): ReactElement {
   const [isFocused, setIsFocused] = useState<boolean>(false);
 
   return (
-    <span className="flex flex-col">
+    <span className={clsx('flex flex-col', { 'w-full': fullWidth })}>
       <input
         name={name}
         placeholder={placeholder}

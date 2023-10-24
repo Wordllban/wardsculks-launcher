@@ -20,7 +20,8 @@
   }
 
   .text-wrap {
-    text-wrap: 'wrap';
+    text-wrap: wrap;
+    overflow-wrap: break-word;
   }
 
   .window-menu {

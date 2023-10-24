@@ -15,8 +15,8 @@ import {
   Input,
   Layout,
   PasswordInput,
+  ServerOnline,
 } from '../../common';
-import logo from '../../../../../assets/icons/logo-big.svg';
 import { LauncherLogs } from '../../../../types';
 import {
   logout,
@@ -34,7 +34,6 @@ import {
   addNotification,
   AppDispatch,
   AppState,
-  getServerOnline,
   requestJavaServerInfo,
 } from '../../../redux';
 
@@ -46,8 +45,6 @@ export function Login(): ReactElement {
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [isSavePassword, setSavePassword] = useState<boolean>(false);
-
-  const serverOnline = useSelector(getServerOnline);
 
   const handleSavePassword = (): void => {
     setSavePassword(!isSavePassword);
@@ -127,7 +124,7 @@ export function Login(): ReactElement {
           addNotification({
             type: LauncherLogs.error,
             message: t('SESSION_EXPIRED_PLEASE_RELOGIN'),
-            nativeError: error,
+            nativeError: JSON.stringify(error),
           })
         );
         dispatch(logout());
@@ -144,7 +141,7 @@ export function Login(): ReactElement {
 
   return (
     <Layout mainBackground="bg-login-bg">
-      <div className="flex h-full items-center gap-10">
+      <div className="flex h-full items-center gap-[26px]">
         <Frame className="max-w-[245px] px-7 py-8">
           <div className="flex flex-col items-start justify-center">
             <h1 className="w-full text-center text-lg">{t('LOGIN')}</h1>
@@ -209,13 +206,7 @@ export function Login(): ReactElement {
           </div>
         </Frame>
         <div className="flex h-full flex-col items-center justify-end">
-          <img src={logo} alt="wardsculks" />
-          <p className="text-center">
-            {/**
-             * if we will have multiple servers in future, we will need to sum online from all servers of remove this
-             */}
-            {t('ONLINE')} <span className="glow-text">{serverOnline}</span>
-          </p>
+          <ServerOnline />
         </div>
       </div>
     </Layout>

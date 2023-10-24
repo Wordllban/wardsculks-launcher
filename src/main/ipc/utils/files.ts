@@ -104,7 +104,7 @@ export const sha256 = (filePath: string): Promise<string> => {
     read.on('error', (error) => {
       main?.webContents.send('logger', {
         message: 'Failed to read file',
-        nativeError: error,
+        nativeError: JSON.stringify(error),
         type: LauncherLogs.error,
       });
       reject(error);
@@ -151,7 +151,7 @@ export async function verifyFileHash(
   } catch (error) {
     main?.webContents.send('logger', {
       key: 'SOME_FILES_WAS_BROKEN',
-      nativeError: error,
+      nativeError: JSON.stringify(error),
       type: LauncherLogs.error,
     });
     return false;
@@ -267,7 +267,7 @@ export async function verifyFolder(
   } catch (error) {
     main?.webContents.send('logger', {
       key: 'ERROR_DURING_FILE_VERIFICATION',
-      nativeError: error,
+      nativeError: JSON.stringify(error),
       type: LauncherLogs.error,
     });
 

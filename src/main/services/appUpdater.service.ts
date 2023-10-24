@@ -1,6 +1,7 @@
 import { autoUpdater } from 'electron-updater';
 import { BrowserWindow } from 'electron';
 import { sleep } from '../../utils';
+import { LauncherLogs } from '../../types';
 
 /**
  * App auto-updater service. Use it only inside `main` process.
@@ -24,11 +25,11 @@ export default class AppUpdater {
     /**
      * EVENTS
      */
-    autoUpdater.on('error', (message) => {
+    autoUpdater.on('error', (error) => {
       main.webContents.send('logger', {
         key: 'ERROR_DURING_APP_UPDATE',
-        nativeError: message,
-        type: 'error',
+        nativeError: JSON.stringify(error),
+        type: LauncherLogs.error,
       });
       handleLoading(false);
     });
@@ -36,7 +37,7 @@ export default class AppUpdater {
     autoUpdater.on('checking-for-update', () => {
       main.webContents.send('logger', {
         key: 'CHECKING_FOR_APP_UPDATE',
-        type: 'log',
+        type: LauncherLogs.log,
       });
       handleLoading(true);
     });
@@ -44,7 +45,7 @@ export default class AppUpdater {
     autoUpdater.on('update-available', () => {
       main.webContents.send('logger', {
         key: 'APP_UPDATE_AVAILABLE',
-        type: 'log',
+        type: LauncherLogs.log,
       });
       handleLoading(true);
     });
@@ -56,7 +57,7 @@ export default class AppUpdater {
     autoUpdater.on('update-downloaded', async () => {
       main.webContents.send('logger', {
         key: 'APP_UPDATE_DOWNLOADED_RESTART',
-        type: 'log',
+        type: LauncherLogs.log,
       });
       await sleep(3000);
       autoUpdater.quitAndInstall();

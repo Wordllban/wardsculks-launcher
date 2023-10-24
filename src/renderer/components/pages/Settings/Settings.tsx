@@ -84,7 +84,7 @@ export function Settings(): ReactElement {
         dispatch(
           addNotification({
             message: t('FAILED_TO_GET_SETTINGS'),
-            nativeError: error,
+            nativeError: JSON.stringify(error),
             type: LauncherLogs.error,
           })
         )
@@ -105,7 +105,7 @@ export function Settings(): ReactElement {
         dispatch(
           addNotification({
             message: t('FAILED_TO_GET_SYSTEM_MEMORY'),
-            nativeError: error,
+            nativeError: JSON.stringify(error),
             type: LauncherLogs.error,
           })
         )
