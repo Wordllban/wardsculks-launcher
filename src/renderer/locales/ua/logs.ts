@@ -7,6 +7,8 @@ const logs: Record<string, string> = {
   APP_UPDATE_AVAILABLE: 'Доступна нова версія, починаємо встановлення',
   APP_UPDATE_DOWNLOADED_RESTART:
     'Оновлення встановлено успішно, перезапуск застосунку через 3 секунди',
+  APP_WILL_AUTOMATICALLY_CLOSE:
+    'Застосунок закриється самостійно коли гра запуститься',
 };
 
 export default logs;

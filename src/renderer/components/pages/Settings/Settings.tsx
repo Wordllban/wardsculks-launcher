@@ -31,7 +31,7 @@ function Setting(props: SettingProps) {
   const { title, description, initialValue, disabled, onCheckbox } = props;
   return (
     <div
-      className={clsx('mb-5 flex flex-col items-start', {
+      className={clsx('flex flex-col items-start [&:not(:last-child)]:mb-5', {
         'cursor-not-allowed opacity-50': disabled,
       })}
     >
@@ -173,6 +173,21 @@ export function Settings(): ReactElement {
           }));
         },
       },
+      {
+        name: 'closeOnGameStart',
+        title: t('CLOSE_LAUNCHER_ON_GAME_START'),
+        description: t('CLOSE_LAUNCHER_ON_GAME_START_DESCRIPTION'),
+        initialValue: newSettings[SettingsList.closeOnGameStart]?.value,
+        onCheckbox: () => {
+          setNewSettings((prevState) => ({
+            ...prevState,
+            [SettingsList.closeOnGameStart]: {
+              value: !newSettings[SettingsList.closeOnGameStart].value,
+              type: newSettings[SettingsList.closeOnGameStart].type,
+            },
+          }));
+        },
+      },
     ],
     [t, newSettings]
   );
@@ -192,8 +207,6 @@ export function Settings(): ReactElement {
       }),
     [newSettings]
   );
-
-  // add type launch setting & in-game setting
 
   return (
     <Layout mainBackground="bg-settings-bg">
@@ -226,9 +239,11 @@ export function Settings(): ReactElement {
               newSettings[SettingsList.maxMemoryUsage]?.value
             )}
           />
-          {settingsWithCheckboxes.map((setting) => (
-            <Setting {...setting} key={`${setting.name}-setting`} />
-          ))}
+          <div className="max-w-[300px]">
+            {settingsWithCheckboxes.map((setting) => (
+              <Setting {...setting} key={`${setting.name}-setting`} />
+            ))}
+          </div>
           {/* feature: ability to change game folder */}
           {/* <div className="flex items-center">
             <span className="mr-5 text-xs text-main">

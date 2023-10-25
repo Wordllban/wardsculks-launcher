@@ -61,7 +61,7 @@ function Error(props: MessageProps & { nativeError?: string }): ReactElement {
       <div
         className={clsx(
           'z-[100] min-w-[210px]  p-2',
-          'animate-opacity overflow-x-hidden transition-opacity duration-1000',
+          'animate-opacity overflow-x-hidden transition-all duration-1000',
           'whitespace-normal border-2 border-solid border-red-700 bg-wall',
           showNativeError ? 'max-h-[360px] max-w-[720px]' : 'max-w-[360px]'
         )}
@@ -113,7 +113,7 @@ function Log(props: MessageProps): ReactElement {
     >
       <div
         className="z-[100] min-w-[210px] max-w-[360px] animate-opacity
-     overflow-x-hidden border-2 border-solid border-main bg-wall p-2 transition-opacity duration-1000"
+     overflow-x-hidden border-2 border-solid border-main bg-wall p-2 transition-all duration-1000"
       >
         {message}
       </div>
@@ -141,7 +141,7 @@ function Warning(props: MessageProps): ReactElement {
     >
       <div
         className="z-[100] min-w-[210px] max-w-[360px] animate-opacity
-     overflow-x-hidden border-2 border-solid border-orange-500 bg-wall p-2 transition-opacity duration-1000"
+     overflow-x-hidden border-2 border-solid border-orange-500 bg-wall p-2 transition-all duration-1000"
       >
         {message}
       </div>

@@ -29,6 +29,8 @@ const translation: Resource = {
       'Увімкнути автоматичний вхід на сервер при запуску клієнта',
     FULLSCREEN_MODE: 'Повноекранний режим',
     FULLSCREEN_MODE_DESCRIPTION: 'Увімкнути повноекранний режим у грі',
+    CLOSE_LAUNCHER_ON_GAME_START: 'Закрити застосунок при запуску гри',
+    CLOSE_LAUNCHER_ON_GAME_START_DESCRIPTION: 'Не працює у режимі налагодження',
     CHANGE_PATH: 'Змінити',
     SAVE_CHANGES: 'Зберегти',
     INVALID_LOGIN: "Неправильне ім'я користувача",

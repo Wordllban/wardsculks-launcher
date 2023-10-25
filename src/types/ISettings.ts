@@ -1,6 +1,4 @@
 /**
- * `isInitial` - boolean, if initial key doesn't exists in config,
- *  it's first time user opens app
  *
  * `maxMemoryUsage` - number, maximum memory that can be used by Minecraft
  *
@@ -11,11 +9,11 @@
  */
 
 export enum SettingsList {
-  isInitial = 'isInitial',
   maxMemoryUsage = 'memoryUsage',
   isFullScreen = 'fullscreen',
   isAutoJoin = 'autoJoin',
   isDebug = 'isDebug',
+  closeOnGameStart = 'closeOnGameStart',
 }
 
 export enum SETTINGS_TYPE {
@@ -24,10 +22,6 @@ export enum SETTINGS_TYPE {
 }
 
 export interface ISettings {
-  [SettingsList.isInitial]: {
-    value: boolean;
-    type: SETTINGS_TYPE.LAUNCH;
-  };
   /**
    * LAUNCH SETTINGS
    */
@@ -40,6 +34,10 @@ export interface ISettings {
     type: SETTINGS_TYPE.LAUNCH;
   };
   [SettingsList.isDebug]: {
+    value: boolean;
+    type: SETTINGS_TYPE.LAUNCH;
+  };
+  [SettingsList.closeOnGameStart]: {
     value: boolean;
     type: SETTINGS_TYPE.LAUNCH;
   };

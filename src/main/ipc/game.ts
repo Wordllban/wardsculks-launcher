@@ -1,4 +1,4 @@
-import { ipcMain } from 'electron';
+import { ipcMain, app } from 'electron';
 import { join } from 'path';
 import { mkdirSync, readFile, /* appendFile, */ writeFile, stat } from 'fs';
 import { readFile as readFileAsync } from 'fs/promises';
@@ -260,8 +260,8 @@ ipcMain.handle(
       serverIp?: string;
     }
   ) => {
-    // const main = getMainWindow();
-    const { memoryUsage, autoJoin, isDebug } = store.getAll();
+    const main = getMainWindow();
+    const { memoryUsage, autoJoin, isDebug, closeOnGameStart } = store.getAll();
 
     const command = await generateLaunchMinecraftCommand({
       username,
@@ -313,5 +313,16 @@ ipcMain.handle(
     } */
 
     gameProcess.unref();
+
+    if (closeOnGameStart) {
+      await sleep(3000);
+      main?.webContents.send('logger', {
+        key: 'APP_WILL_AUTOMATICALLY_CLOSE',
+        type: LauncherLogs.log,
+      });
+      await sleep(5000);
+
+      app.quit();
+    }
   }
 );

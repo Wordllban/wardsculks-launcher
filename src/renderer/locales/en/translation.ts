@@ -28,6 +28,8 @@ const translation: Resource = {
     AUTO_JOIN_SERVER_DESCRIPTION: 'Automatically join the server on startup',
     FULLSCREEN_MODE: 'Fullscreen Mode',
     FULLSCREEN_MODE_DESCRIPTION: 'Enable the fullscreen mode',
+    CLOSE_LAUNCHER_ON_GAME_START: 'Close app on game start',
+    CLOSE_LAUNCHER_ON_GAME_START_DESCRIPTION: 'Does not work in debug mode',
     CHANGE_PATH: 'Change',
     SAVE_CHANGES: 'Save',
     INVALID_LOGIN: 'Invalid username',

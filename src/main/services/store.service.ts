@@ -18,6 +18,10 @@ class StoreService {
         value: false,
         type: SETTINGS_TYPE.LAUNCH,
       },
+      closeOnGameStart: {
+        value: false,
+        type: SETTINGS_TYPE.LAUNCH,
+      },
       fullscreen: {
         value: false,
         type: SETTINGS_TYPE.GAME,
