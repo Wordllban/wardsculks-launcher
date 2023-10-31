@@ -1,3 +1,4 @@
+import { SERVER_STATUS_API_URL } from 'constants/files';
 import { IServer, IServerInfo } from '../../types/IServer';
 import client from '../client.service';
 
@@ -14,10 +15,10 @@ export const getAvailableServers = async (): Promise<
 
 export interface IRequestJavaServerInfoResponse extends IServerInfo {}
 
-export const getJavaSeverInfo = async (): Promise<any> => {
-  const info = await fetch(
-    'https://api.mcstatus.io/v2/status/java/mc.wardsculks.me'
-  ).then((response) => response.json());
+export const getJavaSeverInfo = async (): Promise<IServerInfo> => {
+  const info = await fetch(SERVER_STATUS_API_URL).then((response) =>
+    response.json()
+  );
 
   return info;
 };

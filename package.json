@@ -1,6 +1,6 @@
 {
   "name": "wardsculks-launcher",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "Launcher for WardSculks project. Ukrainian Minecraft servers.",
   "keywords": [
     "electron",
@@ -23,18 +23,19 @@
   "license": "MIT",
   "main": "./src/main/main.ts",
   "scripts": {
-    "build": "concurrently \"npm run build:main\" \"npm run build:renderer\"",
-    "build:main": "cross-env NODE_ENV=production TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.main.prod.ts",
-    "build:renderer": "cross-env NODE_ENV=production TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.renderer.prod.ts",
-    "postinstall": "ts-node .erb/scripts/check-native-dep.js && electron-builder install-app-deps && cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.renderer.dev.dll.ts",
-    "lint": "cross-env NODE_ENV=development eslint . --ext .js,.jsx,.ts,.tsx --fix && npm run pretty",
-    "pretty": "prettier --ignore-path .gitignore \"(src|__tests__)/**/*.+(js|jsx|html|tsx|ts)\" --write",
-    "package": "ts-node ./.erb/scripts/clean.js dist && npm run build && electron-builder build --publish never",
-    "rebuild": "electron-rebuild --parallel --types prod,dev,optional --module-dir release/app",
     "start": "ts-node ./.erb/scripts/check-port-in-use.js && npm run start:renderer",
     "start:main": "cross-env NODE_ENV=development electronmon -r ts-node/register/transpile-only .",
-    "start:preload": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.preload.dev.ts",
     "start:renderer": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack serve --config ./.erb/configs/webpack.config.renderer.dev.ts",
+    "start:preload": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.preload.dev.ts",
+    "postinstall": "ts-node .erb/scripts/check-native-dep.js && electron-builder install-app-deps && cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.renderer.dev.dll.ts",
+    "build": "concurrently \"npm run build:main\" \"npm run build:renderer\" \"npm run build:scripts\"",
+    "build:main": "cross-env NODE_ENV=production TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.main.prod.ts",
+    "build:renderer": "cross-env NODE_ENV=production TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.renderer.prod.ts",
+    "build:scripts": "cross-env NODE_ENV=production TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.scripts.prod.ts",
+    "package": "ts-node ./.erb/scripts/clean.js dist && npm run build && electron-builder build --publish never",
+    "rebuild": "electron-rebuild --parallel --types prod,dev,optional --module-dir release/app",
+    "pretty": "prettier --ignore-path .gitignore \"(src|__tests__)/**/*.+(js|jsx|html|tsx|ts)\" --write",
+    "lint": "cross-env NODE_ENV=development eslint . --ext .js,.jsx,.ts,.tsx --fix && npm run pretty",
     "test": "jest"
   },
   "browserslist": [],
@@ -93,6 +94,7 @@
     "electron-log": "^4.4.8",
     "electron-store": "^8.1.0",
     "electron-updater": "^5.3.0",
+    "glob": "^10.3.10",
     "i18next": "^22.4.10",
     "node-machine-id": "^1.1.12",
     "p-limit": "^4.0.0",
@@ -110,6 +112,7 @@
     "@teamsupercell/typings-for-css-modules-loader": "^2.5.2",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
+    "@types/discord-rpc": "^4.0.7",
     "@types/jest": "^29.4.0",
     "@types/node": "18.13.0",
     "@types/react": "^18.0.27",
@@ -177,10 +180,14 @@
     "webpack-merge": "^5.8.0"
   },
   "build": {
-    "productName": "WardSculks Launcher",
+    "productName": "WardSculks",
     "appId": "org.wardsculks.com",
     "asar": true,
-    "asarUnpack": "**\\*.{node,dll}",
+    "asarUnpack": [
+      "**\\*.{node,dll}",
+      "dist\\scripts\\**.js",
+      "node_modules"
+    ],
     "files": [
       "dist",
       "node_modules",
@@ -218,8 +225,12 @@
     "win": {
       "target": [
         "nsis"
-      ],
-      "requestedExecutionLevel": "requireAdministrator"
+      ]
+    },
+    "nsis": {
+      "deleteAppDataOnUninstall": true,
+      "allowToChangeInstallationDirectory": true,
+      "oneClick": false
     },
     "linux": {
       "target": [

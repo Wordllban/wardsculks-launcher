@@ -12,10 +12,10 @@ import path from 'path';
 import { app, BrowserWindow, shell } from 'electron';
 import MenuBuilder from './menu';
 import { configureEnvironment, resolveHtmlPath } from './util';
+import { AppUpdater } from './services';
 
 // IPC
 import './ipc/index';
-import { AppUpdater } from './services';
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -63,6 +63,7 @@ const createWindow = async () => {
     show: false,
     width: 915,
     height: 540,
+    resizable: process.env.NODE_ENV === 'development',
     icon: getAssetPath('logo.png'),
     webPreferences: {
       preload: app.isPackaged

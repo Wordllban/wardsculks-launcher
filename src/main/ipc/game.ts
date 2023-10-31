@@ -1,6 +1,6 @@
 import { ipcMain, app } from 'electron';
-import { join } from 'path';
-import { mkdirSync, readFile, /* appendFile, */ writeFile, stat } from 'fs';
+import { join, resolve } from 'path';
+import { mkdirSync, readFile, writeFile, stat } from 'fs';
 import { readFile as readFileAsync } from 'fs/promises';
 import { EOL } from 'os';
 import { promisify } from 'util';
@@ -261,68 +261,74 @@ ipcMain.handle(
     }
   ) => {
     const main = getMainWindow();
-    const { memoryUsage, autoJoin, isDebug, closeOnGameStart } = store.getAll();
+    try {
+      const { memoryUsage, autoJoin, isDebug, closeOnGameStart } =
+        store.getAll();
 
-    const command = await generateLaunchMinecraftCommand({
-      username,
-      serverName,
-      memoryInGigabytes: memoryUsage.value,
-      ...(autoJoin.value ? { serverIp } : {}),
-      isDebug: isDebug.value,
-    });
-
-    const serverFolder = getServerFolder(serverName);
-    const args = command
-      .split(' ')
-      // remove empty arguments
-      .filter((arg) => arg.length > 0)
-      .map((arg) => {
-        return arg.replaceAll('"', '').trim();
+      const command = await generateLaunchMinecraftCommand({
+        username,
+        serverName,
+        memoryInGigabytes: memoryUsage.value,
+        ...(autoJoin.value ? { serverIp } : {}),
+        isDebug: isDebug.value,
       });
 
-    const gameProcess = spawn(args[4], args.slice(5), {
-      detached: true,
-      cwd: serverFolder,
-      stdio: 'inherit',
-    });
-
-    /*     if (isDebug.value) {
-      const debugFilePath = join(serverFolder, 'debugger.txt');
-      // clear previous debug file, or create if it not exists
-      writeFile(debugFilePath, '', (error) => {
-        if (error) {
-          main?.webContents.send('logger', {
-            key: 'FAILED_TO_CREATE_DEBUG_FILE',
-            nativeError: JSON.stringify(error),
-            type: LauncherLogs.error,
-          });
-        }
-      });
-
-      gameProcess.stdout?.on('data', (data) => {
-        appendFile(debugFilePath, data.toString() + EOL, (error) => {
-          if (error) {
-            main?.webContents.send('logger', {
-              key: 'FAILED_TO_CREATE_DEBUG_FILE',
-              nativeError: JSON.stringify(error),
-              type: LauncherLogs.error,
-            });
-          }
+      const serverFolder = getServerFolder(serverName);
+      const args = command
+        .split(' ')
+        // remove empty arguments
+        .filter((arg) => arg.length > 0)
+        .map((arg) => {
+          return arg.replaceAll('"', '').trim();
         });
+
+      const gameProcess = spawn(args[4], args.slice(5), {
+        detached: true,
+        cwd: serverFolder,
+        stdio: 'inherit',
       });
-    } */
+      gameProcess.unref();
 
-    gameProcess.unref();
+      // only for production
+      // need to replace path for development
+      const discordPresencePath = resolve(
+        app.getAppPath().replace('app.asar', 'app.asar.unpacked'),
+        'dist',
+        'scripts',
+        'discordPresence.js'
+      );
 
-    if (closeOnGameStart) {
-      await sleep(3000);
+      const discordPresence = spawn(
+        'node',
+        [discordPresencePath, '--gamepid', `${gameProcess.pid}`],
+        {
+          detached: true,
+        }
+      );
+      discordPresence.unref();
+
+      // kill presence process on game close
+      // note: works only if electron app not closed
+      gameProcess.on('exit', () => {
+        discordPresence.kill();
+      });
+
+      if (closeOnGameStart.value) {
+        await sleep(3000);
+        main?.webContents.send('logger', {
+          key: 'APP_WILL_AUTOMATICALLY_CLOSE',
+          type: LauncherLogs.log,
+        });
+        await sleep(5000);
+
+        app.quit();
+      }
+    } catch (error) {
       main?.webContents.send('logger', {
-        key: 'APP_WILL_AUTOMATICALLY_CLOSE',
-        type: LauncherLogs.log,
+        key: 'FAILED_TO_LAUNCH_GAME',
+        type: LauncherLogs.error,
+        nativeError: JSON.stringify(error),
       });
-      await sleep(5000);
-
-      app.quit();
     }
   }
 );
