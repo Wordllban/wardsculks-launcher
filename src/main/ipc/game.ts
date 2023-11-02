@@ -299,10 +299,14 @@ ipcMain.handle(
       );
 
       const discordPresence = spawn(
-        'node',
+        process.env.NODE_ENV === 'production' ? process.execPath : 'node',
         [discordPresencePath, '--gamepid', `${gameProcess.pid}`],
         {
           detached: true,
+          env: {
+            ...process.env,
+            ELECTRON_RUN_AS_NODE: '1',
+          },
         }
       );
       discordPresence.unref();
