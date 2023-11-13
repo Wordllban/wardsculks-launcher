@@ -105,20 +105,22 @@ export function Login(): ReactElement {
           .payload;
 
         const { access } = response as IRefreshAccessResponse;
+
         if (access) {
           // get user from token
           const user = (await dispatch(requestUser(access)))
             .payload as IGetUserFromTokenResponse;
-          if (user) {
+
+          if (user && user.username) {
             // save new data
             window.electron.ipcRenderer.sendMessage('save-access-token', [
               access,
             ]);
-            navigate('/main-menu');
+            return navigate('/main-menu');
           }
-        } else {
-          throw new Error(t('SESSION_EXPIRED_PLEASE_RELOGIN'));
         }
+
+        throw new Error(t('SESSION_EXPIRED_PLEASE_RELOGIN'));
       } catch (error) {
         dispatch(
           addNotification({

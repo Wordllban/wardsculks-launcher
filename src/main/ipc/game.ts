@@ -274,13 +274,11 @@ ipcMain.handle(
       });
 
       const serverFolder = getServerFolder(serverName);
-      const args = command
-        .split(' ')
-        // remove empty arguments
-        .filter((arg) => arg.length > 0)
-        .map((arg) => {
-          return arg.replaceAll('"', '').trim();
-        });
+
+      const args =
+        command
+          .match(/"[^"]+"|\S+/g)
+          ?.map((arg: string) => arg.replace(/^"(.*)"$/, '$1')) || [];
 
       const gameProcess = spawn(args[4], args.slice(5), {
         detached: true,

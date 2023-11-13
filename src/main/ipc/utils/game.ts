@@ -128,8 +128,8 @@ export async function generateLaunchMinecraftCommand({
   const parameters = `${immutableParameters} ${assetIndexParameter} ${usernameParameter} ${autoConnectParameter}`;
 
   return `chcp 65001
-  cd ${serverFolderPath}
-  ${executableText} ${variables} cpw.mods.bootstraplauncher.BootstrapLauncher ${parameters}
+  cd "${serverFolderPath}"
+  "${executableText}" ${variables} cpw.mods.bootstraplauncher.BootstrapLauncher ${parameters}
   ${isDebug && 'pause'}`;
 }
 
