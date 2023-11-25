@@ -34,6 +34,7 @@ import {
   addNotification,
   AppDispatch,
   AppState,
+  getServerOnline,
   requestJavaServerInfo,
 } from '../../../redux';
 
@@ -41,7 +42,7 @@ export function Login(): ReactElement {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const { t } = useTranslation();
-
+  const serverOnline = useSelector(getServerOnline);
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [isSavePassword, setSavePassword] = useState<boolean>(false);
@@ -138,7 +139,7 @@ export function Login(): ReactElement {
   }, []);
 
   useEffect(() => {
-    dispatch(requestJavaServerInfo());
+    if (!serverOnline) dispatch(requestJavaServerInfo());
   }, []);
 
   return (

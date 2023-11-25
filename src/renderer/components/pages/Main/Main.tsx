@@ -34,7 +34,7 @@ export function Main(): ReactElement {
 
   useEffect(() => {
     dispatch(requestServers());
-    dispatch(requestJavaServerInfo());
+    if (!serverOnline) dispatch(requestJavaServerInfo());
   }, []);
 
   return (
