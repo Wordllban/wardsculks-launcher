@@ -9,12 +9,9 @@ export const retrieveTokens = (data: {
   username: string;
   password: string;
 }) => {
-  return client.post<IRetrieveTokensResponse, typeof data>(
-    '/users/auth/token/obtain',
-    {
-      ...data,
-    }
-  );
+  return client.post<IRetrieveTokensResponse>('/users/auth/token/obtain', {
+    ...data,
+  });
 };
 
 export interface IUser {
@@ -33,7 +30,7 @@ export const createUser = (data: {
   email: string;
   machine_id: string;
 }) => {
-  return client.post<ICreateUserResponse, typeof data>('/users/user', {
+  return client.post<ICreateUserResponse>('/users/user', {
     ...data,
   });
 };
@@ -53,10 +50,25 @@ export interface IRefreshAccessResponse {
 }
 
 export const refreshAccessToken = (refreshToken: string) => {
-  return client.post<IRefreshAccessResponse, { refresh: string }>(
-    'users/auth/token/refresh',
-    {
-      refresh: refreshToken,
-    }
-  );
+  return client.post<IRefreshAccessResponse>('users/auth/token/refresh', {
+    refresh: refreshToken,
+  });
+};
+
+export const requestCode = (email: string) => {
+  return client.post<void>('users/request-password-reset', {
+    email,
+  });
+};
+
+export const requestPasswordReset = (
+  email: string,
+  code: string,
+  newPassword: string
+) => {
+  return client.post<void>('users/reset-password', {
+    email,
+    resetCode: code,
+    newPassword,
+  });
 };

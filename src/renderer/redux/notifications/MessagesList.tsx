@@ -12,7 +12,10 @@ const DEFAULT_MESSAGE_LIFE_TIME: number = 10000;
 /**
  * Hook for handling notification life cycle.
  */
-const useNotificationLifeCycle = (destroyHandler: () => void) => {
+const useNotificationLifeCycle = (
+  destroyHandler: () => void,
+  lifetime: number
+) => {
   const [isHovered, setIsHovered] = useState(false);
 
   // self-destroy
@@ -20,7 +23,7 @@ const useNotificationLifeCycle = (destroyHandler: () => void) => {
     // do not destroy message when it's hovered
     if (isHovered) return;
 
-    const timer = setTimeout(destroyHandler, DEFAULT_MESSAGE_LIFE_TIME);
+    const timer = setTimeout(destroyHandler, lifetime);
 
     return () => {
       clearTimeout(timer);
@@ -31,26 +34,41 @@ const useNotificationLifeCycle = (destroyHandler: () => void) => {
 };
 
 type MessageProps = {
+  // in ms
+  lifetime?: number;
   message?: string;
   removeMessage: () => void;
 };
 
 function Error(props: MessageProps & { nativeError?: string }): ReactElement {
   const { t } = useTranslation();
-  const { message, nativeError, removeMessage } = props;
+  const {
+    lifetime = DEFAULT_MESSAGE_LIFE_TIME,
+    message,
+    nativeError,
+    removeMessage,
+  } = props;
   const [showNativeError, setShowNativeError] = useState<boolean>(false);
 
-  const onMouse = useNotificationLifeCycle(removeMessage);
+  const onMouse = useNotificationLifeCycle(removeMessage, lifetime);
+
+  const safeParseJson = (error: string) => {
+    try {
+      return JSON.parse(error);
+    } catch (e) {
+      // If JSON.parse() fails, return the original string
+      return nativeError;
+    }
+  };
 
   /**
-   * we are receiving native errors as unserialized string
+   * sometimes we are receiving native errors using JSON.stringify()
    * because of IPC restrictions
-   * so we are serializing it back to object
+   * so we are parsing it back to object
    */
-  const parsedNativeError = nativeError ? JSON.parse(nativeError) : {};
-  const nativeErrorKeys = parsedNativeError
-    ? Object.keys(parsedNativeError)
-    : [];
+  const parsedNativeError = nativeError ? safeParseJson(nativeError) : {};
+  const nativeErrorKeys =
+    typeof parsedNativeError === 'object' ? Object.keys(parsedNativeError) : [];
 
   return (
     <div
@@ -77,13 +95,19 @@ function Error(props: MessageProps & { nativeError?: string }): ReactElement {
             </button>
             {showNativeError ? (
               <ul className="mt-4 max-w-[360px]">
-                {nativeErrorKeys.map((errorKey: string) => {
-                  return (
-                    <li className="text-wrap" key={errorKey}>
-                      {errorKey}: <span>{parsedNativeError[errorKey]}</span>
-                    </li>
-                  );
-                })}
+                {nativeErrorKeys.length ? (
+                  nativeErrorKeys.map((errorKey: string) => {
+                    return (
+                      <li className="text-wrap" key={errorKey}>
+                        {errorKey}: <span>{parsedNativeError[errorKey]}</span>
+                      </li>
+                    );
+                  })
+                ) : (
+                  <li className="text-wrap">
+                    <span>{nativeError}</span>
+                  </li>
+                )}
               </ul>
             ) : null}
           </div>
@@ -101,9 +125,13 @@ function Error(props: MessageProps & { nativeError?: string }): ReactElement {
 }
 
 function Log(props: MessageProps): ReactElement {
-  const { message, removeMessage } = props;
+  const {
+    lifetime = DEFAULT_MESSAGE_LIFE_TIME,
+    message,
+    removeMessage,
+  } = props;
 
-  const onMouse = useNotificationLifeCycle(removeMessage);
+  const onMouse = useNotificationLifeCycle(removeMessage, lifetime);
 
   return (
     <div
@@ -129,9 +157,13 @@ function Log(props: MessageProps): ReactElement {
 }
 
 function Warning(props: MessageProps): ReactElement {
-  const { message, removeMessage } = props;
+  const {
+    lifetime = DEFAULT_MESSAGE_LIFE_TIME,
+    message,
+    removeMessage,
+  } = props;
 
-  const onMouse = useNotificationLifeCycle(removeMessage);
+  const onMouse = useNotificationLifeCycle(removeMessage, lifetime);
 
   return (
     <div
@@ -171,41 +203,46 @@ function MessagesList(): ReactElement {
     <div className="absolute bottom-2 right-2 max-h-[85vh] overflow-y-auto pt-4">
       <div className="flex w-[380px] flex-col gap-4 transition-all">
         {messages.length > 0
-          ? messages.map(({ id, message, key, nativeError, type }) => {
-              const removeMessage = () => {
-                dispatch(removeNotification(id));
-              };
+          ? messages.map(
+              ({ id, message, key, nativeError, type, lifetime }) => {
+                const removeMessage = () => {
+                  dispatch(removeNotification(id));
+                };
 
-              const messageText = key ? t(key) : message;
+                const messageText = key ? t(key) : message;
 
-              switch (type) {
-                case LauncherLogs.error:
-                  return (
-                    <Error
-                      key={`${id}-error`}
-                      message={messageText}
-                      nativeError={nativeError}
-                      removeMessage={removeMessage}
-                    />
-                  );
-                case LauncherLogs.warning:
-                  return (
-                    <Warning
-                      key={`${id}-warning`}
-                      message={messageText}
-                      removeMessage={removeMessage}
-                    />
-                  );
-                default:
-                  return (
-                    <Log
-                      key={`${id}-log`}
-                      message={messageText}
-                      removeMessage={removeMessage}
-                    />
-                  );
+                switch (type) {
+                  case LauncherLogs.error:
+                    return (
+                      <Error
+                        key={`${id}-error`}
+                        message={messageText}
+                        nativeError={nativeError}
+                        removeMessage={removeMessage}
+                        lifetime={lifetime}
+                      />
+                    );
+                  case LauncherLogs.warning:
+                    return (
+                      <Warning
+                        key={`${id}-warning`}
+                        message={messageText}
+                        removeMessage={removeMessage}
+                        lifetime={lifetime}
+                      />
+                    );
+                  default:
+                    return (
+                      <Log
+                        key={`${id}-log`}
+                        message={messageText}
+                        removeMessage={removeMessage}
+                        lifetime={lifetime}
+                      />
+                    );
+                }
               }
-            })
+            )
           : null}
       </div>
     </div>

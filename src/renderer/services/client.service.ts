@@ -44,16 +44,16 @@ class ClientService {
     return this.client.get(url, config);
   }
 
-  async put<Response, Data>(
+  async put<Response>(
     url: string,
-    data?: Data
+    data?: unknown
   ): Promise<AxiosResponse<Response>> {
     return this.client.put(url, data);
   }
 
-  async post<Response, Data>(
+  async post<Response>(
     url: string,
-    data?: Data
+    data?: unknown
   ): Promise<AxiosResponse<Response>> {
     return this.client.post(url, data);
   }

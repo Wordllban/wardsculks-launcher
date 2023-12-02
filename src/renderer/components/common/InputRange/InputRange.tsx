@@ -28,6 +28,11 @@ export function InputRange(props: Props): ReactElement {
     max ? Number(max) / 2 : 2
   );
 
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    if (onChangeHandler) onChangeHandler(event);
+    setValue(event.target.value);
+  };
+
   return (
     <div className="relative flex flex-col">
       {options && (
@@ -56,10 +61,7 @@ export function InputRange(props: Props): ReactElement {
             max={max}
             step={step}
             className={clsx('w-[325px]', className)}
-            onChange={(event: ChangeEvent<HTMLInputElement>) => {
-              if (onChangeHandler) onChangeHandler(event);
-              setValue(event.target.value);
-            }}
+            onChange={handleChange}
             list="memory"
             value={initialValue || value}
           />

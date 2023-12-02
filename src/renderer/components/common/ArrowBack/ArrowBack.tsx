@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { KeyboardEvent, ReactElement, useState, useCallback } from 'react';
+import { KeyboardEvent, ReactElement, useState } from 'react';
 import clsx from 'clsx';
 import { useKeyPress } from '../../../hooks/useKeyPress';
 import ConfirmationWindow from '../ConfirmationWindow/ConfirmationWindow';
@@ -28,12 +28,12 @@ export function ArrowBack(props: Props): ReactElement {
 
   const navigate = useNavigate();
 
-  const handleGoBack = useCallback(() => {
+  const handleGoBack = () => {
     if (hasConfirmation && !showConfirmation) {
       return setShowConfirmation(true);
     }
     return navigate(-1);
-  }, [navigate, hasConfirmation, showConfirmation]);
+  };
 
   useKeyPress('Escape', handleGoBack);
 

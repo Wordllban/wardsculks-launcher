@@ -40,9 +40,11 @@ export function Input(props: InputProps): ReactElement {
         // data attribute for styles
         data-focused={isFocused}
       />
-      <span data-error className="block pt-1 text-xs font-light">
-        {errorMessage}
-      </span>
+      {errorMessage ? (
+        <span data-error className="block pt-1 text-xs font-light">
+          {errorMessage}
+        </span>
+      ) : null}
     </span>
   );
 }

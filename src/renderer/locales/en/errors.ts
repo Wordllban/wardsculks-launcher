@@ -3,6 +3,8 @@ const errors: Record<string, string> = {
   HIDE_NATIVE_ERROR: 'Hide native error',
   FAILED_TO_LOGIN: 'Failed to login',
   FAILED_TO_REGISTER: 'Failed to register',
+  FAILED_TO_REQUEST_RESET_CODE: 'Failed to request confirmation code',
+  FAILED_TO_REQUEST_PASSWORD_CHANGE: 'Failed to request password change',
   FAILED_TO_GET_SETTINGS: 'Failed to get settings',
   FAILED_TO_GET_SYSTEM_MEMORY: 'Failed to get system memory size',
   FAILED_TO_GET_SERVERS_LIST: 'Failed to retrieve list of available servers',

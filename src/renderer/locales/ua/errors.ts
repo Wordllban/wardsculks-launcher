@@ -3,6 +3,8 @@ const errors: Record<string, string> = {
   HIDE_NATIVE_ERROR: 'Сховати нативну помилку',
   FAILED_TO_LOGIN: 'Не вдалось увійти',
   FAILED_TO_REGISTER: 'Не вдалось зареєструватись',
+  FAILED_TO_REQUEST_RESET_CODE: 'Не вдалось запросити код підтвердження',
+  FAILED_TO_REQUEST_PASSWORD_CHANGE: 'Не вдалось змінити пароль',
   FAILED_TO_GET_SETTINGS: 'Не вдалось отримати поточні налаштування',
   FAILED_TO_GET_SYSTEM_MEMORY: "Не вдалось отримати об'єм ОЗУ системи",
   FAILED_TO_GET_SERVERS_LIST: 'Не вдалось отримати список доступних серверів',

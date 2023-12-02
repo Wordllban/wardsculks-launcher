@@ -19,4 +19,6 @@ export interface ILauncherLog {
   key?: string;
   type: LauncherLogsTypes;
   nativeError?: any;
+  // in ms
+  lifetime?: number;
 }

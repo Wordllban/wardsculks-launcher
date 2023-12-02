@@ -11,3 +11,4 @@ export * from './PasswordInput';
 export * from './InputRange';
 export * from './Menu';
 export * from './ServerOnline';
+export * from './WithTimer';

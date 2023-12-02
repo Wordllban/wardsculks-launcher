@@ -1,20 +1,28 @@
-import { ReactElement } from 'react';
-import { ArrowBack, Frame, Layout } from '../../common';
+import { ReactElement, useState } from 'react';
+import { ArrowBack, Layout, ServerOnline } from '../../common';
+
+import { ResetCodeForm } from './Forms/ResetCodeForm';
+import { PasswordChangeForm } from './Forms/PasswordChangeForm';
 
 export function ForgotPassword(): ReactElement {
+  const [readyForChange, setReadyForChange] = useState(false);
+  const [email, setEmail] = useState<string>('');
+
   return (
     <Layout mainBackground="bg-login-bg">
       <ArrowBack position="absolute left-0 top-0" />
-      <div className="flex h-full items-center justify-center">
-        <Frame className="flex items-center justify-center">
-          <div className="p-8">
-            <h1 className="text-3xl text-main">У розробці...</h1>
-            <div>
-              Якщо ви забули пароль -
-              <br /> зв&apos;яжіться з адміністрацією у Discord сервері.
-            </div>
-          </div>
-        </Frame>
+      <div className="flex h-full flex-col items-center justify-end">
+        <div className="flex h-full max-h-[365px] items-center gap-8">
+          <ResetCodeForm
+            setReadyForReset={setReadyForChange}
+            email={email}
+            setEmail={setEmail}
+          />
+          {readyForChange ? <PasswordChangeForm email={email} /> : null}
+        </div>
+        <div className="flex flex-col items-center justify-end">
+          <ServerOnline />
+        </div>
       </div>
     </Layout>
   );

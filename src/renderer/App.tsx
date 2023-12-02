@@ -13,9 +13,11 @@ import {
 } from './components';
 import { AppState, Notifications, ProtectedRoute } from './redux';
 
+// todo: move global loader to separate component wrapper file
+
 function GlobalLoader(): ReactElement {
   return (
-    <div className="absolute left-0 top-0 z-[99] flex h-full w-full flex-col items-center justify-center bg-black/80">
+    <div className="absolute left-0 top-0 z-[99] flex h-full w-full flex-col items-center justify-center bg-black/70">
       <div className="loading-animation" />
     </div>
   );

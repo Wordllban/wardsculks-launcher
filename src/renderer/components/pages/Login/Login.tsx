@@ -8,6 +8,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useNavigate, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { AxiosError } from 'axios';
 import {
   Button,
   Checkbox,
@@ -37,6 +38,7 @@ import {
   getServerOnline,
   requestJavaServerInfo,
 } from '../../../redux';
+import { USERNAME_FIELD_PATTERN } from '../../../../constants/regex';
 
 export function Login(): ReactElement {
   const dispatch = useDispatch<AppDispatch>();
@@ -127,7 +129,8 @@ export function Login(): ReactElement {
           addNotification({
             type: LauncherLogs.error,
             message: t('SESSION_EXPIRED_PLEASE_RELOGIN'),
-            nativeError: JSON.stringify(error),
+            nativeError:
+              (error as AxiosError)?.message || JSON.stringify(error),
           })
         );
         dispatch(logout());
@@ -153,13 +156,13 @@ export function Login(): ReactElement {
                 name="username"
                 placeholder={t('LOGIN_FIELD')}
                 type="text"
-                className="mt-2 w-full text-sm"
+                className="mb-4 mt-2 w-full text-sm"
                 onChange={(event: ChangeEvent<HTMLInputElement>) =>
                   setUsername(event.target.value)
                 }
                 minLength={2}
                 maxLength={16}
-                pattern="^[a-zA-Z0-9_]*$"
+                pattern={USERNAME_FIELD_PATTERN}
                 required
                 errorMessage={t('INVALID_LOGIN')}
               />
@@ -167,7 +170,7 @@ export function Login(): ReactElement {
                 name="password"
                 placeholder={t('PASSWORD')}
                 type="password"
-                className="mt-4 w-full text-sm"
+                className="w-full text-sm"
                 onChange={(event: ChangeEvent<HTMLInputElement>) =>
                   setPassword(event.target.value)
                 }

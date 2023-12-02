@@ -1,4 +1,4 @@
-import { ReactElement, useState, useCallback } from 'react';
+import { ReactElement, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import clsx from 'clsx';
 import { useSelector } from 'react-redux';
@@ -16,18 +16,18 @@ export function Menu(): ReactElement {
   const location = useLocation();
   const [isMaximized, setIsMaximized] = useState(false);
 
-  const handleHide = useCallback(() => {
+  const handleHide = () => {
     window.electron.ipcRenderer.sendMessage('minimize-window');
-  }, []);
+  };
 
-  const handleMinMax = useCallback(async () => {
+  const handleMinMax = async () => {
     const isMinMax = await window.electron.ipcRenderer.invoke('min-max-window');
     setIsMaximized(isMinMax);
-  }, []);
+  };
 
-  const handleClose = useCallback(() => {
+  const handleClose = () => {
     window.electron.ipcRenderer.sendMessage('close-window');
-  }, []);
+  };
 
   return (
     <nav

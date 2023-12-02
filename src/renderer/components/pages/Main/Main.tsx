@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useCallback } from 'react';
+import { ReactElement, useEffect } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { useNavigate, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -26,7 +26,7 @@ export function Main(): ReactElement {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const handleLogout = useCallback(() => dispatch(logout()), []);
+  const handleLogout = () => dispatch(logout());
 
   const handleStartGame = () => {
     navigate('/downloading');

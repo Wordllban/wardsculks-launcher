@@ -1,13 +1,8 @@
-import {
-  useState,
-  ReactElement,
-  ChangeEvent,
-  FormEvent,
-  useCallback,
-} from 'react';
+import { useState, ReactElement, ChangeEvent, FormEvent } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { useNavigate, Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
+import { AxiosError } from 'axios';
 import {
   Layout,
   Frame,
@@ -20,6 +15,11 @@ import { LauncherLogs } from '../../../../types';
 import { register } from '../../../redux/auth/auth.slice';
 import { ICreateUserResponse } from '../../../services/api';
 import { addNotification, AppDispatch } from '../../../redux';
+import {
+  EMAIL_FIELD_PATTERN,
+  STRONG_PASSWORD_PATTERN,
+  USERNAME_FIELD_PATTERN,
+} from '../../../../constants/regex';
 
 export function Registration(): ReactElement {
   const dispatch = useDispatch<AppDispatch>();
@@ -52,19 +52,20 @@ export function Registration(): ReactElement {
         addNotification({
           message: t('FAILED_TO_REGISTER'),
           type: LauncherLogs.error,
-          nativeError: JSON.stringify(response),
+          nativeError:
+            (response as AxiosError)?.message || JSON.stringify(response),
         })
       );
     }
   };
 
-  const handleRulesOpen = useCallback(() => {
+  const handleRulesOpen = () => {
     setIsAgreementAccepted(true);
     window.electron.ipcRenderer.sendMessage(
       'open-remote-file',
       window.env.RULES_URL
     );
-  }, []);
+  };
 
   return (
     <Layout mainBackground="bg-registration-bg">
@@ -82,23 +83,25 @@ export function Registration(): ReactElement {
               }
               minLength={2}
               maxLength={16}
-              pattern="^[a-zA-Z0-9_]*$"
+              pattern={USERNAME_FIELD_PATTERN}
               required
               errorMessage={t('INVALID_LOGIN')}
             />
-            <PasswordInput
-              name="password"
-              placeholder={t('PASSWORD')}
-              type="password"
-              className="mt-4 w-full text-sm"
-              onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                setPassword(event.target.value)
-              }
-              minLength={6}
-              required
-              pattern="^(?!.*(qwe|QWE|123))(?=.*\d)(?=.*[A-Z]).{6,}$"
-              errorMessage={t('WEAK_PASSWORD')}
-            />
+            <div className="mt-4">
+              <PasswordInput
+                name="password"
+                placeholder={t('PASSWORD')}
+                type="password"
+                className="w-full text-sm"
+                onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                  setPassword(event.target.value)
+                }
+                minLength={6}
+                required
+                pattern={STRONG_PASSWORD_PATTERN}
+                errorMessage={t('WEAK_PASSWORD')}
+              />
+            </div>
             <Input
               name="email"
               placeholder={t('EMAIL')}
@@ -109,7 +112,7 @@ export function Registration(): ReactElement {
               }
               minLength={6}
               required
-              pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$"
+              pattern={EMAIL_FIELD_PATTERN}
               errorMessage={t('INVALID_EMAIL')}
             />
             <div className="mt-6 w-full text-sm">

@@ -21,7 +21,7 @@ export const requestJavaServerInfo = createAsyncThunk(
         addNotification({
           type: LauncherLogs.error,
           key: 'FAILED_TO_GET_SERVER_INFO',
-          nativeError: JSON.stringify(error),
+          nativeError: (error as AxiosError)?.message || JSON.stringify(error),
         })
       );
       return rejectWithValue((error as AxiosError).response?.data || error);

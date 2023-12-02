@@ -23,7 +23,7 @@ export const requestServers = createAsyncThunk(
         addNotification({
           type: LauncherLogs.error,
           key: 'FAILED_TO_GET_SERVERS_LIST',
-          nativeError: JSON.stringify(error),
+          nativeError: (error as AxiosError)?.message || JSON.stringify(error),
         })
       );
       return rejectWithValue((error as AxiosError).response?.data || error);
