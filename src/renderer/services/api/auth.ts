@@ -56,7 +56,7 @@ export const refreshAccessToken = (refreshToken: string) => {
 };
 
 export const requestCode = (email: string) => {
-  return client.post<void>('users/request-password-reset', {
+  return client.post<string>('users/request-password-reset', {
     email,
   });
 };
@@ -66,7 +66,7 @@ export const requestPasswordReset = (
   code: string,
   newPassword: string
 ) => {
-  return client.post<void>('users/reset-password', {
+  return client.post<string>('users/reset-password', {
     email,
     resetCode: code,
     newPassword,

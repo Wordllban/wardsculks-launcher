@@ -1,17 +1,19 @@
 import { FormEvent, ChangeEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { requestPasswordReset } from 'renderer/services/api';
 import { useDispatch } from 'react-redux';
-import { AxiosError } from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { Button, Frame, Input, PasswordInput } from '../../../common';
 import {
   STRONG_PASSWORD_PATTERN,
   USERNAME_FIELD_PATTERN,
 } from '../../../../../constants/regex';
-import { addNotification } from '../../../../redux';
-import { LauncherLogs } from '../../../../../types';
+import {
+  AppDispatch,
+  addNotification,
+  requestChangePassword,
+} from '../../../../redux';
 import { sleep } from '../../../../../utils';
+import { LauncherLogs } from '../../../../../types';
 
 const CONFIRMATION_CODE_LENGTH = 6;
 
@@ -23,7 +25,7 @@ export function PasswordChangeForm(props: Props) {
   const { email } = props;
 
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const { t } = useTranslation();
 
   const [code, setCode] = useState('');
@@ -34,32 +36,37 @@ export function PasswordChangeForm(props: Props) {
     event: FormEvent<HTMLFormElement>
   ): Promise<void> => {
     event.preventDefault();
-    try {
-      await requestPasswordReset(email, code, newPassword);
+
+    const response = await dispatch(
+      requestChangePassword({ email, code, newPassword })
+    );
+
+    if (!response.payload) {
       dispatch(
         addNotification({
-          message: t('PASSWORD_CHANGED_SUCCESSFULLY'),
+          key: 'PASSWORD_CHANGED_SUCCESSFULLY',
           type: LauncherLogs.log,
         })
       );
 
-      await sleep(500);
+      await sleep(100);
 
       dispatch(
         addNotification({
-          message: t('REDIRECT_AFTER_PASSWORD_CHANGE'),
+          key: 'REDIRECT_AFTER_PASSWORD_CHANGE',
           type: LauncherLogs.log,
           lifetime: 4000,
         })
       );
+
       await sleep(3000);
       navigate('/main-menu');
-    } catch (error) {
+    } else {
       dispatch(
         addNotification({
-          message: t('FAILED_TO_REQUEST_PASSWORD_CHANGE'),
+          key: 'FAILED_TO_REQUEST_PASSWORD_CHANGE',
           type: LauncherLogs.error,
-          nativeError: (error as AxiosError)?.message || JSON.stringify(error),
+          nativeError: response.payload,
         })
       );
     }

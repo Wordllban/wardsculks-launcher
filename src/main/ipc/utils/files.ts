@@ -14,6 +14,7 @@ import { getMainWindow } from '../../main';
 import { LauncherLogs, ReleaseFileList } from '../../../types';
 
 import getAxios from '../../services/axios';
+import { AxiosError } from 'axios';
 
 export async function downloadFile(
   url: string,
@@ -267,8 +268,9 @@ export async function verifyFolder(
   } catch (error) {
     main?.webContents.send('logger', {
       key: 'ERROR_DURING_FILE_VERIFICATION',
-      nativeError: JSON.stringify(error),
       type: LauncherLogs.error,
+      nativeError:
+        (error as AxiosError).response?.data || JSON.stringify(error),
     });
 
     return {};

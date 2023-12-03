@@ -18,6 +18,7 @@ import {
 } from './utils';
 import { getMainWindow } from '../main';
 import { IRelease, LauncherLogs } from '../../types';
+import { AxiosError } from 'axios';
 
 ipcMain.on('game-install', async (_, serverInfo: string[]) => {
   const main = getMainWindow();
@@ -152,7 +153,8 @@ ipcMain.handle(
       main?.webContents.send('logger', {
         key: 'ERROR_DURING_FILE_VERIFICATION',
         type: LauncherLogs.error,
-        nativeError: JSON.stringify(error),
+        nativeError:
+          (error as AxiosError).response?.data || JSON.stringify(error),
       });
     }
   }

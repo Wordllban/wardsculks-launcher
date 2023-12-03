@@ -12,6 +12,8 @@ import {
   createUser,
   getUserFromToken,
   refreshAccessToken,
+  requestCode,
+  requestPasswordReset,
   retrieveTokens,
 } from '../../services/api';
 import client from '../../services/client.service';
@@ -112,6 +114,39 @@ export const updateAccessToken = createAsyncThunk(
   }
 );
 
+export const requestResetCode = createAsyncThunk(
+  'auth/requestResetCode',
+  async (email: string, { rejectWithValue }) => {
+    try {
+      await requestCode(email);
+    } catch (error) {
+      return rejectWithValue((error as AxiosError).response?.data || error);
+    }
+  }
+);
+
+export const requestChangePassword = createAsyncThunk(
+  'auth/requestChangePassword',
+  async (
+    {
+      email,
+      code,
+      newPassword,
+    }: {
+      email: string;
+      code: string;
+      newPassword: string;
+    },
+    { rejectWithValue }
+  ) => {
+    try {
+      await requestPasswordReset(email, code, newPassword);
+    } catch (error) {
+      return rejectWithValue((error as AxiosError).response?.data || error);
+    }
+  }
+);
+
 export interface AuthState {
   isLoading: boolean;
   access: string;
@@ -180,9 +215,12 @@ const authSlice = createSlice({
       })
       .addMatcher(
         isAnyOf(
+          register.pending,
           requestTokens.pending,
           requestUser.pending,
-          updateAccessToken.pending
+          updateAccessToken.pending,
+          requestResetCode.pending,
+          requestChangePassword.pending
         ),
         (state) => {
           state.isLoading = true;
@@ -193,7 +231,11 @@ const authSlice = createSlice({
           register.rejected,
           requestTokens.rejected,
           requestUser.rejected,
-          updateAccessToken.rejected
+          updateAccessToken.rejected,
+          requestResetCode.rejected,
+          requestResetCode.fulfilled,
+          requestChangePassword.rejected,
+          requestChangePassword.fulfilled
         ),
         (state) => {
           state.isLoading = false;

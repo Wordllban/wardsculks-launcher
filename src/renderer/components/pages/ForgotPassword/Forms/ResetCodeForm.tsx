@@ -1,11 +1,13 @@
 import { ChangeEvent, FormEvent, ReactElement, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { requestCode } from 'renderer/services/api';
 import { useDispatch } from 'react-redux';
-import { AxiosError } from 'axios';
 import { Button, Frame, Input, WithTimer } from '../../../common';
 import { EMAIL_FIELD_PATTERN } from '../../../../../constants/regex';
-import { addNotification } from '../../../../redux';
+import {
+  AppDispatch,
+  addNotification,
+  requestResetCode,
+} from '../../../../redux';
 import { LauncherLogs } from '../../../../../types';
 
 // in seconds
@@ -19,7 +21,7 @@ type Props = {
 
 export function ResetCodeForm(props: Props): ReactElement {
   const { email, setEmail, setReadyForReset } = props;
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const { t } = useTranslation();
 
   const [codeSent, setCodeSent] = useState<boolean>(false);
@@ -34,22 +36,24 @@ export function ResetCodeForm(props: Props): ReactElement {
   ): Promise<void> => {
     event.preventDefault();
 
-    try {
-      await requestCode(email);
+    const response = await dispatch(requestResetCode(email));
+
+    if (!response.payload) {
       dispatch(
         addNotification({
-          message: t('CONFIRMATION_CODE_REQUESTED_SUCCESSFULLY'),
+          key: 'CONFIRMATION_CODE_REQUESTED_SUCCESSFULLY',
           type: LauncherLogs.log,
         })
       );
+
       setCodeSent(true);
       setReadyForReset(true);
-    } catch (error) {
+    } else {
       dispatch(
         addNotification({
-          message: t('FAILED_TO_REQUEST_RESET_CODE'),
+          key: 'FAILED_TO_REQUEST_RESET_CODE',
           type: LauncherLogs.error,
-          nativeError: (error as AxiosError)?.message || JSON.stringify(error),
+          nativeError: response.payload,
         })
       );
     }
