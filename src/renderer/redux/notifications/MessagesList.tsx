@@ -117,6 +117,7 @@ function Error(props: MessageProps & { nativeError?: string }): ReactElement {
         onClick={removeMessage}
         className="absolute right-3 top-[-0.5rem] z-[150]"
         type="button"
+        aria-label="Close"
       >
         <CloseIcon width={20} height={20} />
       </button>
@@ -149,6 +150,7 @@ function Log(props: MessageProps): ReactElement {
         onClick={removeMessage}
         className="absolute right-3 top-[-0.5rem] z-[150]"
         type="button"
+        aria-label="Close"
       >
         <CloseIcon width={20} height={20} />
       </button>
@@ -181,6 +183,7 @@ function Warning(props: MessageProps): ReactElement {
         onClick={removeMessage}
         className="absolute right-3 top-[-0.5rem] z-[150]"
         type="button"
+        aria-label="Close"
       >
         <CloseIcon width={20} height={20} />
       </button>

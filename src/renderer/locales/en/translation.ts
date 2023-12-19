@@ -14,10 +14,10 @@ const translation: Resource = {
     PASSWORD: 'Password',
     EMAIL: 'Email',
     SAVE_PASSWORD: 'Save password',
-    LOGIN_BUTTON: 'Join',
+    FORGOT_PASSWORD: 'Forgot password?',
+    LOGIN_BUTTON: 'Login',
     DONT_HAVE_ACCOUNT: 'Do not have an account?',
     REGISTER: 'Sign up',
-    FORGOT_PASSWORD: 'Forgot password?',
     REQUEST_RESET_PASSWORD: 'You will receive a confirmation code by email',
     REQUEST_CODE: 'Get code',
     REQUEST_CODE_AGAIN: 'Get code one more time: ',
@@ -63,6 +63,19 @@ const translation: Resource = {
     UNSAVED_SETTINGS_CONFIRMATION_DESCRIPTION:
       "You have changed settings, but haven't saved them.",
     CURRENT_SELECTED_SERVER: 'Selected server',
+    MODS_PAGE: 'Mods',
+    ALL: 'All',
+    SELECTED: 'Selected',
+    UNSELECTED: 'Unselected',
+    TEXTURE_PACKS: 'Texture packs',
+    SHADERS: 'Shaders',
+    SHOW_MORE: 'Show more',
+    HIDE: 'Hide',
+    SEARCH_PLACEHOLDER: 'Search...',
+    MODS_SEARCH_NO_RESULTS: 'No mods found',
+    MODS_SEARCH_NO_RESULTS_SUGGESTION:
+      'However, you can suggest your mod in our Discord server!',
+    JOIN: 'Join',
   },
 };
 

@@ -137,6 +137,7 @@ export function PasswordChangeForm(props: Props) {
           className="hover:glow-text mb-6 mt-8 px-[46px] py-3 text-22"
           type="submit"
           disabled={isDisabled}
+          aria-label="Change password submit"
         >
           {t('CHANGE_PASSWORD_BUTTON')}
         </Button>

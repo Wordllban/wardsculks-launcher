@@ -19,7 +19,7 @@ export function Dropdown<T extends IDropdownItem>(
 ): ReactElement {
   const { items, defaultValue, onSelect } = props;
 
-  const [selected, setSelected] = useState<T | undefined>(defaultValue);
+  const [selected, setSelected] = useState<T | undefined>();
   const [isOpen, setIsOpen] = useState<boolean>();
 
   const handleSelect = (item: T) => {

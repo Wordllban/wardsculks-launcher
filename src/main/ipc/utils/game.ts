@@ -219,7 +219,6 @@ export const saveReleaseFile = async (
   serverFolderPath: string,
   release: IRelease
 ) => {
-  // todo: create utility function wrapper for writeFile
   const main = getMainWindow();
   writeFile(
     join(serverFolderPath, RELEASE_FILE_NAME),

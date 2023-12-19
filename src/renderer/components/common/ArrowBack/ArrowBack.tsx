@@ -11,6 +11,7 @@ type Props = {
   confirmationWindowTitle?: string;
   confirmationWindowDescription?: string;
   disabled?: boolean;
+  navigateTo?: string;
 };
 
 /**
@@ -23,6 +24,7 @@ export function ArrowBack(props: Props): ReactElement {
     confirmationWindowTitle,
     confirmationWindowDescription,
     disabled = false,
+    navigateTo = '/main-menu',
   } = props;
   const [showConfirmation, setShowConfirmation] = useState<boolean>(false);
 
@@ -32,7 +34,7 @@ export function ArrowBack(props: Props): ReactElement {
     if (hasConfirmation && !showConfirmation) {
       return setShowConfirmation(true);
     }
-    return navigate(-1);
+    return navigate(navigateTo);
   };
 
   useKeyPress('Escape', handleGoBack);
@@ -51,6 +53,7 @@ export function ArrowBack(props: Props): ReactElement {
         }}
         type="button"
         disabled={disabled}
+        aria-label="Back"
       >
         <ArrowIcon />
       </button>

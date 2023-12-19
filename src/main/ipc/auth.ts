@@ -1,7 +1,7 @@
 import { setPassword, deletePassword, getPassword } from 'keytar';
 import { ipcMain } from 'electron';
 import { userInfo } from 'os';
-
+import { client } from '../services';
 /**
  * IPC handlers related to auth
  */
@@ -20,6 +20,8 @@ ipcMain.on('save-access-token', async (_, args) => {
   const accessToken = args[0];
 
   await setPassword(ACCESS_TOKEN, ACCOUNT_NAME, accessToken);
+
+  await client.updateInterceptor(accessToken);
 });
 
 ipcMain.on('logout', () => {

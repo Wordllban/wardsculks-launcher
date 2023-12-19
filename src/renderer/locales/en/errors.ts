@@ -17,6 +17,8 @@ const errors: Record<string, string> = {
   FAILED_TO_GET_SERVER_INFO: 'Failed to retrieve server information',
   FAILED_TO_CREATE_DEBUG_FILE: 'Failed to create debug file',
   FAILED_TO_LAUNCH_GAME: 'Failed to launch game',
+  FAILED_TO_GET_MODS_LIST: 'Failed to request mods list',
+  FAILED_TO_SAVE_SELECTED_MODS: 'Failed to save selected. Please, try again',
 };
 
 export default errors;

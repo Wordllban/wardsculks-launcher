@@ -65,6 +65,19 @@ const translation: Resource = {
     UNSAVED_SETTINGS_CONFIRMATION_DESCRIPTION:
       'Ви внесли зміни в налаштуваннях, але не зберегли їх',
     CURRENT_SELECTED_SERVER: 'Обраний сервер',
+    MODS_PAGE: 'Моди',
+    ALL: 'Усі',
+    SELECTED: 'Обрані',
+    UNSELECTED: 'Не обрані',
+    TEXTURE_PACKS: 'Текстури',
+    SHADERS: 'Шейдери',
+    SHOW_MORE: 'Показати більше',
+    HIDE: 'Сховати',
+    SEARCH_PLACEHOLDER: 'Пошук...',
+    MODS_SEARCH_NO_RESULTS: 'Модів не знайдено',
+    MODS_SEARCH_NO_RESULTS_SUGGESTION:
+      'Проте ви можете запропонувати свій мод у нашому Discord-сервері!',
+    JOIN: 'Приєднатись',
   },
 };
 

@@ -1,6 +1,6 @@
 {
   "name": "wardsculks-launcher",
-  "version": "0.3.1",
+  "version": "1.0.0",
   "description": "Launcher for WardSculks project. Ukrainian Minecraft servers.",
   "license": "MIT",
   "author": {
@@ -15,10 +15,10 @@
     "link-modules": "node -r ts-node/register ../../.erb/scripts/link-modules.ts"
   },
   "dependencies": {
-    "electron-store": "8.1.0",
-    "keytar": "7.9.0",
-    "node-machine-id": "1.1.12",
-    "discord-rpc": "4.0.1",
-    "node-fetch": "2.7.0"
+    "discord-rpc": "^4.0.1",
+    "electron-store": "^8.1.0",
+    "keytar": "^7.9.0",
+    "node-fetch": "2.7.0",
+    "node-machine-id": "^1.1.12"
   }
 }

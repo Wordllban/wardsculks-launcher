@@ -1,9 +1,13 @@
-import { useState, ReactElement } from 'react';
+import { RefObject, useState, ReactElement } from 'react';
 import clsx from 'clsx';
 import { Input, InputProps } from '../Input';
 import { EyeIcon, ClosedEyeIcon } from '../icons';
 
-export function PasswordInput(props: InputProps): ReactElement {
+type Props = {
+  ref?: RefObject<HTMLInputElement>;
+} & InputProps;
+
+export function PasswordInput(props: Props): ReactElement {
   const { fullWidth } = props;
   const [showPassword, setShowPassword] = useState<boolean>(false);
 

@@ -196,7 +196,10 @@ export function Login(): ReactElement {
                   {t('FORGOT_PASSWORD')}
                 </Link>
               </div>
-              <Button className="hover:glow-text my-[25px] px-[46px] py-3 text-22">
+              <Button
+                className="hover:glow-text my-[25px] px-[46px] py-3 text-22"
+                aria-label="Login"
+              >
                 {t('LOGIN_BUTTON')}
               </Button>
             </form>

@@ -6,13 +6,16 @@ import { EOL } from 'os';
 import { promisify } from 'util';
 import { spawn } from 'child_process';
 import { store } from '../services';
+import {
+  requestOptionalFilesInfo,
+  requestServerRelease,
+} from '../services/api';
 import { LAUNCH_OPTIONS_FILE, RELEASE_FILE_NAME } from '../../constants/files';
 import { sleep } from '../../utils';
 import {
   downloadReleaseFiles,
   generateLaunchMinecraftCommand,
   getServerFolder,
-  requestServerRelease,
   saveReleaseFile,
   verifyFolder,
 } from './utils';
@@ -20,7 +23,7 @@ import { getMainWindow } from '../main';
 import { IRelease, LauncherLogs } from '../../types';
 import { AxiosError } from 'axios';
 
-ipcMain.on('game-install', async (_, serverInfo: string[]) => {
+ipcMain.on('game-install', async (_, serverInfo: [number, string]) => {
   const main = getMainWindow();
   const [serverId, serverName] = serverInfo;
   const serverFolderPath = getServerFolder(serverName);
@@ -67,7 +70,7 @@ ipcMain.handle(
     }: {
       immutableFolders: string[];
       serverName: string;
-      serverId: string;
+      serverId: number;
       isUpToDateRelease: boolean;
     }
   ) => {
@@ -103,13 +106,15 @@ ipcMain.handle(
         localRelease = await requestServerRelease(serverId);
       }
 
+      // request selected optional files and add into release for verification
+      const optionalFiles = await requestOptionalFilesInfo(serverId);
+      localRelease = {
+        ...localRelease,
+        files: { ...localRelease.files, ...optionalFiles },
+      };
+
       const { files, totalSize } = localRelease;
 
-      /* const foldersPaths = isUpToDateRelease
-      ? foldersNames.map((folderName: string) => {
-        return join(serverFolder, folderName);
-      })
-      : [serverFolder]; */
       // for new releases we verifying whole game
       const foldersPaths = [serverFolder];
 
@@ -289,33 +294,35 @@ ipcMain.handle(
       });
       gameProcess.unref();
 
-      // only for production
-      // need to replace path for development
-      const discordPresencePath = resolve(
-        app.getAppPath().replace('app.asar', 'app.asar.unpacked'),
-        'dist',
-        'scripts',
-        'discordPresence.js'
-      );
+      if (process.env.NODE_ENV === 'production') {
+        // only for production
+        // need to replace path for development
+        const discordPresencePath = resolve(
+          app.getAppPath().replace('app.asar', 'app.asar.unpacked'),
+          'dist',
+          'scripts',
+          'discordPresence.js'
+        );
 
-      const discordPresence = spawn(
-        process.env.NODE_ENV === 'production' ? process.execPath : 'node',
-        [discordPresencePath, '--gamepid', `${gameProcess.pid}`],
-        {
-          detached: true,
-          env: {
-            ...process.env,
-            ELECTRON_RUN_AS_NODE: '1',
-          },
-        }
-      );
-      discordPresence.unref();
+        const discordPresence = spawn(
+          process.execPath,
+          [discordPresencePath, '--gamepid', `${gameProcess.pid}`],
+          {
+            detached: true,
+            env: {
+              ...process.env,
+              ELECTRON_RUN_AS_NODE: '1',
+            },
+          }
+        );
+        discordPresence.unref();
 
-      // kill presence process on game close
-      // note: works only if electron app not closed
-      gameProcess.on('exit', () => {
-        discordPresence.kill();
-      });
+        // kill presence process on game close
+        // note: works only if electron app not closed
+        gameProcess.on('exit', () => {
+          discordPresence.kill();
+        });
+      }
 
       if (closeOnGameStart.value) {
         await sleep(3000);

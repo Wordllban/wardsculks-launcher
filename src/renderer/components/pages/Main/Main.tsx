@@ -62,8 +62,8 @@ export function Main(): ReactElement {
           <Button
             className="w-[314px] py-4 text-22"
             onClick={handleStartGame}
-            // todo: also disable if minecraft already running
             disabled={!selectedServer || availableServers.length === 0}
+            aria-label="Start game"
           >
             {t('START_GAME')}
           </Button>

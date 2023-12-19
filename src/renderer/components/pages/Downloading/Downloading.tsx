@@ -46,7 +46,7 @@ export function Downloading(): ReactElement {
     }
   }, [
     downloadingStatus.progress,
-    downloadingStatus.downloadedSize.size,
+    downloadingStatus.firstTimeDownloading,
     name,
     ip,
     username,

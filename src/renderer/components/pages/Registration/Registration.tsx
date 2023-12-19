@@ -142,6 +142,7 @@ export function Registration(): ReactElement {
               className="hover:glow-text my-[25px] px-[46px] py-3 text-22"
               type="submit"
               disabled={!isAgreementAccepted}
+              aria-label="Register"
             >
               {t('REGISTER')}
             </Button>

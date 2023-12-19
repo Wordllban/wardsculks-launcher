@@ -8,6 +8,7 @@ const logs: Record<string, string> = {
   APP_UPDATE_DOWNLOADED_RESTART:
     'Update downloaded successfully, re-starting app in 3 seconds',
   APP_WILL_AUTOMATICALLY_CLOSE: 'App will close automatically when game start',
+  MODS_SAVED_SUCCESSFULLY: 'Selected mods saved successfully',
 };
 
 export default logs;

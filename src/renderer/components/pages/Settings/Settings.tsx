@@ -60,6 +60,7 @@ function Setting(props: SettingProps) {
   );
 }
 
+/* feature: ability to change game folder */
 export function Settings(): ReactElement {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -244,18 +245,10 @@ export function Settings(): ReactElement {
               <Setting {...setting} key={`${setting.name}-setting`} />
             ))}
           </div>
-          {/* feature: ability to change game folder */}
-          {/* <div className="flex items-center">
-            <span className="mr-5 text-xs text-main">
-              C:\Users\harmf\AppData\Roaming\WardSculks\updates
-            </span>
-            <Button className="hover:glow-text px-1 text-sm">
-              {t('CHANGE_PATH')}
-            </Button>
-          </div> */}
           <Button
             className="hover:glow-text my-[25px] px-[46px] py-3 text-22"
             onClick={handleSaveSettings}
+            aria-label="Save"
           >
             {t('SAVE_CHANGES')}
           </Button>

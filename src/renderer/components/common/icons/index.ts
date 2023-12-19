@@ -6,3 +6,4 @@ export { ReactComponent as EyeIcon } from '../../../../../assets/icons/eye.svg';
 export { ReactComponent as SettingsIcon } from '../../../../../assets/icons/settings.svg';
 export { ReactComponent as MinimizeIcon } from '../../../../../assets/icons/minimize.svg';
 export { ReactComponent as MaximizeIcon } from '../../../../../assets/icons/maximize.svg';
+export { ReactComponent as SearchIcon } from '../../../../../assets/icons/search-icon.svg';

@@ -9,6 +9,7 @@ const logs: Record<string, string> = {
     'Оновлення встановлено успішно, перезапуск застосунку через 3 секунди',
   APP_WILL_AUTOMATICALLY_CLOSE:
     'Застосунок закриється самостійно коли гра запуститься',
+  MODS_SAVED_SUCCESSFULLY: 'Обрані моди збережено!',
 };
 
 export default logs;

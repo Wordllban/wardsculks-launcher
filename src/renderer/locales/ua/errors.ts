@@ -19,6 +19,8 @@ const errors: Record<string, string> = {
   FAILED_TO_GET_SERVER_INFO: 'Не вдалось отримати інформацію про сервер',
   FAILED_TO_CREATE_DEBUG_FILE: 'Не вдалось створити файл налагодження',
   FAILED_TO_LAUNCH_GAME: 'Не вдалось запустити гру',
+  FAILED_TO_GET_MODS_LIST: 'Не вдалось отримати список модів',
+  FAILED_TO_SAVE_SELECTED_MODS: 'Не вдалось зберегти обране. Спробуйте ще раз',
 };
 
 export default errors;

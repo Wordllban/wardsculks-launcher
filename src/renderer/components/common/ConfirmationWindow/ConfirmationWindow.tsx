@@ -32,12 +32,14 @@ function ConfirmationWindow(props: ConfirmationWindowProps): ReactElement {
             <Button
               className="hover:glow-text px-8 py-2 text-main"
               onClick={handleConfirmation}
+              aria-label="Yes"
             >
               {t('YES')}
             </Button>
             <Button
               className="hover:glow-text px-8 py-2 text-main"
               onClick={handleRejection}
+              aria-label="No"
             >
               {t('NO')}
             </Button>

@@ -7,20 +7,16 @@ import {
 } from 'fs/promises';
 import { RELEASE_FILE_NAME } from '../../constants/files';
 import MenuBuilder from '../menu';
-import {
-  checkFileExists,
-  getServerFolder,
-  requestServerRelease,
-  saveReleaseFile,
-} from './utils';
+import { checkFileExists, getServerFolder, saveReleaseFile } from './utils';
 import { getMainWindow } from '../main';
 import { LauncherLogs } from '../../types';
+import { requestServerRelease } from '../services/api';
 
 /**
  * IPC handlers related to file system
  */
 
-ipcMain.on('open-remote-file', async (_, url) => {
+ipcMain.on('open-remote-file', async (_, url: string) => {
   const window = new BrowserWindow({
     webPreferences: {
       plugins: true,
@@ -33,6 +29,10 @@ ipcMain.on('open-remote-file', async (_, url) => {
   menuBuilder.buildMenu();
 
   window.loadURL(url);
+});
+
+ipcMain.on('open-external-link', async (_, url: string) => {
+  shell.openExternal(url);
 });
 
 ipcMain.handle(
@@ -95,17 +95,17 @@ ipcMain.handle(
   'get-local-release-version',
   async (
     _,
-    { serverName, serverId }: { serverName: string; serverId: string }
+    { serverName, serverId }: { serverName: string; serverId: number }
   ) => {
     const serverFolderPath = getServerFolder(serverName);
     const releasePath = join(serverFolderPath, RELEASE_FILE_NAME);
 
     const isReleaseFileExists = checkFileExists(releasePath);
-
     if (isReleaseFileExists) {
       const release = JSON.parse(await readFileAsync(releasePath, 'utf-8'));
       return release.version;
     }
+
     const release = await requestServerRelease(serverId);
     await saveReleaseFile(serverFolderPath, release);
     return release.version;

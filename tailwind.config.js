@@ -40,8 +40,8 @@ module.exports = {
         'settings-bg': "url('../../assets/images/settings-background.png')",
         'registration-bg':
           "url('../../assets/images/registration-background.png')",
-        // update
         'update-bg': "url('../../assets/images/downloading-background.png')",
+        'mods-bg': "url('../../assets/images/mods-background.png')",
         // components
         wall: "url('../../assets/images/wall.png')",
       },

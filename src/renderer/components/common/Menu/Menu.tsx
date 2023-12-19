@@ -2,6 +2,7 @@ import { ReactElement, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import clsx from 'clsx';
 import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { AppState } from '../../../redux';
 import {
   CloseIcon,
@@ -12,8 +13,9 @@ import {
 } from '../icons';
 
 export function Menu(): ReactElement {
-  const accessToken = useSelector((state: AppState) => state.auth.access);
+  const { t } = useTranslation();
   const location = useLocation();
+  const accessToken = useSelector((state: AppState) => state.auth.access);
   const [isMaximized, setIsMaximized] = useState(false);
 
   const handleHide = () => {
@@ -38,10 +40,23 @@ export function Menu(): ReactElement {
     >
       {accessToken && location.pathname !== '/downloading' ? (
         <Link
+          to="/mods"
+          className={clsx(
+            'flex h-10 w-14 cursor-pointer items-center justify-center hover:bg-main/30',
+            'window-menu-button pt-[2px] text-main',
+            { 'bg-main/40': location.pathname === '/mods' }
+          )}
+        >
+          {t('MODS_PAGE')}
+        </Link>
+      ) : null}
+      {accessToken && location.pathname !== '/downloading' ? (
+        <Link
           to="/settings"
           className={clsx(
             'flex h-10 w-12 cursor-pointer items-center justify-center hover:bg-main/30',
-            'window-menu-button'
+            'window-menu-button',
+            { 'bg-main/40': location.pathname === '/settings' }
           )}
         >
           <SettingsIcon />
@@ -54,6 +69,7 @@ export function Menu(): ReactElement {
         )}
         onClick={handleHide}
         type="button"
+        aria-label="Hide window"
       >
         <HideIcon />
       </button>
@@ -76,6 +92,7 @@ export function Menu(): ReactElement {
         )}
         onClick={handleClose}
         type="button"
+        aria-label="Close window"
       >
         <CloseIcon />
       </button>

@@ -13,7 +13,7 @@ import { sleep /* , filterObjectKeys  */ } from '../../../utils';
 import { getMainWindow } from '../../main';
 import { LauncherLogs, ReleaseFileList } from '../../../types';
 
-import getAxios from '../../services/axios';
+import { client } from '../../services';
 import { AxiosError } from 'axios';
 
 export async function downloadFile(
@@ -27,9 +27,9 @@ export async function downloadFile(
   const writer = createWriteStream(fileFullPath);
 
   const main = getMainWindow();
-  const axios = getAxios();
+
   try {
-    const response = await axios.get(url, {
+    const response = await client.instance.get(url, {
       responseType: 'stream',
     });
 

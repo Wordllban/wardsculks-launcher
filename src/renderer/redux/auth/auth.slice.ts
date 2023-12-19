@@ -18,6 +18,8 @@ import {
 } from '../../services/api';
 import client from '../../services/client.service';
 
+// todo: remove all error handlers notifications to async thunk
+
 /**
  * Create new user
  *

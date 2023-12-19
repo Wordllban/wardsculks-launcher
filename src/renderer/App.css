@@ -25,12 +25,15 @@
   }
 
   .window-menu {
-    -webkit-user-select: none;
     -webkit-app-region: drag;
   }
 
   .window-menu-button {
     -webkit-app-region: no-drag;
+  }
+
+  .scrollbar-gutter {
+    scrollbar-gutter: stable;
   }
 
   /* 96 is width of sprite image */
@@ -53,7 +56,7 @@
 @layer base {
   /* scrollbar */
   *::-webkit-scrollbar {
-    width: 8px;
+    width: 6px;
   }
 
   *::-webkit-scrollbar-thumb {

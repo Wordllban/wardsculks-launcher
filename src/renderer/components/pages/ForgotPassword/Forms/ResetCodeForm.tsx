@@ -89,6 +89,7 @@ export function ResetCodeForm(props: Props): ReactElement {
               className="hover:glow-text px-[46px] py-3 text-22"
               disabled={codeSent || !isValidEmail}
               type="submit"
+              aria-label="Request code"
             >
               {t('REQUEST_CODE')}
             </Button>

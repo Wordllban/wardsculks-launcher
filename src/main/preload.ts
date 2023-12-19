@@ -52,6 +52,7 @@ const envHandler = {
   NODE_ENV: process.env.NODE_ENV,
   API_URL: process.env.API_URL,
   RULES_URL: process.env.RULES_URL,
+  DISCORD_LINK: process.env.DISCORD_LINK,
 };
 
 contextBridge.exposeInMainWorld('env', envHandler);

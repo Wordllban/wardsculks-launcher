@@ -10,6 +10,7 @@ import {
   Downloading,
   Menu,
   ForgotPassword,
+  Mods,
 } from './components';
 import { AppState, Notifications, ProtectedRoute } from './redux';
 
@@ -63,6 +64,7 @@ export default function App() {
             />
             <Route index path="/downloading" element={<Downloading />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/mods" element={<Mods />} />
           </Routes>
         </Router>
         <Notifications />
