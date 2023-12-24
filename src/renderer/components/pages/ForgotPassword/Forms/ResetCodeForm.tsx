@@ -3,12 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { Button, Frame, Input, WithTimer } from '../../../common';
 import { EMAIL_FIELD_PATTERN } from '../../../../../constants/regex';
-import {
-  AppDispatch,
-  addNotification,
-  requestResetCode,
-} from '../../../../redux';
-import { LauncherLogs } from '../../../../../types';
+import { AppDispatch, requestResetCode } from '../../../../redux';
 
 // in seconds
 const REQUEST_CODE_COOLDOWN = 60;
@@ -38,24 +33,9 @@ export function ResetCodeForm(props: Props): ReactElement {
 
     const response = await dispatch(requestResetCode(email));
 
-    if (!response.payload) {
-      dispatch(
-        addNotification({
-          key: 'CONFIRMATION_CODE_REQUESTED_SUCCESSFULLY',
-          type: LauncherLogs.log,
-        })
-      );
-
+    if (response.payload) {
       setCodeSent(true);
       setReadyForReset(true);
-    } else {
-      dispatch(
-        addNotification({
-          key: 'FAILED_TO_REQUEST_RESET_CODE',
-          type: LauncherLogs.error,
-          nativeError: response.payload,
-        })
-      );
     }
   };
 

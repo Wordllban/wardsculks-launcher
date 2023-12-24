@@ -7,13 +7,8 @@ import {
   STRONG_PASSWORD_PATTERN,
   USERNAME_FIELD_PATTERN,
 } from '../../../../../constants/regex';
-import {
-  AppDispatch,
-  addNotification,
-  requestChangePassword,
-} from '../../../../redux';
+import { AppDispatch, requestChangePassword } from '../../../../redux';
 import { sleep } from '../../../../../utils';
-import { LauncherLogs } from '../../../../../types';
 
 const CONFIRMATION_CODE_LENGTH = 6;
 
@@ -41,34 +36,9 @@ export function PasswordChangeForm(props: Props) {
       requestChangePassword({ email, code, newPassword })
     );
 
-    if (!response.payload) {
-      dispatch(
-        addNotification({
-          key: 'PASSWORD_CHANGED_SUCCESSFULLY',
-          type: LauncherLogs.log,
-        })
-      );
-
-      await sleep(100);
-
-      dispatch(
-        addNotification({
-          key: 'REDIRECT_AFTER_PASSWORD_CHANGE',
-          type: LauncherLogs.log,
-          lifetime: 4000,
-        })
-      );
-
+    if (response.payload) {
       await sleep(3000);
       navigate('/main-menu');
-    } else {
-      dispatch(
-        addNotification({
-          key: 'FAILED_TO_REQUEST_PASSWORD_CHANGE',
-          type: LauncherLogs.error,
-          nativeError: response.payload,
-        })
-      );
     }
   };
 

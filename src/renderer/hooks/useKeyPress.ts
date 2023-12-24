@@ -1,9 +1,5 @@
 import { useEffect, useRef } from 'react';
 
-/**
- * TODO: add aliases for macOS & windows
- */
-
 type KeyPressEventListener = (_event: KeyboardEvent) => void;
 
 export const useKeyPress = (key: string, handler: KeyPressEventListener) => {

@@ -5,6 +5,7 @@ import { readFile as readFileAsync } from 'fs/promises';
 import { EOL } from 'os';
 import { promisify } from 'util';
 import { spawn } from 'child_process';
+import { AxiosError } from 'axios';
 import { store } from '../services';
 import {
   requestOptionalFilesInfo,
@@ -21,7 +22,6 @@ import {
 } from './utils';
 import { getMainWindow } from '../main';
 import { IRelease, LauncherLogs } from '../../types';
-import { AxiosError } from 'axios';
 
 ipcMain.on('game-install', async (_, serverInfo: [number, string]) => {
   const main = getMainWindow();

@@ -9,12 +9,12 @@ import {
 } from 'fs';
 import { createHash } from 'crypto';
 import { basename, join, relative } from 'path';
+import { AxiosError } from 'axios';
 import { sleep /* , filterObjectKeys  */ } from '../../../utils';
 import { getMainWindow } from '../../main';
 import { LauncherLogs, ReleaseFileList } from '../../../types';
 
 import { client } from '../../services';
-import { AxiosError } from 'axios';
 
 export async function downloadFile(
   url: string,

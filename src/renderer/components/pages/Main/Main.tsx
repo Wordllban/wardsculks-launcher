@@ -33,7 +33,7 @@ export function Main(): ReactElement {
   };
 
   useEffect(() => {
-    dispatch(requestServers());
+    if (!availableServers.length) dispatch(requestServers());
     if (!serverOnline) dispatch(requestJavaServerInfo());
   }, []);
 

@@ -17,8 +17,9 @@ import {
   retrieveTokens,
 } from '../../services/api';
 import client from '../../services/client.service';
-
-// todo: remove all error handlers notifications to async thunk
+import { addNotification } from '../notifications/notifications.slice';
+import { LauncherLogs } from '../../../types';
+import { sleep } from '../../../utils';
 
 /**
  * Create new user
@@ -41,7 +42,7 @@ export const register = createAsyncThunk(
       password: string;
       email: string;
     },
-    { rejectWithValue }
+    { dispatch, rejectWithValue }
   ) => {
     try {
       const machineId = await window.electron.ipcRenderer.invoke(
@@ -55,9 +56,25 @@ export const register = createAsyncThunk(
         machine_id: machineId,
       });
 
+      const { user, access, refresh } = data;
+
+      if (user && access && refresh) {
+        window.electron.ipcRenderer.sendMessage('save-access-token', [access]);
+        window.electron.ipcRenderer.sendMessage('save-refresh-token', [
+          refresh,
+        ]);
+      }
+
       return data;
     } catch (error) {
-      return rejectWithValue((error as AxiosError).response?.data || error);
+      dispatch(
+        addNotification({
+          key: 'FAILED_TO_REGISTER',
+          type: LauncherLogs.error,
+          nativeError: (error as AxiosError).response?.data || error,
+        })
+      );
+      return rejectWithValue(null);
     }
   }
 );
@@ -118,11 +135,25 @@ export const updateAccessToken = createAsyncThunk(
 
 export const requestResetCode = createAsyncThunk(
   'auth/requestResetCode',
-  async (email: string, { rejectWithValue }) => {
+  async (email: string, { dispatch, rejectWithValue }) => {
     try {
       await requestCode(email);
+      dispatch(
+        addNotification({
+          key: 'CONFIRMATION_CODE_REQUESTED_SUCCESSFULLY',
+          type: LauncherLogs.log,
+        })
+      );
+      return true;
     } catch (error) {
-      return rejectWithValue((error as AxiosError).response?.data || error);
+      dispatch(
+        addNotification({
+          key: 'FAILED_TO_REQUEST_RESET_CODE',
+          type: LauncherLogs.error,
+          nativeError: (error as AxiosError).response?.data || error,
+        })
+      );
+      return rejectWithValue(null);
     }
   }
 );
@@ -139,12 +170,37 @@ export const requestChangePassword = createAsyncThunk(
       code: string;
       newPassword: string;
     },
-    { rejectWithValue }
+    { dispatch, rejectWithValue }
   ) => {
     try {
       await requestPasswordReset(email, code, newPassword);
+
+      dispatch(
+        addNotification({
+          key: 'PASSWORD_CHANGED_SUCCESSFULLY',
+          type: LauncherLogs.log,
+        })
+      );
+
+      await sleep(100);
+
+      dispatch(
+        addNotification({
+          key: 'REDIRECT_AFTER_PASSWORD_CHANGE',
+          type: LauncherLogs.log,
+          lifetime: 4000,
+        })
+      );
+      return true;
     } catch (error) {
-      return rejectWithValue((error as AxiosError).response?.data || error);
+      dispatch(
+        addNotification({
+          key: 'FAILED_TO_REQUEST_PASSWORD_CHANGE',
+          type: LauncherLogs.error,
+          nativeError: (error as AxiosError).response?.data || error,
+        })
+      );
+      return rejectWithValue(false);
     }
   }
 );

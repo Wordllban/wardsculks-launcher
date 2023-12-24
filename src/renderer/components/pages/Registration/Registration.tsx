@@ -2,7 +2,6 @@ import { useState, ReactElement, ChangeEvent, FormEvent } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { useNavigate, Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { AxiosError } from 'axios';
 import {
   Layout,
   Frame,
@@ -11,10 +10,8 @@ import {
   Button,
   PasswordInput,
 } from '../../common';
-import { LauncherLogs } from '../../../../types';
 import { register } from '../../../redux/auth/auth.slice';
-import { ICreateUserResponse } from '../../../services/api';
-import { addNotification, AppDispatch } from '../../../redux';
+import { AppDispatch } from '../../../redux';
 import {
   EMAIL_FIELD_PATTERN,
   STRONG_PASSWORD_PATTERN,
@@ -38,24 +35,10 @@ export function Registration(): ReactElement {
   ): Promise<void> => {
     event.preventDefault();
 
-    const response = (await dispatch(register({ username, password, email })))
-      .payload;
-    const { user, access, refresh } = response as ICreateUserResponse;
+    const response = await dispatch(register({ username, password, email }));
 
-    if (user && access && refresh) {
-      window.electron.ipcRenderer.sendMessage('save-access-token', [access]);
-      window.electron.ipcRenderer.sendMessage('save-refresh-token', [refresh]);
-
+    if (response.payload) {
       navigate('/main-menu');
-    } else {
-      dispatch(
-        addNotification({
-          message: t('FAILED_TO_REGISTER'),
-          type: LauncherLogs.error,
-          nativeError:
-            (response as AxiosError)?.message || JSON.stringify(response),
-        })
-      );
     }
   };
 

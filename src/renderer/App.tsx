@@ -1,7 +1,6 @@
-import { useState, ReactElement, Suspense } from 'react';
+import { Suspense } from 'react';
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
-import { useSelector } from 'react-redux';
 import {
   Login,
   Main,
@@ -11,35 +10,14 @@ import {
   Menu,
   ForgotPassword,
   Mods,
+  GlobalLoader,
 } from './components';
-import { AppState, Notifications, ProtectedRoute } from './redux';
-
-// todo: move global loader to separate component wrapper file
-
-function GlobalLoader(): ReactElement {
-  return (
-    <div className="absolute left-0 top-0 z-[99] flex h-full w-full flex-col items-center justify-center bg-black/70">
-      <div className="loading-animation" />
-    </div>
-  );
-}
+import { Notifications, ProtectedRoute } from './redux';
 
 export default function App() {
-  const [appUpdating, setAppUpdating] = useState<boolean>(false);
-  const isFetching: boolean = useSelector(
-    (state: AppState) =>
-      state.auth.isLoading || state.main.isLoading || state.server.isLoading
-  );
-
-  const isLoading = appUpdating || isFetching;
-
-  window.electron.ipcRenderer.on('app-update-downloading', (value: boolean) => {
-    setAppUpdating(value);
-  });
-
   return (
-    <div className="relative">
-      <Suspense>
+    <Suspense>
+      <GlobalLoader>
         <Router>
           <Menu />
           <Routes>
@@ -67,9 +45,8 @@ export default function App() {
             <Route path="/mods" element={<Mods />} />
           </Routes>
         </Router>
-        <Notifications />
-      </Suspense>
-      {isLoading && <GlobalLoader />}
-    </div>
+      </GlobalLoader>
+      <Notifications />
+    </Suspense>
   );
 }
