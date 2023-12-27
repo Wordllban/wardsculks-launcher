@@ -30,7 +30,7 @@
 
 For more insight into the backend infrastructure of the WardSculks Launcher, visit my friend's repository:
 
-🔗 [WardSculks Backend Repository](https://github.com/WardSculks/Backend)
+🔗 [WardSculks Backend Repository](https://www.youtube.com/watch?v=AWPUOO2HM9Y)
 
 UI/UX Design by Me and [Bohdan Ryshko](https://www.linkedin.com/in/bohdan-ryshko-782330277/)
 
