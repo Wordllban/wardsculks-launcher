@@ -6,7 +6,7 @@
   "author": {
     "name": "WardSculks",
     "email": "wardsculks@gmail.com",
-    "url": "https://github.com/Ward-Sculks/electron-launcher"
+    "url": "https://github.com/Wordllban/wardsculks-launcher"
   },
   "main": "./dist/main/main.js",
   "scripts": {

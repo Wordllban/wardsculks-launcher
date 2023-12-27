@@ -11,11 +11,11 @@
     "minecraft",
     "launcher"
   ],
-  "homepage": "https://github.com/Ward-Sculks/electron-launcher",
+  "homepage": "https://github.com/Wordllban/wardsculks-launcher",
   "bugs": {
-    "url": "https://github.com/Ward-Sculks/electron-launcher/issues"
+    "url": "https://github.com/Wordllban/wardsculks-launcher/issues"
   },
-  "repository": "https://github.com/Ward-Sculks/wardsculks-launcher",
+  "repository": "https://github.com/Wordllban/wardsculks-launcher",
   "publish": {
     "provider": "github",
     "releaseType": "release"
