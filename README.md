@@ -19,10 +19,11 @@
 - **Built-In Anti-Cheat System:** Prevents unauthorized modpack modifications, ensuring fair play.
 - **Multiple Language Support**
 - **Cross-platform**
+- **Overriding of Minecraft launch arguments through App interface**
+- **Discord Rich Presence**
 - **Intuitive User Interface:** Powered by React and Tailwind CSS for a smooth, user-friendly experience.
 - **Efficient Server Communication:** Leverages Electron for robust and efficient server interactions.
 - **State Management:** Utilizes Redux Toolkit for predictable state management across the application.
-- **Overriding of Minecraft launch arguments through App interface**
 
 ---
 
