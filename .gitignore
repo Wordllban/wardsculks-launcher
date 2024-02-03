@@ -22,6 +22,7 @@ node_modules
 # OSX
 .DS_Store
 
+obsidian
 release/app/dist
 release/build
 .erb/dll
