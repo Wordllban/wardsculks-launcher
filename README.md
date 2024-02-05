@@ -25,6 +25,11 @@
 - **Efficient Server Communication:** Leverages Electron for robust and efficient server interactions.
 - **State Management:** Utilizes Redux Toolkit for predictable state management across the application.
 
+### There are still much things to do
+
+I used [Obsidian](https://obsidian.md) to take notes and make some plans.
+For more information about each page and things to impove see [obsidian folder](https://github.com/Wordllban/wardsculks-launcher/tree/main/obsidian)
+
 ---
 
 ## Related to Project
