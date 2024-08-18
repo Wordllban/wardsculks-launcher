@@ -15,7 +15,7 @@ import { LAUNCH_OPTIONS_FILE, RELEASE_FILE_NAME } from '../../constants/files';
 import { sleep } from '../../utils';
 import {
   downloadReleaseFiles,
-  generateLaunchMinecraftCommand,
+  generateLaunchMinecraftCommandFabric,
   getServerFolder,
   saveReleaseFile,
   verifyFolder,
@@ -183,7 +183,7 @@ ipcMain.handle(
       isDebug: boolean;
     }
   ) => {
-    return generateLaunchMinecraftCommand({
+    return generateLaunchMinecraftCommandFabric({
       username,
       serverName,
       memoryInGigabytes,
@@ -272,7 +272,9 @@ ipcMain.handle(
       const { memoryUsage, autoJoin, isDebug, closeOnGameStart } =
         store.getAll();
 
-      const command = await generateLaunchMinecraftCommand({
+      // todo: add switch statement when release.json
+      // will contain engine information to select command generation function
+      const command = await generateLaunchMinecraftCommandFabric({
         username,
         serverName,
         memoryInGigabytes: memoryUsage.value,

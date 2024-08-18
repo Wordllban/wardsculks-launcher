@@ -62,7 +62,7 @@ export async function generateLaunchMinecraftCommandFabric({
   ${isDebug ? 'pause' : ''}`;
 }
 
-export async function generateLaunchMinecraftCommand({
+export async function generateLaunchMinecraftCommandForge({
   username,
   memoryInGigabytes,
   serverName,

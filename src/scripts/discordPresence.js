@@ -36,7 +36,7 @@ async function setActivity() {
   ).then((response) => response.json());
 
   await client.setActivity({
-    details: '4 Сезон - Доба битв та чарів',
+    details: '5 Сезон - Темна доба',
     state: `Онлайн: ${serverInfo.players.online} з ${serverInfo.players.max}`,
     largeImageKey: '1024x1024',
     largeImageText: 'WardSculks',
