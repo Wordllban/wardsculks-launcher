@@ -30,8 +30,6 @@
 I used [Obsidian](https://obsidian.md) to take notes and make some plans.
 For more information about each page and things to impove see [obsidian folder](https://github.com/Wordllban/wardsculks-launcher/tree/main/obsidian)
 
----
-
 ## Related to Project
 
 For more insight into the backend infrastructure of the WardSculks Launcher, visit my friend's repository:
@@ -41,6 +39,32 @@ For more insight into the backend infrastructure of the WardSculks Launcher, vis
 UI/UX Design by Me and [Bohdan Ryshko](https://www.linkedin.com/in/bohdan-ryshko-782330277/)
 
 🔗 [Link to Figma](https://www.figma.com/file/O7dKYt30Zwiaxz30zEfJAJ/WardSculks-Launcher?type=design&node-id=0-1&mode=design&t=IvL2k3Tu7GFTZ9sT-0)
+
+## Commands
+
+Before starting the project in development, you will need to run post-install command to properly install and use native dependencies
+
+```bash
+yarn && yarn post-install
+```
+
+Start
+
+```bash
+yarn start
+```
+
+Before commit or build make sure to run linter
+
+```bash
+yarn lint
+```
+
+Create installation file, also do not forget to update version in `package.json`
+
+```bash
+yarn package
+```
 
 ---
 
