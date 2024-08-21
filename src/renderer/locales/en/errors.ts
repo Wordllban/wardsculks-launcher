@@ -19,6 +19,7 @@ const errors: Record<string, string> = {
   FAILED_TO_LAUNCH_GAME: 'Failed to launch game',
   FAILED_TO_GET_MODS_LIST: 'Failed to request mods list',
   FAILED_TO_SAVE_SELECTED_MODS: 'Failed to save selected. Please, try again',
+  FAILED_TO_GENERATE_LAUNCH_COMMAND: 'Failed to launch game. Wrong engine!',
 };
 
 export default errors;

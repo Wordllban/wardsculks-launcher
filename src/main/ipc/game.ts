@@ -16,12 +16,14 @@ import { sleep } from '../../utils';
 import {
   downloadReleaseFiles,
   generateLaunchMinecraftCommandFabric,
+  generateLaunchMinecraftCommandForge,
+  getReleaseFile,
   getServerFolder,
   saveReleaseFile,
   verifyFolder,
 } from './utils';
 import { getMainWindow } from '../main';
-import { IRelease, LauncherLogs } from '../../types';
+import { IRelease, LauncherLogs, RELEASE_ENGINES } from '../../types';
 
 ipcMain.on('game-install', async (_, serverInfo: [number, string]) => {
   const main = getMainWindow();
@@ -272,20 +274,44 @@ ipcMain.handle(
       const { memoryUsage, autoJoin, isDebug, closeOnGameStart } =
         store.getAll();
 
-      // todo: add switch statement when release.json
-      // will contain engine information to select command generation function
-      const command = await generateLaunchMinecraftCommandFabric({
-        username,
-        serverName,
-        memoryInGigabytes: memoryUsage.value,
-        ...(autoJoin.value ? { serverIp } : {}),
-        isDebug: isDebug.value,
-      });
+      const release = await getReleaseFile(serverName);
+      const releaseEngine = release.engine;
+
+      let launchCommand: string;
+
+      switch (releaseEngine) {
+        case RELEASE_ENGINES.FABRIC:
+          launchCommand = await generateLaunchMinecraftCommandFabric({
+            username,
+            serverName,
+            memoryInGigabytes: memoryUsage.value,
+            ...(autoJoin.value ? { serverIp } : {}),
+            isDebug: isDebug.value,
+          });
+          break;
+
+        case RELEASE_ENGINES.FORGE:
+          launchCommand = await generateLaunchMinecraftCommandForge({
+            username,
+            serverName,
+            memoryInGigabytes: memoryUsage.value,
+            ...(autoJoin.value ? { serverIp } : {}),
+            isDebug: isDebug.value,
+          });
+          break;
+
+        default:
+          main?.webContents.send('logger', {
+            key: 'GAME_FOLDER_NOT_FOUND',
+            type: LauncherLogs.warning,
+          });
+          return;
+      }
 
       const serverFolder = getServerFolder(serverName);
 
       const args =
-        command
+        launchCommand
           .match(/"[^"]+"|\S+/g)
           ?.map((arg: string) => arg.replace(/^"(.*)"$/, '$1')) || [];
 

@@ -21,6 +21,8 @@ const errors: Record<string, string> = {
   FAILED_TO_LAUNCH_GAME: 'Не вдалось запустити гру',
   FAILED_TO_GET_MODS_LIST: 'Не вдалось отримати список модів',
   FAILED_TO_SAVE_SELECTED_MODS: 'Не вдалось зберегти обране. Спробуйте ще раз',
+  FAILED_TO_GENERATE_LAUNCH_COMMAND:
+    'Не вдалось запустити гру. Неправильний рушій!',
 };
 
 export default errors;

@@ -1,5 +1,6 @@
 import { dirname, basename, join, sep, normalize } from 'path';
 import { existsSync, mkdirSync, writeFile } from 'fs';
+import { readFile as readFileAsync } from 'fs/promises';
 import getAppDataPath from 'appdata-path';
 import promiseLimit from 'p-limit';
 import {
@@ -14,6 +15,12 @@ import { IRelease, LauncherLogs, ReleaseFileList } from '../../../types';
 
 export function getServerFolder(serverName: string): string {
   return getAppDataPath(`${GAME_FOLDER_NAME}/${serverName}`);
+}
+
+export async function getReleaseFile(serverName: string): Promise<IRelease> {
+  const releasePath = join(getServerFolder(serverName), RELEASE_FILE_NAME);
+  const release = JSON.parse(await readFileAsync(releasePath, 'utf-8'));
+  return release;
 }
 
 export async function generateLaunchMinecraftCommandFabric({

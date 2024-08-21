@@ -6,7 +6,7 @@ export enum MemorySizing {
 }
 
 export function formatBytes(bytes: number, decimals = 2) {
-  if (!+bytes)
+  if (!Number(bytes) || Number.isNaN(bytes))
     return {
       value: 0,
       size: MemorySizing.BYTES,
