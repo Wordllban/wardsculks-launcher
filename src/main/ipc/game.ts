@@ -14,6 +14,7 @@ import {
 import { LAUNCH_OPTIONS_FILE, RELEASE_FILE_NAME } from '../../constants/files';
 import { sleep } from '../../utils';
 import {
+  checkFileExists,
   downloadReleaseFiles,
   generateLaunchMinecraftCommandFabric,
   generateLaunchMinecraftCommandForge,
@@ -212,10 +213,19 @@ ipcMain.on(
     const main = getMainWindow();
     const serverFolder = getServerFolder(serverName);
     const optionsPath = join(serverFolder, LAUNCH_OPTIONS_FILE);
+
+    const isOptionsFileExists = checkFileExists(optionsPath);
+    if (!isOptionsFileExists) {
+      return main?.webContents.send('logger', {
+        key: 'FAILED_TO_UPDATE_OPTIONS_TXT_DONT_EXIST',
+        type: LauncherLogs.warning,
+      });
+    }
+
     readFile(optionsPath, 'utf-8', (error, data) => {
       if (error) {
         return main?.webContents.send('logger', {
-          message: 'Failed to update setting',
+          key: 'FAILED_TO_SAVE_SETTINGS_CHANGES',
           nativeError: JSON.stringify(error),
           type: LauncherLogs.error,
         });

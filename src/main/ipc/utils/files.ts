@@ -72,7 +72,7 @@ export async function downloadFile(
         'downloading-log',
         `Request failed. Retries left: ${maxRetries}`
       );
-      await sleep(2000);
+      await sleep(3000);
       return downloadFile(url, filePath, fileName, fileSize, maxRetries - 1);
     }
     return main?.webContents.send(

@@ -127,6 +127,11 @@ export function Downloading(): ReactElement {
     handleStartGame();
   }, []);
 
+  const value =
+    downloadingStatus.progress >= FINISHED_PROGRESS
+      ? 0
+      : downloadingStatus.downloadedSize.value;
+
   return (
     <Layout mainBackground="bg-update-bg">
       <ArrowBack
@@ -140,10 +145,7 @@ export function Downloading(): ReactElement {
               i18nKey="DOWNLOADING_SPEED"
               defaults="{{value}} {{size}}/S"
               values={{
-                value:
-                  downloadingStatus.progress >= FINISHED_PROGRESS
-                    ? 0
-                    : downloadingStatus.downloadedSize.value,
+                value: Number.isNaN(value) ? 0 : value,
                 size:
                   downloadingStatus.progress >= FINISHED_PROGRESS
                     ? MemorySizing.BYTES

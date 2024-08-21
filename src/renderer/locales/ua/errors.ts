@@ -23,6 +23,9 @@ const errors: Record<string, string> = {
   FAILED_TO_SAVE_SELECTED_MODS: 'Не вдалось зберегти обране. Спробуйте ще раз',
   FAILED_TO_GENERATE_LAUNCH_COMMAND:
     'Не вдалось запустити гру. Неправильний рушій!',
+  FAILED_TO_UPDATE_OPTIONS_TXT_DONT_EXIST:
+    'Не вдалось оновити налаштування гри. Запустість гру і спробуйте ще раз',
+  FAILED_TO_SAVE_SETTINGS_CHANGES: 'Не вдалось зберегти зміни',
 };
 
 export default errors;
