@@ -107,12 +107,20 @@ ipcMain.handle(
         localRelease = JSON.parse(await readFileAsync(releasePath, 'utf-8'));
       } else {
         localRelease = await requestServerRelease(serverId);
+        await saveReleaseFile(serverFolder, localRelease);
       }
 
       // request selected optional files and add into release for verification
       const optionalFiles = await requestOptionalFilesInfo(serverId);
+      const optionalFilesTotalSize = Object.keys(optionalFiles).reduce(
+        (totalSize: number, currentFileName: string) =>
+          totalSize + optionalFiles[currentFileName].size,
+        0
+      );
+
       localRelease = {
         ...localRelease,
+        totalSize: localRelease.totalSize + optionalFilesTotalSize,
         files: { ...localRelease.files, ...optionalFiles },
       };
 
@@ -325,11 +333,13 @@ ipcMain.handle(
           .match(/"[^"]+"|\S+/g)
           ?.map((arg: string) => arg.replace(/^"(.*)"$/, '$1')) || [];
 
-      const gameProcess = spawn(args[4], args.slice(5), {
+      const gameProcess = spawn(args[2], args.slice(3), {
         detached: true,
         cwd: serverFolder,
         stdio: 'inherit',
+        shell: true,
       });
+
       gameProcess.unref();
 
       if (process.env.NODE_ENV === 'production') {

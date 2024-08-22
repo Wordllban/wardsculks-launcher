@@ -68,7 +68,7 @@ function Mod(props: ModProps): ReactElement {
         </div>
         <div
           className={clsx(
-            isExpanded ? 'max-h-none' : 'max-h-[50px] sm:line-clamp-2',
+            isExpanded ? 'max-h-none' : 'sm:line-clamp-2 max-h-[50px]',
             'overflow-hidden text-ellipsis text-sm'
           )}
           ref={textBlockRef}

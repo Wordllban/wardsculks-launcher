@@ -6,7 +6,7 @@ class ClientService {
   private client: AxiosInstance;
 
   /**
-   * Note: we cannot use `.env` variables inside main process, because electron doesn't know about them
+   * Note: we cannot use `.env` variables inside main process, because electron doesn't know about it
    */
   constructor() {
     this.client = axios.create({

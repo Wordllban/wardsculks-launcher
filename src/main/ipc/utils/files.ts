@@ -210,18 +210,11 @@ export async function verifyFolder(
 ) {
   const main = getMainWindow();
 
-  // we passing whole server folder to verify when new release
-  /* const isNewRelease = folderPath === serverPath;
-
-  const filesToReinstall = isNewRelease
-    ? files
-    : filterObjectKeys(files, (keyToCheck: string) => {
-        return keyToCheck.startsWith(basename(folderPath));
-      }); */
-
   /**
    * temp hardcoded array of files to ignore checks
-   * todo: delete it when release.json will contain files to ignore field
+   * this array should be configured manually for each mod pack
+   *
+   * Note: options.txt is required for each
    */
   const filesToIgnore: string[] = ['options.txt', 'client-config.snbt'];
 

@@ -36,7 +36,7 @@ export async function generateLaunchMinecraftCommandFabric({
   serverIp?: string;
   isDebug: boolean;
 }): Promise<string> {
-  const serverFolderPath = getServerFolder(serverName);
+  const serverFolderPath = normalize(getServerFolder(serverName));
   const librariesFolderPath = join(serverFolderPath, 'libraries');
   const executableText = isDebug
     ? join(serverFolderPath, 'jre', 'bin', 'java.exe')
@@ -64,9 +64,9 @@ export async function generateLaunchMinecraftCommandFabric({
   const usernameParameter = `--username ${username}`;
   const autoConnectParameter = serverIp ? `--server ${serverIp}` : '';
   const parameters = `${immutableParameters} ${assetIndexParameter} ${usernameParameter} ${autoConnectParameter}`;
-  return `cd ${serverFolderPath}
-  ${executableText} ${variables} net.fabricmc.loader.impl.launch.knot.KnotClient ${parameters}
-  ${isDebug ? 'pause' : ''}`;
+  return `chcp 65001
+    ${executableText} ${variables} net.fabricmc.loader.impl.launch.knot.KnotClient ${parameters}
+    ${isDebug && 'pause'}`;
 }
 
 export async function generateLaunchMinecraftCommandForge({
@@ -135,9 +135,8 @@ export async function generateLaunchMinecraftCommandForge({
   const parameters = `${immutableParameters} ${assetIndexParameter} ${usernameParameter} ${autoConnectParameter}`;
 
   return `chcp 65001
-  cd "${serverFolderPath}"
-  "${executableText}" ${variables} cpw.mods.bootstraplauncher.BootstrapLauncher ${parameters}
-  ${isDebug && 'pause'}`;
+    "${executableText}" ${variables} cpw.mods.bootstraplauncher.BootstrapLauncher ${parameters}
+    ${isDebug && 'pause'}`;
 }
 
 /**
@@ -158,6 +157,7 @@ export const downloadingProgressSubscription = (
 
   return setInterval(() => {
     // todo: find a way to optimize this calculation
+    // sum file sizes from release.json on successful install
     const serverFolderSize = getFolderSize(serverFolderPath);
     const progress = Math.round((serverFolderSize / totalSize) * 100);
     const downloadedSize = formatBytes(
