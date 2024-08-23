@@ -27,6 +27,10 @@ class ClientService {
 
   async updateInterceptor(accessToken: string) {
     this.client.interceptors.request.use(async (config) => {
+      if ('Authorization' in config.headers) {
+        return config;
+      }
+
       config.headers.Authorization = `Bearer ${accessToken}`;
 
       return config;

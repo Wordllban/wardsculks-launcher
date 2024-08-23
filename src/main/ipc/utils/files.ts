@@ -31,6 +31,9 @@ export async function downloadFile(
   try {
     const response = await client.instance.get(url, {
       responseType: 'stream',
+      headers: {
+        Authorization: undefined,
+      },
     });
 
     const responseSize = response.headers['content-length'];
@@ -216,7 +219,11 @@ export async function verifyFolder(
    *
    * Note: options.txt is required for each
    */
-  const filesToIgnore: string[] = ['options.txt', 'client-config.snbt'];
+  const filesToIgnore: string[] = [
+    'options.txt',
+    'client-config.snbt',
+    'config/',
+  ];
 
   const filesToReinstall = files;
   try {
@@ -225,7 +232,6 @@ export async function verifyFolder(
     await Promise.all(
       filePaths.map(async (file) => {
         const relativePath = relative(serverPath, file).replaceAll('\\', '/');
-
         if (
           filesToIgnore.some((toIgnore: string) =>
             relativePath.includes(toIgnore)
