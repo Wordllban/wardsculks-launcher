@@ -62,6 +62,8 @@ yarn lint
 
 Create installation file, also do not forget to update version in `package.json`
 
+Note: check `webpack.config.main.prod.ts`, you must add environment variables here manually to include them in build, otherwise builder don't see them
+
 ```bash
 yarn package
 ```

@@ -62,6 +62,11 @@ const configuration: webpack.Configuration = {
       NODE_ENV: 'production',
       DEBUG_PROD: false,
       START_MINIMIZED: false,
+      // to create release we need to add env there
+      API_URL: '',
+      RULES_URL: '',
+      DISCORD_PRESENCE_CLIENT_ID: 0,
+      DISCORD_LINK: '',
     }),
 
     new webpack.DefinePlugin({
