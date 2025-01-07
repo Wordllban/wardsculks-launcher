@@ -11,7 +11,7 @@
 
 ## Description
 
-**WardSculks** is a Ukrainian Minecraft project, known for its modded servers. This application enhances the user experience for players on our servers. It is designed to support multiple server systems and integrates a sophisticated anti-cheat system. This ensures that users cannot modify the modpacks, maintaining the integrity and fairness of the gameplay.
+**WardSculks** is a Ukrainian Minecraft project, known for its modded servers. This application enhances the user experience for players on our servers. It is designed to support multiple server systems and integrates a sophisticated anti-cheat system. This ensures that users cannot modify the mod packs, maintaining the integrity and fairness of the gameplay.
 
 ### Key Features:
 
