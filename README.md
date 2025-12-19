@@ -36,7 +36,7 @@ For more insight into the backend infrastructure of the WardSculks Launcher, vis
 
 🔗 [WardSculks Backend Repository](https://www.youtube.com/watch?v=dQw4w9WgXcQ)
 
-UI/UX Design by Me and [Bohdan Ryshko](https://www.linkedin.com/in/bohdan-ryshko-782330277/)
+UI/UX Design by [Bohdan Ryshko](https://www.linkedin.com/in/bohdan-ryshko-782330277/) and me 
 
 🔗 [Link to Figma](https://www.figma.com/file/O7dKYt30Zwiaxz30zEfJAJ/WardSculks-Launcher?type=design&node-id=0-1&mode=design&t=IvL2k3Tu7GFTZ9sT-0)
 
